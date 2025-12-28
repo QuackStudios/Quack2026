@@ -1,0 +1,88 @@
+.footer-nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0em;
+  top: 45%;
+  width: 0.25em;
+  height: 0.25em;
+  border-radius: 100em;
+  background: #fff;
+  transform-origin: center center;
+  transform: translate3d(-200%, 0px, 0px) scale(0);
+  transition: transform 0.3s;
+  transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+.footer-nav-link:hover::before {
+  transform: translate3d(0%, 0px, 0px) scale(1);
+}
+
+::selection {
+  background: black;
+  color: white;
+}
+
+.background-color-black ::selection {
+  background: white;
+  color: black;
+}
+
+.heading-medium.gradient {
+  --bg-size: 300%;
+  --color-one: #000;
+  --color-two: #9a99a2;
+  background: linear-gradient(90deg,
+      var(--color-one),
+      var(--color-two),
+      var(--color-one)) 0 0 / var(--bg-size) 100%;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: move-bg 8s infinite linear;
+}
+
+.enquiry-card__wrap:hover .card-tag.no--caps {
+  color: transparent;
+  --bg-size: 300%;
+  --color-one: #fff;
+  --color-two: #53525f;
+  background: linear-gradient(90deg,
+      var(--color-one),
+      var(--color-two),
+      var(--color-one)) 0 0 / var(--bg-size) 100%;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: move-bg 4s infinite linear;
+}
+
+.enquiry-card__wrap .card-tag.no--caps:after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  border: 1px solid white;
+  border-radius: 100rem;
+  width: 100%;
+  height: 100%;
+  display: block;
+  visibility: hidden;
+}
+
+.enquiry-card__wrap:hover .card-tag.no--caps::after {
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .boujee-text {
+    animation: move-bg 8s linear infinite;
+  }
+
+  @keyframes move-bg {
+    to {
+      background-position: var(--bg-size) 0;
+    }
+  }
+}

@@ -2043,7 +2043,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Neue Montreal;
-  src: url("../fonts/dgp3QKShh9ye.woff2") format("woff2");
+  src: url("../fonts/rbcWnIzBTKV1.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -2051,7 +2051,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Neue Montreal;
-  src: url("../fonts/aG6RJAUQxCoi.woff2") format("woff2");
+  src: url("../fonts/q9ExDZqfHpRh.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -2059,7 +2059,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Mori;
-  src: url("../fonts/mqOhCHegJB68.woff2") format("woff2");
+  src: url("../fonts/Y1fkTVswNudH.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -2067,7 +2067,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Neue Montreal;
-  src: url("../fonts/jVPyjZnXpRCC.woff2") format("woff2");
+  src: url("../fonts/3zPGn4lAkIxz.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -2133,7 +2133,7 @@ textarea.w-input, textarea.w-select {
 
 .w-checkbox-input--inputType-custom.w--redirected-checked {
   background-color: #3898ec;
-  background-image: url("../images/n0g4zPMYEvAU.svg");
+  background-image: url("../images/7WZs2vu0xtXV.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -3513,6 +3513,7 @@ figcaption {
   position: fixed;
   inset: 1.5rem 0% auto;
 }
+
 .logo {
   z-index: 3;
   float: none;
@@ -8116,7 +8117,7 @@ figcaption {
   pointer-events: auto;
   color: var(--white);
   cursor: pointer;
-  background-image: url("../images/ef8nkuhbsr5u.gif");
+  background-image: url("../images/B5zCeSjfl5mX.gif");
   background-repeat: no-repeat;
   background-size: cover;
   justify-content: center;
