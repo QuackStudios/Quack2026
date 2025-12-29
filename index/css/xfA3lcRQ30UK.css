@@ -3513,6 +3513,12 @@ figcaption {
   position: fixed;
   inset: 1.5rem 0% auto;
 }
+.x_bc-header_services_inner{
+  overflow-y: auto;              /* or auto */
+  overscroll-behavior: contain;  /* stops scroll chaining */
+  -webkit-overflow-scrolling: touch;
+}
+
 
 .logo {
   z-index: 3;
@@ -8455,7 +8461,7 @@ figcaption {
 }
 
 .load-anim {
-  width: 20rem;
+  width: 25rem;
 }
 
 .surprise {

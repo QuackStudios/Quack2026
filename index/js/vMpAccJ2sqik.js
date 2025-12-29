@@ -10376,7 +10376,7 @@
               direction: null,
               effectIn: null,
             },
-            createdOn: 0x18d795e30ef,
+            createdOn: 0x18d7924000ef,
           },
           "e-180": {
             id: "e-180",
@@ -15819,7 +15819,7 @@
               direction: "BOTTOM",
               effectIn: !0,
             },
-            createdOn: 0x1983c4e3100,
+            createdOn: 0x1983c4e2500,
           },
           "e-458": {
             id: "e-458",
@@ -25603,7 +25603,7 @@
                             useEventTarget: "CHILDREN",
                             selector: ".sentence-3",
                             selectorGuids: [
-                              "70027c88-35e3-540f-0235-16452f153b96",
+                              "70027c88-32400-540f-0235-16452f153b96",
                             ],
                           },
                           value: 0.1,
@@ -25644,7 +25644,7 @@
                             useEventTarget: "CHILDREN",
                             selector: ".sentence-3",
                             selectorGuids: [
-                              "70027c88-35e3-540f-0235-16452f153b96",
+                              "70027c88-32400-540f-0235-16452f153b96",
                             ],
                           },
                           value: 1,
@@ -25685,7 +25685,7 @@
                             useEventTarget: "CHILDREN",
                             selector: ".sentence-3",
                             selectorGuids: [
-                              "70027c88-35e3-540f-0235-16452f153b96",
+                              "70027c88-32400-540f-0235-16452f153b96",
                             ],
                           },
                           value: 1,
@@ -25744,7 +25744,7 @@
                             useEventTarget: "CHILDREN",
                             selector: ".sentence-3",
                             selectorGuids: [
-                              "70027c88-35e3-540f-0235-16452f153b96",
+                              "70027c88-32400-540f-0235-16452f153b96",
                             ],
                           },
                           value: 0.1,
@@ -26611,7 +26611,7 @@
                     config: {
                       delay: 0,
                       easing: "",
-                      duration: 500,
+                      duration: 200,
                       target: {
                         id: "65af9f0cabbaf2f9644deb4a|7871eb9d-187e-6140-1607-3dae8e8808d9",
                       },
@@ -26625,7 +26625,7 @@
                     config: {
                       delay: 0,
                       easing: "",
-                      duration: 500,
+                      duration: 200,
                       target: {
                         id: "65af9f0cabbaf2f9644deb4a|7871eb9d-187e-6140-1607-3dae8e8808d9",
                       },
@@ -26658,7 +26658,7 @@
                     config: {
                       delay: 0,
                       easing: "",
-                      duration: 500,
+                      duration: 200,
                       target: {
                         id: "65af9f0cabbaf2f9644deb4a|7871eb9d-187e-6140-1607-3dae8e8808d9",
                       },
@@ -26945,7 +26945,7 @@
                     config: {
                       delay: 0,
                       easing: "",
-                      duration: 4240,
+                      duration: 2000,
                       target: {
                         id: "65af9f0cabbaf2f9644deb4a|7871eb9d-187e-6140-1607-3dae8e8808d9",
                       },
@@ -26956,7 +26956,7 @@
                     id: "a-139-n-25",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 4400,
+                      delay: 2000,
                       easing: "inOutQuart",
                       duration: 500,
                       target: {
@@ -26972,7 +26972,7 @@
                     id: "a-139-n-26",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 4400,
+                      delay: 2000,
                       easing: "inOutQuart",
                       duration: 500,
                       target: {
@@ -26986,7 +26986,7 @@
                     id: "a-139-n-27",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 4500,
+                      delay: 2000,
                       easing: "inOutExpo",
                       duration: 1e3,
                       target: {
@@ -27003,7 +27003,7 @@
                     id: "a-139-n-28",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 4800,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27019,7 +27019,7 @@
                     id: "a-139-n-29",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 4800,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27033,7 +27033,7 @@
                     id: "a-139-n-30",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 4800,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27049,7 +27049,7 @@
                     id: "a-139-n-31",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5e3,
+                      delay: 2400,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27065,7 +27065,7 @@
                     id: "a-139-n-32",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 5e3,
+                      delay: 2400,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27079,7 +27079,7 @@
                     id: "a-139-n-33",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5e3,
+                      delay: 2400,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27095,7 +27095,7 @@
                     id: "a-139-n-34",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27111,7 +27111,7 @@
                     id: "a-139-n-35",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27125,7 +27125,7 @@
                     id: "a-139-n-36",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27141,7 +27141,7 @@
                     id: "a-139-n-37",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27155,7 +27155,7 @@
                     id: "a-139-n-38",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27171,7 +27171,7 @@
                     id: "a-139-n-39",
                     actionTypeId: "TRANSFORM_SCALE",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27186,7 +27186,7 @@
                     id: "a-139-n-40",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27200,7 +27200,7 @@
                     id: "a-139-n-41",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5200,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27216,7 +27216,7 @@
                     id: "a-139-n-42",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 5300,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27230,7 +27230,7 @@
                     id: "a-139-n-43",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5300,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27246,7 +27246,7 @@
                     id: "a-139-n-44",
                     actionTypeId: "STYLE_OPACITY",
                     config: {
-                      delay: 5400,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
@@ -27260,7 +27260,7 @@
                     id: "a-139-n-45",
                     actionTypeId: "TRANSFORM_MOVE",
                     config: {
-                      delay: 5400,
+                      delay: 2500,
                       easing: "inOutQuart",
                       duration: 1e3,
                       target: {
