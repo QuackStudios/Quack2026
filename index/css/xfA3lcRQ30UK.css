@@ -8464,6 +8464,11 @@ figcaption {
   width: 25rem;
 }
 
+header.navigation {
+  overscroll-behavior: contain;
+}
+
+
 .surprise {
   background-color: var(--white);
   cursor: pointer;

@@ -990,7 +990,7 @@
               
             </div>
           </div>
-          <div class="x_bc-header_services_bottom">
+          <div class="x_bc-header_services_bottom" style="pointer-events: none !important;">
             <div
               class="x_bc-header_services_ico"
               data-w-id="dc4bd620-c824-dd11-99d9-72f9fd3b9f47"
@@ -5199,6 +5199,74 @@ body.services-open .qs-main-logo img {
     updateOnScroll();
     window.addEventListener("scroll", updateOnScroll, { passive: true });
   });
+})();
+</script>
+<script>
+(() => {
+  // ====== CONFIG ======
+  const HEADER_SEL = "header.navigation"; // change if needed
+  const DEBUG = true;
+
+  const log = (...args) => DEBUG && console.log("[scroll-block]", ...args);
+
+  function isMenuOpen() {
+    return document.body.classList.contains("services-open");
+  }
+
+  function inHeader(target) {
+    const header = document.querySelector(HEADER_SEL);
+    return !!(header && target && target.closest && target.closest(HEADER_SEL));
+  }
+
+  // Detect whether the page is actually scrolling
+  let lastY = window.scrollY;
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY;
+    if (y !== lastY) log("WINDOW SCROLLED:", lastY, "→", y, "menuOpen=", isMenuOpen());
+    lastY = y;
+  }, { passive: true });
+
+  // ====== HARD BLOCK: capture-phase, document-level ======
+  function blockIfNeeded(e) {
+    const open = isMenuOpen();
+    const hitHeader = inHeader(e.target);
+
+    if (!open || !hitHeader) return;
+
+    // Kill the gesture completely BEFORE Lenis/other libs see it
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+
+    log(
+      "BLOCKED",
+      e.type,
+      "deltaY=",
+      e.deltaY,
+      "target=",
+      e.target?.className || e.target?.tagName
+    );
+  }
+
+  // Wheel / touchmove are the big ones
+  document.addEventListener("wheel", blockIfNeeded, { passive: false, capture: true });
+  document.addEventListener("touchmove", blockIfNeeded, { passive: false, capture: true });
+
+  // Some Macs / browsers can also “scroll” via key presses while menu open
+  document.addEventListener("keydown", (e) => {
+    if (!isMenuOpen()) return;
+    if (!inHeader(document.activeElement)) return;
+
+    const keys = ["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"," "];
+    if (!keys.includes(e.key)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    log("BLOCKED key scroll:", e.key);
+  }, { capture: true });
+
+  log("Installed. Watching for scroll over header while body.services-open is present.");
 })();
 </script>
 
