@@ -8340,8 +8340,8 @@
                 continuousParameterGroupId: "a-9-p",
                 smoothing: 80,
                 startsEntering: !0,
-                addStartOffset: !1,
-                addOffsetValue: 50,
+                addStartOffset: !0,
+                addOffsetValue: 100,
                 startsExiting: !1,
                 addEndOffset: !1,
                 endOffsetValue: 50,
@@ -15111,8 +15111,8 @@
                 continuousParameterGroupId: "a-9-p",
                 smoothing: 80,
                 startsEntering: !0,
-                addStartOffset: !1,
-                addOffsetValue: 50,
+                addStartOffset: !0,
+                addOffsetValue: 100,
                 startsExiting: !1,
                 addEndOffset: !1,
                 endOffsetValue: 50,
@@ -15407,8 +15407,8 @@
                 continuousParameterGroupId: "a-9-p",
                 smoothing: 80,
                 startsEntering: !0,
-                addStartOffset: !1,
-                addOffsetValue: 50,
+                addStartOffset: !0,
+                addOffsetValue: 100,
                 startsExiting: !1,
                 addEndOffset: !1,
                 endOffsetValue: 50,
@@ -16542,100 +16542,7 @@
                       },
                     ],
                   },
-                  {
-                    keyframe: 40,
-                    actionItems: [
-                      {
-                        id: "a-9-n-5",
-                        actionTypeId: "STYLE_BACKGROUND_COLOR",
-                        config: {
-                          delay: 0,
-                          easing: "inOutQuad",
-                          duration: 500,
-                          target: {
-                            useEventTarget: "PARENT",
-                            selector: ".wrap-transition",
-                            selectorGuids: [
-                              "09a3ab5e-bdcf-6665-8f51-86cc7603d46b",
-                            ],
-                          },
-                          globalSwatchId: "",
-                          rValue: 0,
-                          bValue: 0,
-                          gValue: 0,
-                          aValue: 1,
-                        },
-                      },
-                      {
-                        id: "a-9-n-8",
-                        actionTypeId: "STYLE_TEXT_COLOR",
-                        config: {
-                          delay: 0,
-                          easing: "inOutQuad",
-                          duration: 500,
-                          target: {
-                            useEventTarget: "PARENT",
-                            selector: ".wrap-transition",
-                            selectorGuids: [
-                              "09a3ab5e-bdcf-6665-8f51-86cc7603d46b",
-                            ],
-                          },
-                          globalSwatchId: "",
-                          rValue: 255,
-                          bValue: 255,
-                          gValue: 255,
-                          aValue: 1,
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    keyframe: 50,
-                    actionItems: [
-                      {
-                        id: "a-9-n-6",
-                        actionTypeId: "STYLE_BACKGROUND_COLOR",
-                        config: {
-                          delay: 0,
-                          easing: "inOutQuad",
-                          duration: 500,
-                          target: {
-                            useEventTarget: "PARENT",
-                            selector: ".wrap-transition",
-                            selectorGuids: [
-                              "09a3ab5e-bdcf-6665-8f51-86cc7603d46b",
-                            ],
-                          },
-                          globalSwatchId: "",
-                          rValue: 240,
-                          bValue: 230,
-                          gValue: 237,
-                          aValue: 1,
-                        },
-                      },
-                      {
-                        id: "a-9-n-7",
-                        actionTypeId: "STYLE_TEXT_COLOR",
-                        config: {
-                          delay: 0,
-                          easing: "inOutQuad",
-                          duration: 500,
-                          target: {
-                            useEventTarget: "PARENT",
-                            selector: ".wrap-transition",
-                            selectorGuids: [
-                              "09a3ab5e-bdcf-6665-8f51-86cc7603d46b",
-                            ],
-                          },
-                          globalSwatchId: "",
-                          rValue: 0,
-                          bValue: 0,
-                          gValue: 0,
-                          aValue: 1,
-                        },
-                      },
-                    ],
-                  },
+
                   {
                     keyframe: 100,
                     actionItems: [
