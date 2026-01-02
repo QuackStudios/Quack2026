@@ -8188,13 +8188,16 @@ const Gx = ({ isClient: t, initialState: e, app: n }) => {
     )
   ),
   Kx = "modulepreload",
- Xx = function (t) {
-  // GitHub Pages repo base-path fix
-  // Turns "./test/..." -> "/Quack2026/test/..."
-  // Turns "test/..."   -> "/Quack2026/test/..."
-  t = (typeof t === "string" && t.startsWith("./")) ? t.slice(1) : t; // remove leading "."
-  return "/Quack2026" + (t.startsWith("/") ? t : "/" + t);
+Xx = function (t) {
+  const repoBase =
+    location.hostname.endsWith("github.io") && location.pathname.startsWith("/Quack2026/")
+      ? "/Quack2026"
+      : "";
+
+  t = (typeof t === "string" && t.startsWith("./")) ? t.slice(1) : t;
+  return repoBase + (t.startsWith("/") ? t : "/" + t);
 },
+
 
   c0 = {},
   zr = function (e, n, r) {
