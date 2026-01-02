@@ -57177,7 +57177,7 @@ const t8 = { class: "audio-unlock" },
     },
   }),
   i8 = ["portfolio"],
-  o8 = ["/prototype/", "./test/", "/readme"],
+  o8 = ["/prototype/", "/readme"],
   s8 = !1;
 function NE(t) {
   let e = !1;
