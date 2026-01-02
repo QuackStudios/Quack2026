@@ -39158,7 +39158,7 @@ function Ms(t, e = 0.3333) {
   return t < e ? (1 / (2 * e)) * t * t : t - e / 2;
 }
 const $F =
-    "/./test/desktop-1500-1080-homepage-approach%20section-refresh-v8-CGbbtDTB.riv",
+    "./test/desktop-1500-1080-homepage-approach%20section-refresh-v8-CGbbtDTB.riv",
   HF =
     "/assets/mobile-375-520-homepage-approach%20section-refresh-v10-57ftYjte.riv",
   NF = {
@@ -57177,7 +57177,7 @@ const t8 = { class: "audio-unlock" },
     },
   }),
   i8 = ["portfolio"],
-  o8 = ["/prototype/", "/./test/", "/readme"],
+  o8 = ["/prototype/", "./test/", "/readme"],
   s8 = !1;
 function NE(t) {
   let e = !1;
