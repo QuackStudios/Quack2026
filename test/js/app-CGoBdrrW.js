@@ -49984,7 +49984,7 @@ function __injectPreStickyIntro() {
                         "
                         class="hero-button-wrapper"
                       >
-                        <a href="/services" class="button w-inline-block" style="padding: 1rem 3rem !important;"
+                        <a href="./services" class="button w-inline-block" style="padding: 1rem 3rem !important;"
                           ><div class="button-text-wrap" style="font-size: 1.1vw; line-height: 138%;">
                             Build your website like you give a quack →
                           </div></a
@@ -50069,7 +50069,7 @@ function __injectPreStickyIntro() {
                     >
                       <a
                         id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608721-644deb4a"
-                        href="/work/wa-solutions"
+                        href="./work/wa-solutions"
                         class="home-project-card w-inline-block"
                         ><img
                           class="card-bg"
@@ -50104,7 +50104,7 @@ function __injectPreStickyIntro() {
                       </div>
                       <a
                         id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60872b-644deb4a"
-                        href="/work/seatgeek"
+                        href="./work/seatgeek"
                         class="home-project-card w-inline-block"
                         ><div class="project-card-info">
                           <h3 class="heading-small">SeatGeek</h3>
@@ -50142,7 +50142,7 @@ function __injectPreStickyIntro() {
                         </div>
                       </div>
                       <a
-                        href="/work/optix"
+                        href="./work/optix"
                         class="home-project-card w-inline-block"
                         ><img
                           src="index/images/jfVlPkP74hkx.webp"
@@ -50163,7 +50163,7 @@ function __injectPreStickyIntro() {
                           <div class="project-tag">Coworking</div>
                         </div></a
                       ><a
-                        href="/work/jackie"
+                        href="./work/jackie"
                         class="home-project-card w-inline-block"
                         ><img
                           src="index/images/XjBb8NC4l9zI.png"
@@ -50488,7 +50488,7 @@ function __injectHeaderNavigation() {
         </div>
 
         <div class="qs-main-logo" style="width: 19%;">
-          <a href="/">
+          <a href="./">
             <img src="QuackStudios-3.svg" alt="QuackStudios logo">
           </a>
         </div>
@@ -50510,7 +50510,7 @@ function __injectHeaderNavigation() {
           <div class="mobile-nav">
             <a
               id="w-node-_64d6b572-7c43-936d-785b-b92d636aa663-644deb4a"
-              href="/"
+              href="./"
               aria-current="page"
               class="logo w-inline-block w--current"
             >
@@ -50544,7 +50544,7 @@ function __injectHeaderNavigation() {
             </div>
           </div>
           <div fs-scrolldisable-media="(max-width: 991px)" fs-scrolldisable-element="when-visible" class="nav-menu">
-            <a href="/" data-w-id="64d6b572-7c43-936d-785b-b92d636aa670" class="nav-logo-home w-inline-block" style="min-width: 3.75rem !important">
+            <a href="./" data-w-id="64d6b572-7c43-936d-785b-b92d636aa670" class="nav-logo-home w-inline-block" style="min-width: 3.75rem !important">
               <div class="logo-mono w-embed"><img src="quack-icon.png"></div>
             </a>
             <a class="nav-link w-inline-block">
@@ -50552,30 +50552,30 @@ function __injectHeaderNavigation() {
               <div class="nav-pill"></div>
             </a>
 
-            <link rel="prefetch" href="/services" />
-            <a href="/about" class="nav-link is-2 w-inline-block">
+            <link rel="prefetch" href="./services" />
+            <a href="./about" class="nav-link is-2 w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa676" class="link-text is-2">About</div>
             </a>
 
-            <link rel="prefetch" href="/about" />
-            <a href="/work" class="nav-link w-inline-block">
+            <link rel="prefetch" href="./about" />
+            <a href="./work" class="nav-link w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa679" class="link-text is-3">Work</div>
             </a>
 
-            <link rel="prefetch" href="/work" />
-            <a href="/insights" class="nav-link w-inline-block">
+            <link rel="prefetch" href="./work" />
+            <a href="./insights" class="nav-link w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa67c" class="link-text is-4">Insights</div>
             </a>
 
-            <link rel="prefetch" href="/insights" />
-            <a href="/careers" class="nav-link display-mobile w-inline-block">
+            <link rel="prefetch" href="./insights" />
+            <a href="./careers" class="nav-link display-mobile w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa67f" class="link-text is-5">Careers</div>
             </a>
 
-            <a data-button-hover="" href="/work-with-us" class="button is-nav w-inline-block">
+            <a data-button-hover="" href="./work-with-us" class="button is-nav w-inline-block">
               <div data-button-text="" class="button-anim__text">Work With Us</div>
             </a>
-            <link rel="prefetch" href="/work-with-us" />
+            <link rel="prefetch" href="./work-with-us" />
             <div class="menu-bg"></div>
           </div>
         </div>
@@ -50785,7 +50785,7 @@ function __injectScrollMenu() {
               <div class="x_nav_left">
                 <div class="x_nav_left_inner">
                   <a
-                    href="/"
+                    href="./"
                     aria-current="page"
                     class="x_nav_logo_link w-inline-block w--current"
                     ><svg
@@ -50812,7 +50812,7 @@ function __injectScrollMenu() {
                     <div class="x_nav_list_line"></div>
                     <a
                       nav-link="services"
-                      href="/"
+                      href="./"
                       aria-current="page"
                       class="x_nav_link_wrap is-home w-inline-block w--current"
                       ><div class="x_nav_link_text x_u-l-body">Home</div>
@@ -50854,7 +50854,7 @@ function __injectScrollMenu() {
                     <div class="x_nav_list_line"></div>
                     <a
                       nav-link="about"
-                      href="/about.html"
+                      href="./about.html"
                       class="x_nav_link_wrap is-about w-inline-block"
                       ><div class="x_nav_link_text x_u-l-body">Philosophy</div>
                       <div class="x_nav_link_dot"></div>
@@ -50874,7 +50874,7 @@ function __injectScrollMenu() {
                     <div class="x_nav_list_line"></div>
                     <a
                       nav-link="works"
-                      href="/projects.html"
+                      href="./projects.html"
                       class="x_nav_link_wrap is-works w-inline-block"
                       ><div class="x_nav_link_text x_u-l-body">Works</div>
                       <div class="x_nav_link_dot"></div>
@@ -50895,7 +50895,7 @@ function __injectScrollMenu() {
                     <a
                       nav-mobile=""
                       nav-link="insights"
-                      href="/blog.html"
+                      href="./blog.html"
                       class="x_nav_link_wrap is-insights w-inline-block"
                       ><div class="x_nav_link_text x_u-l-body">Insights</div>
                       <div class="x_nav_link_dot"></div>
@@ -50915,7 +50915,7 @@ function __injectScrollMenu() {
                     <div class="x_nav_list_line"></div>
                     <a
                       nav-link="contact"
-                      href="/contact.html"
+                      href="./contact.html"
                       class="x_nav_link_wrap is-contact w-inline-block"
                       ><div class="x_nav_link_text x_u-l-body">Contact</div>
                       <div class="x_nav_link_dot"></div>
@@ -51028,7 +51028,7 @@ function __injectScrollMenu() {
                     </div>
                     <div class="x_nav_services_row">
                       <a
-                        href="/user-experience-design"
+                        href="./user-experience-design"
                         class="x_nav_services_link w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
                           5 services
@@ -51062,7 +51062,7 @@ function __injectScrollMenu() {
                           loading="lazy"
                           class="x_nav_services_bg" /></a
                       ><a
-                        href="/digital-product-development"
+                        href="./digital-product-development"
                         class="x_nav_services_link w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
                           10 services<br />
@@ -51099,7 +51099,7 @@ function __injectScrollMenu() {
                     </div>
                     <div class="x_nav_services_row">
                       <a
-                        href="/branding-agency"
+                        href="./branding-agency"
                         class="x_nav_services_link w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
                           6 services
@@ -51133,7 +51133,7 @@ function __injectScrollMenu() {
                           loading="lazy"
                           class="x_nav_services_bg" /></a
                       ><a
-                        href="/content-creation"
+                        href="./content-creation"
                         class="x_nav_services_link w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
                           4 services<br />
@@ -51170,7 +51170,7 @@ function __injectScrollMenu() {
                     </div>
                     <div class="x_nav_services_row">
                       <a
-                        href="/digital-marketing"
+                        href="./digital-marketing"
                         class="x_nav_services_link w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
                           6 services
@@ -51199,7 +51199,7 @@ function __injectScrollMenu() {
                           alt=""
                           class="x_nav_services_bg" /></a
                       ><a
-                        href="/shopify-ecommerce"
+                        href="./shopify-ecommerce"
                         class="x_nav_services_link is-last w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
                           8 services
@@ -51348,7 +51348,7 @@ function __injectScrollMenu() {
                         </div>
                       </div>
                       <a
-                        href="/projects.html"
+                        href="./projects.html"
                         class="x_nav_mob-submenu_top_link w-inline-block"
                         ><div class="x_nav_mob-submenu_top_title x_u-l-body">
                           Open all works
@@ -52005,7 +52005,7 @@ function __injectScrollMenu() {
                         </div>
                       </div>
                       <a
-                        href="/blog.html"
+                        href="./blog.html"
                         class="x_nav_mob-submenu_top_link w-inline-block"
                         ><div class="x_nav_mob-submenu_top_title x_u-l-body">
                           Open all insights
@@ -52019,7 +52019,7 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="/blog/time-to-redesign-website"
+                            href="./blog/time-to-redesign-website"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
@@ -52052,7 +52052,7 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="/blog/effective-landing-page-design-for-startups"
+                            href="./blog/effective-landing-page-design-for-startups"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
@@ -52083,7 +52083,7 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="/blog/11-key-ux-and-ui-components-driving-website-engagement"
+                            href="./blog/11-key-ux-and-ui-components-driving-website-engagement"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
@@ -52116,7 +52116,7 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="/blog/what-is-a-design-brief"
+                            href="./blog/what-is-a-design-brief"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
@@ -52383,7 +52383,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="/user-experience-design"
+                  href="./user-experience-design"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -52456,7 +52456,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="/digital-product-development"
+                  href="./digital-product-development"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -52495,7 +52495,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="/branding-agency"
+                  href="./branding-agency"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -52535,7 +52535,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="/digital-marketing"
+                  href="./digital-marketing"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-06">
@@ -52570,7 +52570,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="/user-experience-design"
+                  href="./user-experience-design"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -52643,7 +52643,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="/digital-product-development"
+                  href="./digital-product-development"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -52682,7 +52682,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="/branding-agency"
+                  href="./branding-agency"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -52722,7 +52722,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="/digital-marketing"
+                  href="./digital-marketing"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-06">
@@ -52757,7 +52757,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="/user-experience-design"
+                  href="./user-experience-design"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -52830,7 +52830,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="/digital-product-development"
+                  href="./digital-product-development"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -52869,7 +52869,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="/branding-agency"
+                  href="./branding-agency"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -52909,7 +52909,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="/digital-marketing"
+                  href="./digital-marketing"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-06">
@@ -52944,7 +52944,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="/user-experience-design"
+                  href="./user-experience-design"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -53017,7 +53017,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="/digital-product-development"
+                  href="./digital-product-development"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -53056,7 +53056,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="/branding-agency"
+                  href="./branding-agency"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -53096,7 +53096,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="/digital-marketing"
+                  href="./digital-marketing"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-06">
@@ -53741,7 +53741,7 @@ function __injectAfterThirdAnchor() {
                   <div class="flex-vertical">
                     <a
                       data-button-hover=""
-                      href="/work-with-us"
+                      href="./work-with-us"
                       class="big-cta w-inline-block"
                       ><div data-button-text="" class="big-cta__text">
                         Work With Us
@@ -53839,7 +53839,7 @@ function __injectAfterThirdAnchor() {
                         class="card-bg" />
                       <div class="enquiry-card__overlay"></div></a
                     ><a
-                      href="/build-a-digital-product"
+                      href="./build-a-digital-product"
                       class="enquiry-card__wrap is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
@@ -53894,7 +53894,7 @@ function __injectAfterThirdAnchor() {
                         alt=""
                         class="card-bg" />
                       <div class="enquiry-card__overlay"></div></a
-                    ><link rel="prefetch" href="/build-a-digital-product" />
+                    ><link rel="prefetch" href="./build-a-digital-product" />
                   </div>
                 </div>
               </div>

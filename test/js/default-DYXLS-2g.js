@@ -810,7 +810,7 @@ __WEBFLOW_FOOTER_HTML = `
                 <div class="container-large">
                   <a
                     aria-label="return to homepge"
-                    href="/"
+                    href="./"
                     aria-current="page"
                     class="footer-logo w-inline-block w--current"
                     ><div class="w-embed">
@@ -858,7 +858,7 @@ __WEBFLOW_FOOTER_HTML = `
                       <div class="form-disclaimer">
                         By signing up to receive emails from Brave People, you
                         agree to our
-                        <a href="/privacy-policy">Privacy Policy</a>. We treat
+                        <a href="./privacy-policy">Privacy Policy</a>. We treat
                         your info responsibly. Unsubscribe anytime.
                       </div>
                     </div>
@@ -868,20 +868,20 @@ __WEBFLOW_FOOTER_HTML = `
                       >
                         <div class="footer-heading">Company</div>
                         <a
-                          href="/"
+                          href="./"
                           aria-current="page"
                           class="footer-nav-link w-inline-block w--current"
                           ><div>Home</div></a
                         ><a
-                          href="/services"
+                          href="./services"
                           class="footer-nav-link w-inline-block"
                           ><div>Services</div></a
-                        ><a href="/about" class="footer-nav-link w-inline-block"
+                        ><a href="./about" class="footer-nav-link w-inline-block"
                           ><div>About</div></a
-                        ><a href="/work" class="footer-nav-link w-inline-block"
+                        ><a href="./work" class="footer-nav-link w-inline-block"
                           ><div>Work</div></a
                         ><a
-                          href="/work-with-us"
+                          href="./work-with-us"
                           class="footer-nav-link w-inline-block"
                           ><div>Contact</div></a
                         >
@@ -921,7 +921,7 @@ __WEBFLOW_FOOTER_HTML = `
                       >
                         <div class="footer-heading">Learn</div>
                         <a
-                          href="/insights"
+                          href="./insights"
                           class="footer-nav-link w-inline-block"
                           ><div>Insights</div></a
                         ><a
@@ -931,7 +931,7 @@ __WEBFLOW_FOOTER_HTML = `
                           class="footer-nav-link w-inline-block"
                           ><div>Brave/U</div></a
                         ><a
-                          href="/careers"
+                          href="./careers"
                           class="footer-nav-link w-inline-block"
                           ><div>Careers</div></a
                         >
@@ -941,7 +941,7 @@ __WEBFLOW_FOOTER_HTML = `
                   <div class="w-clearfix">
                     <div class="copyright">©2025 BRAVE PEOPLE</div>
                     <a
-                      href="/"
+                      href="./"
                       data-prevent-transition=""
                       class="top-link w-inline-block"
                       ><div>Back to Top</div></a
@@ -953,7 +953,7 @@ __WEBFLOW_FOOTER_HTML = `
           </section>
           <a
             data-w-id="f095ceff-1416-61e3-4e28-8aa500ebb59c"
-            href="/services"
+            href="./services"
             class="next-page is--default w-inline-block"
             ><img
               src="index/images/65aed80126eee11bf033126b_5V1A4016%25402x%201.jpg"
