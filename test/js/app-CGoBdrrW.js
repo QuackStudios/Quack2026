@@ -57209,7 +57209,7 @@ function a8() {
 function l8(t) {
   t.component("ProxyBlock", ZH);
 }
-XH(r8, { routes: BE(), base: "/" }, async (t) => {
+XH(r8, { routes: BE(), base: "/Quack2026/" }, async (t) => {
   const { app: e, router: n } = t;
   Object.values([Bx, Yx]).forEach((o) => {
     var s;
