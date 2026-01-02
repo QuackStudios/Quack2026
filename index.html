@@ -7799,5 +7799,48 @@
 })();
 </script>
 
+<script>
+(() => {
+  const REPO = "/Quack2026";
+
+  // Patch setAttribute for src/href
+  const _setAttr = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function (name, value) {
+    if ((name === "src" || name === "href") && typeof value === "string" && value.startsWith("/test/")) {
+      value = REPO + value;
+    }
+    return _setAttr.call(this, name, value);
+  };
+
+  // Patch direct property assignment: el.src / el.href
+  const linkHref = Object.getOwnPropertyDescriptor(HTMLLinkElement.prototype, "href");
+  const scriptSrc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, "src");
+
+  if (linkHref?.set) {
+    Object.defineProperty(HTMLLinkElement.prototype, "href", {
+      set(v) {
+        if (typeof v === "string" && v.startsWith("/test/")) v = REPO + v;
+        return linkHref.set.call(this, v);
+      },
+      get: linkHref.get,
+      configurable: true,
+      enumerable: true,
+    });
+  }
+
+  if (scriptSrc?.set) {
+    Object.defineProperty(HTMLScriptElement.prototype, "src", {
+      set(v) {
+        if (typeof v === "string" && v.startsWith("/test/")) v = REPO + v;
+        return scriptSrc.set.call(this, v);
+      },
+      get: scriptSrc.get,
+      configurable: true,
+      enumerable: true,
+    });
+  }
+})();
+</script>
+
   </body>
 </html>
