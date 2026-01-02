@@ -49613,19 +49613,22 @@ function XH(t, e, n, r) {
   return (
     (async () => {
       const { app: c, router: h } = await u();
-     await h.isReady(),
-c.mount(a, !0),
-__injectPreloader(),
-__injectHeaderNavigation(),
-__injectPreStickyIntro(),
-__injectScrollMenu(),
+     await h.isReady();
+c.mount(a, true);
+
+__injectPreloader();
+__injectHeaderNavigation();
+__injectPreStickyIntro();
+__injectScrollMenu();
 __injectNewSection();
 __injectAfterMain();
-__ensureInjectAfterAfterMain(); 
+__ensureInjectAfterAfterMain();
 __ensureInjectAfterThird();
+
 if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
   window.__INIT_HEADER_SCRIPTS();
 }
+
     })(),
     u
   );
