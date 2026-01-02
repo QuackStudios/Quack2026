@@ -49624,6 +49624,7 @@ function XH(t, e, n, r) {
      await h.isReady();
 c.mount(a, true);
 
+// 1) inject everything first
 __injectPreloader();
 __injectHeaderNavigation();
 __injectPreStickyIntro();
@@ -49633,9 +49634,30 @@ __injectAfterMain();
 __ensureInjectAfterAfterMain();
 __ensureInjectAfterThird();
 
+// 2) init your header scripts (they may rely on DOM existing)
 if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
   window.__INIT_HEADER_SCRIPTS();
 }
+
+// 3) only after BODY + Webflow exist, reinit Webflow
+(function __safeReinitWebflow() {
+  let tries = 0;
+  const maxTries = 200; // ~10s at 50ms
+  const tick = () => {
+    const wf = window.Webflow;
+
+    // body must exist, and Webflow runtime must be present
+    if (document.body && wf && typeof wf.require === "function") {
+      try { reinitWebflowSoft(); } catch (_) {}
+      return;
+    }
+
+    if (++tries >= maxTries) return;
+    setTimeout(tick, 50);
+  };
+  tick();
+})();
+
 
     })(),
     u
@@ -50238,9 +50260,6 @@ const reinitWebflowSoft = (() => {
     setTimeout(run, 250);
   };
 })();
-
-// Call once placement + cleanup is complete
-reinitWebflowSoft();
 
 
 
