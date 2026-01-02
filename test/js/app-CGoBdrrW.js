@@ -8188,9 +8188,14 @@ const Gx = ({ isClient: t, initialState: e, app: n }) => {
     )
   ),
   Kx = "modulepreload",
-  Xx = function (t) {
-    return "/" + t;
-  },
+ Xx = function (t) {
+  // GitHub Pages repo base-path fix
+  // Turns "./test/..." -> "/Quack2026/test/..."
+  // Turns "test/..."   -> "/Quack2026/test/..."
+  t = (typeof t === "string" && t.startsWith("./")) ? t.slice(1) : t; // remove leading "."
+  return "/Quack2026" + (t.startsWith("/") ? t : "/" + t);
+},
+
   c0 = {},
   zr = function (e, n, r) {
     let i = Promise.resolve();
