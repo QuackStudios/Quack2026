@@ -50246,7 +50246,12 @@ const reinitWebflowSoft = (() => {
       const req = wf.require;
 
       // Re-scan interactions + lottie without nuking runtime.
-      try { req("ix2")?.init?.(); } catch (_) {}
+      try {
+  const ix2 = req("ix2");
+  ix2?.destroy?.();
+  ix2?.init?.();
+} catch (_) {}
+ss
       try { req("lottie")?.ready?.(); } catch (_) {}
       try { req("dropdown")?.ready?.(); } catch (_) {}
       try { req("tabs")?.ready?.(); } catch (_) {}
