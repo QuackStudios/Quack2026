@@ -49299,7 +49299,7 @@ const fH = { render: cH },
     Object.entries(
       Object.assign({
         "/src/layouts/default.vue": () =>
-          zr(() => import("default-DYXLS-2g.js"), __vite__mapDeps([2, 3, 4])),
+          zr(() => import("./default-DYXLS-2g.js"), __vite__mapDeps([2, 3, 4])),
       })
     ).forEach(([i, o]) => {
       let s = i.replace("/src/layouts/", "").replace(".vue", "");
