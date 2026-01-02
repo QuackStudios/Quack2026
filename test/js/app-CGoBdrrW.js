@@ -8218,15 +8218,22 @@ const Gx = ({ isClient: t, initialState: e, app: n }) => {
             l = h ? '[rel="stylesheet"]' : "";
           if (document.querySelector(`link[href="${c}"]${l}`)) return;
           const d = document.createElement("link");
-          if (
-            ((d.rel = h ? "stylesheet" : Kx),
-            h || (d.as = "script"),
-            (d.crossOrigin = ""),
-            (d.href = c),
-            u && d.setAttribute("nonce", u),
-            document.head.appendChild(d),
-            h)
-          )
+          d.rel = h ? "stylesheet" : Kx;
+          if (!h) d.as = "script";
+          d.crossOrigin = "";
+
+          // Fix GitHub Pages repo base-path for absolute "/test/..." URLs
+          const __REPO_BASE__ = "/Quack2026";
+          const fixedHref =
+            typeof c === "string" && c.startsWith("/test/")
+              ? __REPO_BASE__ + c
+              : c;
+
+          d.href = fixedHref;
+
+          if (u) d.setAttribute("nonce", u);
+          document.head.appendChild(d);
+
             return new Promise((f, _) => {
               d.addEventListener("load", f),
                 d.addEventListener("error", () =>
