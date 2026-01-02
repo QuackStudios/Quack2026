@@ -1,0 +1,229 @@
+@font-face {
+  font-family: Saans;
+  src: url(/assets/SaansMedium-OhhNPY7B.woff2) format("woff2");
+  font-weight: 500;
+  font-stretch: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Saans;
+  src: url(/assets/SaansRegular-CRIy43oF.woff2) format("woff2");
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: ItemsRegular;
+  src: url(/assets/Items-Regular-R4P_z7s3.woff2) format("woff2");
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+}
+[data-v-00328bd0]:root {
+  --color-beige: #ddd9d4;
+  --color-black: rgb(18, 17, 14);
+  --color-black-alt: rgb(18, 17, 14);
+  --color-cream: #fafbf8;
+  --color-grey: rgb(128, 128, 128);
+  --color-warm-grey: #c3bdb8;
+  --color-yellow: white;
+  --color-transparent: transparent;
+  --color-border: rgba(18, 17, 14, 0.3019607843);
+}
+[data-v-00328bd0]:export {
+  mobile: 375;
+  tablet-portrait: 768;
+  tablet-landscape: 1024;
+  desktop: 1440;
+  desktop-wide: 1920;
+}
+[data-v-00328bd0]:root {
+  --grid-columns: 12;
+  --grid-side-margin: 2rem;
+  --grid-max-outer-width: 192rem;
+  --grid-side-margin: min(
+    calc((2rem) + (3.2 - 2) * (100vw - 37.5rem) / 106.5),
+    3.2rem
+  );
+  --grid-column-gap: 1rem;
+}
+@media only screen and (width >= 48em) {
+  [data-v-00328bd0]:root {
+    --grid-column-gap: 3.2rem;
+  }
+}
+[data-v-00328bd0]:root {
+  --grid-max-width: calc(
+    var(--grid-max-outer-width) - (var(--grid-side-margin) * 2)
+  );
+  --grid-width-input: calc(100vw - (var(--grid-side-margin) * 2));
+  --grid-width: min(var(--grid-width-input), var(--grid-max-width));
+  --grid-gaps-total: var(--grid-column-gap) * (var(--grid-columns) - 1);
+  --grid-column-width: calc(
+    (var(--grid-width) - var(--grid-gaps-total)) / var(--grid-columns)
+  );
+}
+.SimpleHero[data-v-00328bd0] {
+  position: relative;
+}
+.SimpleHero-container[data-v-00328bd0] {
+  max-width: var(--grid-max-width);
+  box-sizing: content-box;
+  padding-left: var(--grid-side-margin);
+  padding-right: var(--grid-side-margin);
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: min(
+    calc((8.5rem) + (9.5 - 8.5) * (100vw - 37.5rem) / 106.5),
+    9.5rem
+  );
+  padding-bottom: min(
+    calc((1.1rem) + (9.2 - 1.1) * (100vw - 37.5rem) / 106.5),
+    9.2rem
+  );
+}
+.SimpleHero-container[data-variant="center"][data-v-00328bd0] {
+  padding-bottom: min(
+    calc((6.8rem) + (7 - 6.8) * (100vw - 37.5rem) / 106.5),
+    7rem
+  );
+}
+.SimpleHero-wrap[data-v-00328bd0] {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(12, 1fr);
+}
+.SimpleHero-wrap[data-variant="right"][data-v-00328bd0] {
+  row-gap: min(calc((4.5rem) + (11 - 4.5) * (100vw - 37.5rem) / 106.5), 11rem);
+}
+@media only screen and (width < 48em) {
+  .SimpleHero-title[data-v-00328bd0] {
+    font-size: clamp(4rem, 17vw, 12rem);
+  }
+}
+.SimpleHero-title[data-theme="cream"][data-v-00328bd0],
+.SimpleHero-title[data-theme="warm-grey"][data-v-00328bd0] {
+  color: #ddd9d4;
+}
+.SimpleHero-title[data-theme="yellow"][data-v-00328bd0],
+.SimpleHero-title[data-theme="beige"][data-v-00328bd0] {
+  color: #c3bdb8;
+}
+.SimpleHero-title[data-theme="grey"][data-v-00328bd0],
+.SimpleHero-title[data-theme="black-alt"][data-v-00328bd0],
+.SimpleHero-title[data-theme="black"][data-v-00328bd0] {
+  color: #fafbf84d;
+}
+@font-face {
+  font-family: Saans;
+  src: url(/assets/SaansMedium-OhhNPY7B.woff2) format("woff2");
+  font-weight: 500;
+  font-stretch: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Saans;
+  src: url(/assets/SaansRegular-CRIy43oF.woff2) format("woff2");
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: ItemsRegular;
+  src: url(/assets/Items-Regular-R4P_z7s3.woff2) format("woff2");
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+}
+[data-v-d45fc1e7]:root {
+  --color-beige: #ddd9d4;
+  --color-black: rgb(18, 17, 14);
+  --color-black-alt: rgb(18, 17, 14);
+  --color-cream: #fafbf8;
+  --color-grey: rgb(128, 128, 128);
+  --color-warm-grey: #c3bdb8;
+  --color-yellow: white;
+  --color-transparent: transparent;
+  --color-border: rgba(18, 17, 14, 0.3019607843);
+}
+[data-v-d45fc1e7]:export {
+  mobile: 375;
+  tablet-portrait: 768;
+  tablet-landscape: 1024;
+  desktop: 1440;
+  desktop-wide: 1920;
+}
+.ButtonToggle-wrapper[data-v-d45fc1e7] {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+.ButtonToggle-wrapper[data-variant="relative"][data-v-d45fc1e7] {
+  position: relative;
+}
+.ButtonToggle[data-v-d45fc1e7] {
+  position: relative;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 100;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  flex: 1;
+  flex-direction: column;
+  pointer-events: auto;
+  width: auto;
+}
+.ButtonToggle-group[data-v-d45fc1e7] {
+  padding: min(calc(0.2rem + 0 * (100vw - 37.5rem)), 0.2rem)
+    min(calc((3.2rem) + (3.7 - 3.2) * (100vw - 37.5rem) / 106.5), 3.7rem);
+  gap: min(calc((1.8rem) + (2.1 - 1.8) * (100vw - 37.5rem) / 106.5), 2.1rem);
+  display: inline-flex;
+  background-color: #12110e;
+  flex-basis: 100%;
+  border-radius: 0.6rem;
+  justify-content: space-between;
+  align-items: stretch;
+}
+.ButtonToggle-option[data-v-d45fc1e7] {
+  padding: min(calc(1rem + 0 * (100vw - 37.5rem)), 1rem)
+    min(calc(0rem + 0 * (100vw - 37.5rem)), 0rem);
+  font-family: Saans, helvetica, arial, sans-serif;
+  font-weight: 500;
+  text-transform: inherit;
+  font-style: inherit;
+  font-size: min(
+    calc((1.4rem) + (1.6 - 1.4) * (100vw - 37.5rem) / 106.5),
+    1.6rem
+  );
+  line-height: min(
+    calc((1.16em) + (1.2 - 1.16) * (100vw - 37.5rem) / 106.5),
+    1.2em
+  );
+  letter-spacing: 0;
+  background: none;
+  border: none;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  color: gray;
+  text-align: center;
+  flex: 1;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+.ButtonToggle-option[data-v-d45fc1e7]:hover {
+  color: #fafbf8;
+}
+.ButtonToggle-option[data-v-d45fc1e7]:focus {
+  outline: none;
+}
+.ButtonToggle-option[data-active="true"][data-v-d45fc1e7] {
+  color: #fafbf8;
+}
