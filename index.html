@@ -6675,36 +6675,7 @@
       href="/test/css/app-CDdwhi7i.css"
     />
 
-    <script>
-  window.addEventListener("load", () => {
-    // This is the sticky block you highlighted in DevTools
-    const sticky = document.querySelector(".HomeAnimation-landscape-sticky");
-    if (!sticky || !sticky.parentNode) {
-      console.warn("[inject] sticky not found yet");
-      return;
-    }
-
-    // Create a test section
-    const section = document.createElement("section");
-    section.className = "InjectedTestSection";
-    section.style.cssText = `
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 48px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: white;
-    `;
-    section.textContent = "HELLO WORLD";
-
-    // Insert BEFORE the sticky block (so it appears above it)
-    sticky.parentNode.insertBefore(section, sticky);
-
-    console.log("[inject] inserted section above sticky");
-  });
-</script>
+ 
 
 
     <script>
