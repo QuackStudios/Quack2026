@@ -49888,7 +49888,7 @@ function __injectPreStickyIntro() {
                           >
                             <div class="video-play">PLAY</div>
                             <img
-                              src="index/images/temp-img.png"
+                              src="index/images/temp-im.jpeg"
                               loading="eager"
                               width="250"
                               height="250"
@@ -49896,7 +49896,7 @@ function __injectPreStickyIntro() {
                               class="hero-img-1"
                             /><img
                               class="vimeo-thumb"
-                              src="index/images/temp-img.png"
+                              src="index/images/temp-im.jpeg"
                               width="1000"
                               data-vimeo-lightbox-placeholder=""
                               height="1000"
@@ -49904,14 +49904,14 @@ function __injectPreStickyIntro() {
                               sizes="(max-width: 479px) 97vw, (max-width: 767px) 98vw, 99vw"
                               loading="eager"
                               srcset="
-                                index/images/temp-img.png 500w,
-                                index/images/temp-img.png 800w,
-                                index/images/temp-img.png 1080w,
-                                index/images/temp-img.png 1600w,
-                                index/images/temp-img.png 2000w,
-                                index/images/temp-img.png 2600w,
-                                index/images/temp-img.png 3200w,
-                                index/images/temp-img.png 3840w
+                                index/images/temp-im.jpeg 500w,
+                                index/images/temp-im.jpeg 800w,
+                                index/images/temp-im.jpeg 1080w,
+                                index/images/temp-im.jpeg 1600w,
+                                index/images/temp-im.jpeg 2000w,
+                                index/images/temp-im.jpeg 2600w,
+                                index/images/temp-im.jpeg 3200w,
+                                index/images/temp-im.jpeg 3840w
                               "
                             />
                           </button>
@@ -49974,7 +49974,7 @@ function __injectPreStickyIntro() {
                           <div class="hero-heading_img is-img-2">
                             <img
                               class="hero-img-2"
-                              src="index/images/temp-img.png "
+                              src="index/images/temp-im.jpeg "
                               width="446"
                               height="256"
                               alt=""
@@ -49983,14 +49983,14 @@ function __injectPreStickyIntro() {
                               data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e60870f"
                               loading="eager"
                               srcset="
-                                index/images/temp-img.png   500w,
-                                index/images/temp-img.png   800w,
-                                index/images/temp-img.png 1080w,
-                                index/images/temp-img.png 1600w,
-                                index/images/temp-img.png 2000w,
-                                index/images/temp-img.png  2600w,
-                                index/images/temp-img.png  3200w,
-                                index/images/temp-img.png  4760w
+                                index/images/temp-im.jpeg   500w,
+                                index/images/temp-im.jpeg   800w,
+                                index/images/temp-im.jpeg 1080w,
+                                index/images/temp-im.jpeg 1600w,
+                                index/images/temp-im.jpeg 2000w,
+                                index/images/temp-im.jpeg  2600w,
+                                index/images/temp-im.jpeg  3200w,
+                                index/images/temp-im.jpeg  4760w
                               "
                             />
                           </div>
@@ -50205,7 +50205,7 @@ function __injectPreStickyIntro() {
                         class="home-project-card w-inline-block"
                         ><img
                           class="card-bg"
-                          src="index/images/temp-img.png"
+                          src="index/images/temp-im.jpeg"
                           width="1216"
                           height="1564"
                           alt=""
@@ -50213,10 +50213,10 @@ function __injectPreStickyIntro() {
                           data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608722"
                           loading="lazy"
                           srcset="
-                            index/images/temp-img.png  500w,
-                            index/images/temp-img.png  800w,
-                            index/images/temp-img.png 1080w,
-                            index/images/temp-img.png 1402w
+                            index/images/temp-im.jpeg  500w,
+                            index/images/temp-im.jpeg  800w,
+                            index/images/temp-im.jpeg 1080w,
+                            index/images/temp-im.jpeg 1402w
                           "
                         />
                         <div class="project-card-info">
@@ -50243,20 +50243,20 @@ function __injectPreStickyIntro() {
                           <div class="project-tag">Entertainment</div>
                         </div>
                         <img
-                          src="index/images/temp-img.png"
+                          src="index/images/temp-im.jpeg"
                           loading="lazy"
                           width="812"
                           height="1564"
                           alt=""
                           srcset="
-                            index/images/temp-img.png  500w,
-                            index/images/temp-img.png  800w,
-                            index/images/temp-img.png 1080w,
-                            index/images/temp-img.png 1600w,
-                            index/images/temp-img.png 2000w,
-                            index/images/temp-img.png 2600w,
-                            index/images/temp-img.png 3200w,
-                            index/images/temp-img.png 4533w
+                            index/images/temp-im.jpeg  500w,
+                            index/images/temp-im.jpeg  800w,
+                            index/images/temp-im.jpeg 1080w,
+                            index/images/temp-im.jpeg 1600w,
+                            index/images/temp-im.jpeg 2000w,
+                            index/images/temp-im.jpeg 2600w,
+                            index/images/temp-im.jpeg 3200w,
+                            index/images/temp-im.jpeg 4533w
                           "
                           sizes="(max-width: 991px) 100vw, 812px"
                           class="card-bg"
@@ -50277,15 +50277,15 @@ function __injectPreStickyIntro() {
                         href="./work/optix"
                         class="home-project-card w-inline-block"
                         ><img
-                          src="index/images/temp-img.png"
+                          src="index/images/temp-im.jpeg"
                           loading="lazy"
                           width="812"
                           height="1564"
                           alt=""
                           srcset="
-                            index/images/temp-img.png  500w,
-                            index/images/temp-img.png  800w,
-                            index/images/temp-img.png 1065w
+                            index/images/temp-im.jpeg  500w,
+                            index/images/temp-im.jpeg  800w,
+                            index/images/temp-im.jpeg 1065w
                           "
                           sizes="(max-width: 991px) 100vw, 812px"
                           class="card-bg"
@@ -50298,7 +50298,7 @@ function __injectPreStickyIntro() {
                         href="./work/jackie"
                         class="home-project-card w-inline-block"
                         ><img
-                          src="index/images/temp-img.png"
+                          src="index/images/temp-im.jpeg"
                           loading="lazy"
                           width="812"
                           height="1564"
