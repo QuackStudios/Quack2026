@@ -1040,6 +1040,29 @@ function __injectHeaderNavigation() {
       pane.prepend(header);
     }
 
+    
+    // After injection: run header init scripts (DOMContentLoaded already fired)
+const runInjectedHeaderScripts = () => {
+  // Only run once
+  if (window.__HEADER_SCRIPTS_INITED) return;
+  window.__HEADER_SCRIPTS_INITED = true;
+
+  if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+    try { window.__INIT_HEADER_SCRIPTS(); } catch (e) {}
+  }
+};
+
+// Wait a tick so any framework patching settles, then run
+requestAnimationFrame(() => {
+  runInjectedHeaderScripts();
+
+  // ✅ Re-init Webflow interactions reliably (NO Webflow.destroy spam)
+  // Kick both the injected header and the injected intro section (if present),
+  // because either can contain data-w-id nodes.
+  try { __webflowIX2Kick("#navigation"); } catch (e) {}
+  try { __webflowIX2Kick("#presticky-intro"); } catch (e) {}
+});
+
 
     
 
@@ -4629,24 +4652,6 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
       return;
     }
 
-    // Safe GSAP.set: ignore null/undefined targets (happens when injected DOM isn't ready yet)
-    const gsapSafeSet = (targets, vars) => {
-      const flatten = (t) => {
-        if (!t) return [];
-        if (t.nodeType === 1 || t === window || t === document) return [t];
-        if (Array.isArray(t)) return t.flatMap(flatten);
-        // NodeList / HTMLCollection
-        if (typeof t.length === "number") return Array.from(t).flatMap(flatten);
-        return [t];
-      };
-      const list = flatten(targets).filter(Boolean);
-      if (!list.length) {
-        try { __wfWarn && __wfWarn("GSAP.set skipped (no valid targets)", { targets, vars }); } catch (e) {}
-        return;
-      }
-      return gsapSafeSet(list, vars);
-    };
-
     const els = {
       navWrap: document.querySelector(".x_nav_wrap"),
       navButton: document.querySelector(".x_nav_button_wrap"),
@@ -4720,28 +4725,28 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
     let currentConfig = null;
 
     const setInitialStyles = (cfg) => {
-      gsapSafeSet(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
-      gsapSafeSet(els.navLeft, { width: cfg.closedLeftWidth });
-      gsapSafeSet([els.navBg, els.navContent], { display: "none", opacity: 0 });
-      gsapSafeSet([els.navLeftInner], { display: "none", opacity: 0 });
-      gsapSafeSet(els.closeIcon, { display: "none" });
-      gsapSafeSet([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
-      gsapSafeSet(els.openIcon, { display: "block" });
-      gsapSafeSet(els.navRight, { height: "auto" });
-      gsapSafeSet(els.navBtnBg, { opacity: 100 });
+      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
+      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
+      window.gsap.set(els.closeIcon, { display: "none" });
+      window.gsap.set([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set(els.openIcon, { display: "block" });
+      window.gsap.set(els.navRight, { height: "auto" });
+      window.gsap.set(els.navBtnBg, { opacity: 100 });
     };
 
     const setMobileInitialStyles = (cfg) => {
-      gsapSafeSet(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
-      gsapSafeSet(els.navLeft, { width: cfg.closedLeftWidth });
-      gsapSafeSet([els.navBg, els.navContent], { display: "none", opacity: 0 });
-      gsapSafeSet([els.navLeftInner], { display: "none", opacity: 0 });
-      gsapSafeSet(els.closeIcon, { display: "none" });
-      gsapSafeSet([els.navSocials, els.navLogo], { opacity: 0 });
-      gsapSafeSet(els.openIcon, { display: "block" });
-      gsapSafeSet([els.navBtnBg, els.navList], { opacity: 100 });
-      gsapSafeSet(els.navRight, { height: "0rem" });
-      gsapSafeSet(els.navContent, { display: "none", opacity: 0 });
+      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
+      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
+      window.gsap.set(els.closeIcon, { display: "none" });
+      window.gsap.set([els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set(els.openIcon, { display: "block" });
+      window.gsap.set([els.navBtnBg, els.navList], { opacity: 100 });
+      window.gsap.set(els.navRight, { height: "0rem" });
+      window.gsap.set(els.navContent, { display: "none", opacity: 0 });
     };
 
     const setupDesktopAnimation = (cfg) => {

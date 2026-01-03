@@ -62,29 +62,120 @@ if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
   window.__INIT_HEADER_SCRIPTS();
 }
 
-// 3) only after BODY + Webflow exist, reinit Webflow
-(function __safeReinitWebflow() {
-  let tries = 0;
-  const maxTries = 200; // ~10s at 50ms
-  const tick = () => {
-    const wf = window.Webflow;
+// 3) Load Webflow runtime AFTER injections so IX2 scans the final DOM (Option B)
+try {
+  await __loadWebflowOnce("index/js/vMpAccJ2sqik.js");
+  // When webflow.js is loaded dynamically (after DOMContentLoaded),
+  // explicitly kick the modules so they bind immediately.
+  __wfInitAfterLoad();
+} catch (e) {
+  // If Webflow fails to load, keep site usable; interactions just won't run.
+  console.warn("[wf] webflow.js failed to load", e);
+}
 
-    // body must exist, and Webflow runtime must be present
-    if (document.body && wf && typeof wf.require === "function") {
-      try { reinitWebflowSoft(); } catch (_) {}
-      return;
-    }
-
-    if (++tries >= maxTries) return;
-    setTimeout(tick, 50);
-  };
-  tick();
-})();
+// Give Webflow one tick to bind interactions
+await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
 
     })(),
     u
   );
+}
+
+// ---- Webflow runtime loader (Option B) ----
+// Loads webflow.js exactly once, after Vue mount + all DOM injections.
+// This avoids IX2 scanning an incomplete DOM (race condition).
+function __loadWebflowOnce(src) {
+  const S = (window.__WF_BOOT__ ||= { promise: null, loaded: false });
+
+  // NOTE: Webflow-exported HTML often contains an inline stub:
+  //   window.Webflow = window.Webflow || [];
+  // That stub is just an Array (so it has .push), but the runtime is NOT loaded yet.
+  // Therefore we must NOT treat "push exists" as "Webflow is ready".
+  const isRuntimeReady = () =>
+    window.Webflow && typeof window.Webflow.require === "function";
+
+  if (S.loaded) return Promise.resolve();
+  if (S.promise) return S.promise;
+
+  S.promise = new Promise((resolve, reject) => {
+    try {
+      // If Webflow runtime is already present (eg. script still in HTML), just resolve.
+      // (Don't confuse the Webflow stub array for the runtime.)
+      if (isRuntimeReady()) {
+        S.loaded = true;
+        resolve();
+        return;
+      }
+
+      const abs = new URL(src, document.baseURI).href;
+
+      // If a matching script tag already exists, wait for it.
+      const existing = Array.from(document.scripts).find((s) => {
+        const ssrc = s.getAttribute("src");
+        return ssrc && new URL(ssrc, document.baseURI).href === abs;
+      });
+
+      if (existing) {
+        // If it's already loaded, resolve immediately.
+        try {
+          if (existing.readyState === "complete" || isRuntimeReady()) {
+            S.loaded = true;
+            resolve();
+            return;
+          }
+        } catch (_) {}
+        existing.addEventListener("load", () => {
+          S.loaded = true;
+          resolve();
+        });
+        existing.addEventListener("error", reject);
+        return;
+      }
+
+      const s = document.createElement("script");
+      // Use the resolved absolute URL so this works from nested routes like /services.
+      s.src = abs;
+      s.async = true;
+      s.type = "text/javascript";
+      s.onload = () => {
+        S.loaded = true;
+        resolve();
+      };
+      s.onerror = reject;
+
+      // Append to body when possible; fallback to head.
+      (document.body || document.head || document.documentElement).appendChild(s);
+    } catch (e) {
+      reject(e);
+    }
+  });
+
+  return S.promise;
+}
+
+// After dynamic load, kick Webflow modules to bind interactions immediately.
+// (Equivalent to what normally happens on DOM ready in a pure Webflow page.)
+function __wfInitAfterLoad() {
+  const wf = window.Webflow;
+  if (!wf || typeof wf.require !== "function") return;
+  const req = wf.require;
+
+  // Interactions
+  try {
+    const ix2 = req("ix2");
+    if (ix2 && typeof ix2.init === "function") ix2.init();
+  } catch (_) {}
+
+  // Common Webflow components used on your page
+  try { req("lottie")?.ready?.(); } catch (_) {}
+  try { req("dropdown")?.ready?.(); } catch (_) {}
+  try { req("tabs")?.ready?.(); } catch (_) {}
+  try { req("slider")?.ready?.(); } catch (_) {}
+  try { req("forms")?.ready?.(); } catch (_) {}
+
+  // Nudge layout calculations
+  try { window.dispatchEvent(new Event("resize")); } catch (_) {}
 }
 
 function __injectPreStickyIntro() {
@@ -648,49 +739,6 @@ function __injectPreStickyIntro() {
       // Immediately delete any clones (no attribute checks, no id checks except keepNode)
       removeAllInjectedClones(intro);
 
-
-      // Re-init Webflow IX2 so it picks up newly injected nodes
-// HARD Webflow re-init (safe + idempotent)
-// SAFER Webflow re-init: do NOT destroy() the runtime.
-// Just tell modules to (re)scan the DOM after injection.
-const reinitWebflowSoft = (() => {
-  let scheduled = false;
-
-  return () => {
-    if (scheduled) return;
-    scheduled = true;
-
-    const run = () => {
-      scheduled = false;
-
-      const wf = window.Webflow;
-      if (!wf || !wf.require) return;
-
-      const req = wf.require;
-
-      // Re-scan interactions + lottie without nuking runtime.
-      try {
-  const ix2 = req("ix2");
-  ix2?.destroy?.();
-  ix2?.init?.();
-} catch (_) {}
-      try { req("lottie")?.ready?.(); } catch (_) {}
-      try { req("dropdown")?.ready?.(); } catch (_) {}
-      try { req("tabs")?.ready?.(); } catch (_) {}
-      try { req("slider")?.ready?.(); } catch (_) {}
-      try { req("forms")?.ready?.(); } catch (_) {}
-
-      window.dispatchEvent(new Event("resize"));
-    };
-
-    requestAnimationFrame(run);
-    setTimeout(run, 250);
-  };
-})();
-
-
-
-
       // Globals used by your “offset aware” logic elsewhere
       const update = () => {
         const top = main.getBoundingClientRect().top;
@@ -1039,6 +1087,9 @@ function __injectHeaderNavigation() {
     } else {
       pane.prepend(header);
     }
+
+    
+    
 
 
     
@@ -4629,24 +4680,6 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
       return;
     }
 
-    // Safe GSAP.set: ignore null/undefined targets (happens when injected DOM isn't ready yet)
-    const gsapSafeSet = (targets, vars) => {
-      const flatten = (t) => {
-        if (!t) return [];
-        if (t.nodeType === 1 || t === window || t === document) return [t];
-        if (Array.isArray(t)) return t.flatMap(flatten);
-        // NodeList / HTMLCollection
-        if (typeof t.length === "number") return Array.from(t).flatMap(flatten);
-        return [t];
-      };
-      const list = flatten(targets).filter(Boolean);
-      if (!list.length) {
-        try { __wfWarn && __wfWarn("GSAP.set skipped (no valid targets)", { targets, vars }); } catch (e) {}
-        return;
-      }
-      return gsapSafeSet(list, vars);
-    };
-
     const els = {
       navWrap: document.querySelector(".x_nav_wrap"),
       navButton: document.querySelector(".x_nav_button_wrap"),
@@ -4720,28 +4753,28 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
     let currentConfig = null;
 
     const setInitialStyles = (cfg) => {
-      gsapSafeSet(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
-      gsapSafeSet(els.navLeft, { width: cfg.closedLeftWidth });
-      gsapSafeSet([els.navBg, els.navContent], { display: "none", opacity: 0 });
-      gsapSafeSet([els.navLeftInner], { display: "none", opacity: 0 });
-      gsapSafeSet(els.closeIcon, { display: "none" });
-      gsapSafeSet([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
-      gsapSafeSet(els.openIcon, { display: "block" });
-      gsapSafeSet(els.navRight, { height: "auto" });
-      gsapSafeSet(els.navBtnBg, { opacity: 100 });
+      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
+      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
+      window.gsap.set(els.closeIcon, { display: "none" });
+      window.gsap.set([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set(els.openIcon, { display: "block" });
+      window.gsap.set(els.navRight, { height: "auto" });
+      window.gsap.set(els.navBtnBg, { opacity: 100 });
     };
 
     const setMobileInitialStyles = (cfg) => {
-      gsapSafeSet(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
-      gsapSafeSet(els.navLeft, { width: cfg.closedLeftWidth });
-      gsapSafeSet([els.navBg, els.navContent], { display: "none", opacity: 0 });
-      gsapSafeSet([els.navLeftInner], { display: "none", opacity: 0 });
-      gsapSafeSet(els.closeIcon, { display: "none" });
-      gsapSafeSet([els.navSocials, els.navLogo], { opacity: 0 });
-      gsapSafeSet(els.openIcon, { display: "block" });
-      gsapSafeSet([els.navBtnBg, els.navList], { opacity: 100 });
-      gsapSafeSet(els.navRight, { height: "0rem" });
-      gsapSafeSet(els.navContent, { display: "none", opacity: 0 });
+      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
+      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
+      window.gsap.set(els.closeIcon, { display: "none" });
+      window.gsap.set([els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set(els.openIcon, { display: "block" });
+      window.gsap.set([els.navBtnBg, els.navList], { opacity: 100 });
+      window.gsap.set(els.navRight, { height: "0rem" });
+      window.gsap.set(els.navContent, { display: "none", opacity: 0 });
     };
 
     const setupDesktopAnimation = (cfg) => {

@@ -56,6 +56,7 @@ function fk(t, e) {
     Object.defineProperty(t, Symbol.toStringTag, { value: "Module" })
   );
 }
+
 (function () {
   const e = document.createElement("link").relList;
   if (e && e.supports && e.supports("modulepreload")) return;
@@ -49575,6 +49576,23 @@ function KH(t) {
     return console.error("[SSG] On state deserialization -", e, t), {};
   }
 }
+
+// put this somewhere once (outside the async IIFE is fine)
+function __stabilizeIX2ReadyTrigger() {
+  if (!window.Webflow || typeof window.Webflow.require !== "function") return;
+
+  const ix2 = window.Webflow.require("ix2");
+  // If ix2 isn’t present yet, don’t try to force anything
+  if (!ix2) return;
+
+  // Defer by a microtask so ix2 definitions/indexing settle before ready triggers
+  Promise.resolve().then(() => {
+    try { window.Webflow.ready && window.Webflow.ready(); } catch (_) {}
+    try { window.Webflow.push && window.Webflow.push(() => {}); } catch (_) {}
+  });
+}
+
+
 function XH(t, e, n, r) {
   const {
     transformState: i,
@@ -49619,49 +49637,141 @@ function XH(t, e, n, r) {
     return { ...w, initialState: R };
   }
   return (
-    (async () => {
-      const { app: c, router: h } = await u();
-     await h.isReady();
-c.mount(a, true);
+  (async () => {
+    const { app: c, router: h } = await u();
+    await h.isReady();
+    c.mount(a, true);
 
-// 1) inject everything first
-__injectPreloader();
-__injectHeaderNavigation();
-__injectPreStickyIntro();
-__injectScrollMenu();
-__injectNewSection();
-__injectAfterMain();
-__ensureInjectAfterAfterMain();
-__ensureInjectAfterThird();
+    // 1) inject everything first
+    __injectPreloader();
+    __injectHeaderNavigation();
+    __injectPreStickyIntro();
+    __injectScrollMenu();
+    __injectNewSection();
+    __injectAfterMain();
+    __ensureInjectAfterAfterMain();
+    __ensureInjectAfterThird();
 
-// 2) init your header scripts (they may rely on DOM existing)
-if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
-  window.__INIT_HEADER_SCRIPTS();
-}
-
-// 3) only after BODY + Webflow exist, reinit Webflow
-(function __safeReinitWebflow() {
-  let tries = 0;
-  const maxTries = 200; // ~10s at 50ms
-  const tick = () => {
-    const wf = window.Webflow;
-
-    // body must exist, and Webflow runtime must be present
-    if (document.body && wf && typeof wf.require === "function") {
-      try { reinitWebflowSoft(); } catch (_) {}
-      return;
+    // 2) init your header scripts (they may rely on DOM existing)
+    if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+      window.__INIT_HEADER_SCRIPTS();
     }
 
-    if (++tries >= maxTries) return;
-    setTimeout(tick, 50);
-  };
-  tick();
-})();
+    // 3) Load Webflow runtime AFTER injections so IX2 scans the final DOM (Option B)
+    try {
+      await __loadWebflowOnce("index/js/vMpAccJ2sqik.js");
 
+      // Let ix2 finish registering/indexing before any “page ready” triggers fire
+      __stabilizeIX2ReadyTrigger();
 
-    })(),
-    u
-  );
+      // Give the microtask a moment + let Webflow bind modules
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+      // Kick modules once (your helper)
+      __wfInitAfterLoad();
+    } catch (e) {
+      console.warn("[wf] webflow.js failed to load", e);
+    }
+  })(),
+  u
+);
+
+}
+
+// ---- Webflow runtime loader (Option B) ----
+// Loads webflow.js exactly once, after Vue mount + all DOM injections.
+// This avoids IX2 scanning an incomplete DOM (race condition).
+function __loadWebflowOnce(src) {
+  const S = (window.__WF_BOOT__ ||= { promise: null, loaded: false });
+
+  // NOTE: Webflow-exported HTML often contains an inline stub:
+  //   window.Webflow = window.Webflow || [];
+  // That stub is just an Array (so it has .push), but the runtime is NOT loaded yet.
+  // Therefore we must NOT treat "push exists" as "Webflow is ready".
+  const isRuntimeReady = () =>
+    window.Webflow && typeof window.Webflow.require === "function";
+
+  if (S.loaded) return Promise.resolve();
+  if (S.promise) return S.promise;
+
+  S.promise = new Promise((resolve, reject) => {
+    try {
+      // If Webflow runtime is already present (eg. script still in HTML), just resolve.
+      // (Don't confuse the Webflow stub array for the runtime.)
+      if (isRuntimeReady()) {
+        S.loaded = true;
+        resolve();
+        return;
+      }
+
+      const abs = new URL(src, document.baseURI).href;
+
+      // If a matching script tag already exists, wait for it.
+      const existing = Array.from(document.scripts).find((s) => {
+        const ssrc = s.getAttribute("src");
+        return ssrc && new URL(ssrc, document.baseURI).href === abs;
+      });
+
+      if (existing) {
+        // If it's already loaded, resolve immediately.
+        try {
+          if (existing.readyState === "complete" || isRuntimeReady()) {
+            S.loaded = true;
+            resolve();
+            return;
+          }
+        } catch (_) {}
+        existing.addEventListener("load", () => {
+          S.loaded = true;
+          resolve();
+        });
+        existing.addEventListener("error", reject);
+        return;
+      }
+
+      const s = document.createElement("script");
+      // Use the resolved absolute URL so this works from nested routes like /services.
+      s.src = abs;
+      s.async = true;
+      s.type = "text/javascript";
+      s.onload = () => {
+        S.loaded = true;
+        resolve();
+      };
+      s.onerror = reject;
+
+      // Append to body when possible; fallback to head.
+      (document.body || document.head || document.documentElement).appendChild(s);
+    } catch (e) {
+      reject(e);
+    }
+  });
+
+  return S.promise;
+}
+
+// After dynamic load, kick Webflow modules to bind interactions immediately.
+// (Equivalent to what normally happens on DOM ready in a pure Webflow page.)
+function __wfInitAfterLoad() {
+  const wf = window.Webflow;
+  if (!wf || typeof wf.require !== "function") return;
+  const req = wf.require;
+
+  // Interactions
+  try {
+    const ix2 = req("ix2");
+    if (ix2 && typeof ix2.init === "function") ix2.init();
+  } catch (_) {}
+
+  // Common Webflow components used on your page
+  try { req("lottie")?.ready?.(); } catch (_) {}
+  try { req("dropdown")?.ready?.(); } catch (_) {}
+  try { req("tabs")?.ready?.(); } catch (_) {}
+  try { req("slider")?.ready?.(); } catch (_) {}
+  try { req("forms")?.ready?.(); } catch (_) {}
+
+  // Nudge layout calculations
+  try { window.dispatchEvent(new Event("resize")); } catch (_) {}
 }
 
 function __injectPreStickyIntro() {
@@ -50225,49 +50335,6 @@ function __injectPreStickyIntro() {
       // Immediately delete any clones (no attribute checks, no id checks except keepNode)
       removeAllInjectedClones(intro);
 
-
-      // Re-init Webflow IX2 so it picks up newly injected nodes
-// HARD Webflow re-init (safe + idempotent)
-// SAFER Webflow re-init: do NOT destroy() the runtime.
-// Just tell modules to (re)scan the DOM after injection.
-const reinitWebflowSoft = (() => {
-  let scheduled = false;
-
-  return () => {
-    if (scheduled) return;
-    scheduled = true;
-
-    const run = () => {
-      scheduled = false;
-
-      const wf = window.Webflow;
-      if (!wf || !wf.require) return;
-
-      const req = wf.require;
-
-      // Re-scan interactions + lottie without nuking runtime.
-      try {
-  const ix2 = req("ix2");
-  ix2?.destroy?.();
-  ix2?.init?.();
-} catch (_) {}
-      try { req("lottie")?.ready?.(); } catch (_) {}
-      try { req("dropdown")?.ready?.(); } catch (_) {}
-      try { req("tabs")?.ready?.(); } catch (_) {}
-      try { req("slider")?.ready?.(); } catch (_) {}
-      try { req("forms")?.ready?.(); } catch (_) {}
-
-      window.dispatchEvent(new Event("resize"));
-    };
-
-    requestAnimationFrame(run);
-    setTimeout(run, 250);
-  };
-})();
-
-
-
-
       // Globals used by your “offset aware” logic elsewhere
       const update = () => {
         const top = main.getBoundingClientRect().top;
@@ -50618,27 +50685,7 @@ function __injectHeaderNavigation() {
     }
 
     
-    // After injection: run header init scripts (DOMContentLoaded already fired)
-const runInjectedHeaderScripts = () => {
-  // Only run once
-  if (window.__HEADER_SCRIPTS_INITED) return;
-  window.__HEADER_SCRIPTS_INITED = true;
-
-  if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
-    try { window.__INIT_HEADER_SCRIPTS(); } catch (e) {}
-  }
-};
-
-// Wait a tick so any framework patching settles, then run
-requestAnimationFrame(() => {
-  runInjectedHeaderScripts();
-
-  // ✅ Re-init Webflow interactions reliably (NO Webflow.destroy spam)
-  // Kick both the injected header and the injected intro section (if present),
-  // because either can contain data-w-id nodes.
-  try { __webflowIX2Kick("#navigation"); } catch (e) {}
-  try { __webflowIX2Kick("#presticky-intro"); } catch (e) {}
-});
+    
 
 
     
@@ -55042,7 +55089,6 @@ window.__initScrollNavSwap = __initScrollNavSwap;
     );
   };
 })();
-
 
 
 const HE = [
