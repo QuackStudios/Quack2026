@@ -57232,7 +57232,15 @@ function a8() {
 function l8(t) {
   t.component("ProxyBlock", ZH);
 }
-XH(r8, { routes: BE(), base: "/Quack2026/" }, async (t) => {
+const __BASE__ =
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1" ||
+  location.hostname.endsWith(".local")
+    ? "/"
+    : "/Quack2026/";
+
+XH(r8, { routes: BE(), base: __BASE__ }, async (t) => {
+
   const { app: e, router: n } = t;
   Object.values([Bx, Yx]).forEach((o) => {
     var s;
