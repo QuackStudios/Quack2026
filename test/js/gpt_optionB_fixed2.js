@@ -1,3 +1,19 @@
+// put this somewhere once (outside the async IIFE is fine)
+function __stabilizeIX2ReadyTrigger() {
+  if (!window.Webflow || typeof window.Webflow.require !== "function") return;
+
+  const ix2 = window.Webflow.require("ix2");
+  // If ix2 isn’t present yet, don’t try to force anything
+  if (!ix2) return;
+
+  // Defer by a microtask so ix2 definitions/indexing settle before ready triggers
+  Promise.resolve().then(() => {
+    try { window.Webflow.ready && window.Webflow.ready(); } catch (_) {}
+    try { window.Webflow.push && window.Webflow.push(() => {}); } catch (_) {}
+  });
+}
+
+
 function XH(t, e, n, r) {
   const {
     transformState: i,
@@ -42,44 +58,45 @@ function XH(t, e, n, r) {
     return { ...w, initialState: R };
   }
   return (
-    (async () => {
-      const { app: c, router: h } = await u();
-     await h.isReady();
-c.mount(a, true);
+  (async () => {
+    const { app: c, router: h } = await u();
+    await h.isReady();
+    c.mount(a, true);
 
-// 1) inject everything first
-__injectPreloader();
-__injectHeaderNavigation();
-__injectPreStickyIntro();
-__injectScrollMenu();
-__injectNewSection();
-__injectAfterMain();
-__ensureInjectAfterAfterMain();
-__ensureInjectAfterThird();
+    // 1) inject everything first
+    __injectPreloader();
+    __injectHeaderNavigation();
+    __injectPreStickyIntro();
+    __injectScrollMenu();
+    __injectNewSection();
+    __injectAfterMain();
+    __ensureInjectAfterAfterMain();
+    __ensureInjectAfterThird();
 
-// 2) init your header scripts (they may rely on DOM existing)
-if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
-  window.__INIT_HEADER_SCRIPTS();
-}
+    // 2) init your header scripts (they may rely on DOM existing)
+    if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+      window.__INIT_HEADER_SCRIPTS();
+    }
 
-// 3) Load Webflow runtime AFTER injections so IX2 scans the final DOM (Option B)
-try {
-  await __loadWebflowOnce("index/js/vMpAccJ2sqik.js");
-  // When webflow.js is loaded dynamically (after DOMContentLoaded),
-  // explicitly kick the modules so they bind immediately.
-  __wfInitAfterLoad();
-} catch (e) {
-  // If Webflow fails to load, keep site usable; interactions just won't run.
-  console.warn("[wf] webflow.js failed to load", e);
-}
+    // 3) Load Webflow runtime AFTER injections so IX2 scans the final DOM (Option B)
+    try {
+      await __loadWebflowOnce("index/js/vMpAccJ2sqik.js");
 
-// Give Webflow one tick to bind interactions
-await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      // Let ix2 finish registering/indexing before any “page ready” triggers fire
+      __stabilizeIX2ReadyTrigger();
 
+      // Give the microtask a moment + let Webflow bind modules
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-    })(),
-    u
-  );
+      // Kick modules once (your helper)
+      __wfInitAfterLoad();
+    } catch (e) {
+      console.warn("[wf] webflow.js failed to load", e);
+    }
+  })(),
+  u
+);
+
 }
 
 // ---- Webflow runtime loader (Option B) ----
@@ -5493,3 +5510,4 @@ window.__initScrollNavSwap = __initScrollNavSwap;
     );
   };
 })();
+

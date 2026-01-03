@@ -50205,7 +50205,7 @@ function __injectPreStickyIntro() {
                         class="home-project-card w-inline-block"
                         ><img
                           class="card-bg"
-                          src="index/images/9x7qfQC3kWvd.jpg"
+                          src="index/images/temp-img.png"
                           width="1216"
                           height="1564"
                           alt=""
@@ -50213,10 +50213,10 @@ function __injectPreStickyIntro() {
                           data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608722"
                           loading="lazy"
                           srcset="
-                            index/images/9JewMItFwTlB.jpg  500w,
-                            index/images/H1tRswqlSSG9.jpg  800w,
-                            index/images/TcdG5ELSFRMV.jpg 1080w,
-                            index/images/9x7qfQC3kWvd.jpg 1402w
+                            index/images/temp-img.png  500w,
+                            index/images/temp-img.png  800w,
+                            index/images/temp-img.png 1080w,
+                            index/images/temp-img.png 1402w
                           "
                         />
                         <div class="project-card-info">
@@ -50243,20 +50243,20 @@ function __injectPreStickyIntro() {
                           <div class="project-tag">Entertainment</div>
                         </div>
                         <img
-                          src="index/images/CfOdnGOrTEqI.jpg"
+                          src="index/images/temp-img.png"
                           loading="lazy"
                           width="812"
                           height="1564"
                           alt=""
                           srcset="
-                            index/images/NuwtcfOtq8Dc.jpg  500w,
-                            index/images/arRlNJOykmAv.jpg  800w,
-                            index/images/FaMzfaeT8NBH.jpg 1080w,
-                            index/images/ATxTyPreRNWQ.jpg 1600w,
-                            index/images/M3OCu7slz5ap.jpg 2000w,
-                            index/images/iBePSVm2XjQI.jpg 2600w,
-                            index/images/ilIHNtaeexF5.jpg 3200w,
-                            index/images/CfOdnGOrTEqI.jpg 4533w
+                            index/images/temp-img.png  500w,
+                            index/images/temp-img.png  800w,
+                            index/images/temp-img.png 1080w,
+                            index/images/temp-img.png 1600w,
+                            index/images/temp-img.png 2000w,
+                            index/images/temp-img.png 2600w,
+                            index/images/temp-img.png 3200w,
+                            index/images/temp-img.png 4533w
                           "
                           sizes="(max-width: 991px) 100vw, 812px"
                           class="card-bg"
@@ -50277,15 +50277,15 @@ function __injectPreStickyIntro() {
                         href="./work/optix"
                         class="home-project-card w-inline-block"
                         ><img
-                          src="index/images/jfVlPkP74hkx.webp"
+                          src="index/images/temp-img.png"
                           loading="lazy"
                           width="812"
                           height="1564"
                           alt=""
                           srcset="
-                            index/images/uWt6lfUgmSb3.webp  500w,
-                            index/images/fZlX0UxZHuPR.webp  800w,
-                            index/images/jfVlPkP74hkx.webp 1065w
+                            index/images/temp-img.png  500w,
+                            index/images/temp-img.png  800w,
+                            index/images/temp-img.png 1065w
                           "
                           sizes="(max-width: 991px) 100vw, 812px"
                           class="card-bg"
@@ -50298,7 +50298,7 @@ function __injectPreStickyIntro() {
                         href="./work/jackie"
                         class="home-project-card w-inline-block"
                         ><img
-                          src="index/images/XjBb8NC4l9zI.png"
+                          src="index/images/temp-img.png"
                           loading="lazy"
                           width="812"
                           height="1564"
@@ -50642,22 +50642,22 @@ function __injectHeaderNavigation() {
               <div class="nav-pill"></div>
             </a>
 
-            <link rel="prefetch" href="./services" />
+            <link href="./services" />
             <a href="./about" class="nav-link is-2 w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa676" class="link-text is-2">About</div>
             </a>
 
-            <link rel="prefetch" href="./about" />
+            <link href="./about" />
             <a href="./work" class="nav-link w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa679" class="link-text is-3">Work</div>
             </a>
 
-            <link rel="prefetch" href="./work" />
+            <link href="./work" />
             <a href="./insights" class="nav-link w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa67c" class="link-text is-4">Insights</div>
             </a>
 
-            <link rel="prefetch" href="./insights" />
+            <link href="./insights" />
             <a href="./careers" class="nav-link display-mobile w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa67f" class="link-text is-5">Careers</div>
             </a>
