@@ -49888,7 +49888,7 @@ function __injectPreStickyIntro() {
                           >
                             <div class="video-play">PLAY</div>
                             <img
-                              src="index/images/r8a3dPeHTsmH.gif"
+                              src="index/images/temp-img.png"
                               loading="eager"
                               width="250"
                               height="250"
@@ -49896,7 +49896,7 @@ function __injectPreStickyIntro() {
                               class="hero-img-1"
                             /><img
                               class="vimeo-thumb"
-                              src="index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus.jpg"
+                              src="index/images/temp-img.png"
                               width="1000"
                               data-vimeo-lightbox-placeholder=""
                               height="1000"
@@ -49904,14 +49904,14 @@ function __injectPreStickyIntro() {
                               sizes="(max-width: 479px) 97vw, (max-width: 767px) 98vw, 99vw"
                               loading="eager"
                               srcset="
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-500.jpg   500w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-800.jpg   800w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-1080.jpg 1080w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-1600.jpg 1600w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-2000.jpg 2000w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-2600.jpg 2600w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-3200.jpg 3200w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus.jpg        3840w
+                                index/images/temp-img.png 500w,
+                                index/images/temp-img.png 800w,
+                                index/images/temp-img.png 1080w,
+                                index/images/temp-img.png 1600w,
+                                index/images/temp-img.png 2000w,
+                                index/images/temp-img.png 2600w,
+                                index/images/temp-img.png 3200w,
+                                index/images/temp-img.png 3840w
                               "
                             />
                           </button>
@@ -49974,7 +49974,7 @@ function __injectPreStickyIntro() {
                           <div class="hero-heading_img is-img-2">
                             <img
                               class="hero-img-2"
-                              src="index/images/VBhquZRBW96M.jpg"
+                              src="index/images/temp-img.png "
                               width="446"
                               height="256"
                               alt=""
@@ -49983,14 +49983,14 @@ function __injectPreStickyIntro() {
                               data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e60870f"
                               loading="eager"
                               srcset="
-                                index/images/uuHkTi7Cc2zA.jpg  500w,
-                                index/images/WgAkBAOGFNM8.jpg  800w,
-                                index/images/f9qTq29KJnOe.jpg 1080w,
-                                index/images/0aEQoKk2WVYF.jpg 1600w,
-                                index/images/SbjpKOnvNQLP.jpg 2000w,
-                                index/images/C19uR07DGBLZ.jpg 2600w,
-                                index/images/EB3v5xhMllin.jpg 3200w,
-                                index/images/VBhquZRBW96M.jpg 4760w
+                                index/images/temp-img.png   500w,
+                                index/images/temp-img.png   800w,
+                                index/images/temp-img.png 1080w,
+                                index/images/temp-img.png 1600w,
+                                index/images/temp-img.png 2000w,
+                                index/images/temp-img.png  2600w,
+                                index/images/temp-img.png  3200w,
+                                index/images/temp-img.png  4760w
                               "
                             />
                           </div>
