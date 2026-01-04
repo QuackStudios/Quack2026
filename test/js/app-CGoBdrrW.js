@@ -53098,8 +53098,8 @@ function __injectPreloader() {
 
     // Lottie box sizing (tweak as needed)
     Object.assign(animHost.style, {
-      width: "180px",
-      height: "180px",
+      width: "25rem",
+      height: "25rem",
       pointerEvents: "none",
     });
 
