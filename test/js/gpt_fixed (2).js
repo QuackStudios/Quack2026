@@ -1,18 +1,3 @@
-// put this somewhere once (outside the async IIFE is fine)
-function __stabilizeIX2ReadyTrigger() {
-  if (!window.Webflow || typeof window.Webflow.require !== "function") return;
-
-  const ix2 = window.Webflow.require("ix2");
-  // If ix2 isn’t present yet, don’t try to force anything
-  if (!ix2) return;
-
-  // Defer by a microtask so ix2 definitions/indexing settle before ready triggers
-  Promise.resolve().then(() => {
-    try { window.Webflow.ready && window.Webflow.ready(); } catch (_) {}
-    try { window.Webflow.push && window.Webflow.push(() => {}); } catch (_) {}
-  });
-}
-
 
 function XH(t, e, n, r) {
   const {
@@ -58,141 +43,29 @@ function XH(t, e, n, r) {
     return { ...w, initialState: R };
   }
   return (
-  (async () => {
-    const { app: c, router: h } = await u();
-    await h.isReady();
-    c.mount(a, true);
+    (async () => {
+      const { app: c, router: h } = await u();
+     await h.isReady();
+c.mount(a, true);
 
-    // 1) inject everything first
-    __injectPreloader();
-    __injectHeaderNavigation();
-    __injectPreStickyIntro();
-    __injectScrollMenu();
-    __injectNewSection();
-    __injectAfterMain();
-    __ensureInjectAfterAfterMain();
-    __ensureInjectAfterThird();
+// 1) inject everything first
+__injectPreloader();
+__injectHeaderNavigation();
+__injectPreStickyIntro();
+__injectScrollMenu();
+__injectNewSection();
+__injectAfterMain();
+__ensureInjectAfterAfterMain();
+__ensureInjectAfterThird();
 
-    // 2) init your header scripts (they may rely on DOM existing)
-    if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
-      window.__INIT_HEADER_SCRIPTS();
-    }
-
-    // 3) Load Webflow runtime AFTER injections so IX2 scans the final DOM (Option B)
-    try {
-      await __loadWebflowOnce("index/js/vMpAccJ2sqik.js");
-
-      // Let ix2 finish registering/indexing before any “page ready” triggers fire
-      __stabilizeIX2ReadyTrigger();
-
-      // Give the microtask a moment + let Webflow bind modules
-      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-      // Kick modules once (your helper)
-      __wfInitAfterLoad();
-    } catch (e) {
-      console.warn("[wf] webflow.js failed to load", e);
-    }
-  })(),
-  u
-);
-
+// 2) init your header scripts (they may rely on DOM existing)
+if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+  window.__INIT_HEADER_SCRIPTS();
 }
 
-// ---- Webflow runtime loader (Option B) ----
-// Loads webflow.js exactly once, after Vue mount + all DOM injections.
-// This avoids IX2 scanning an incomplete DOM (race condition).
-function __loadWebflowOnce(src) {
-  const S = (window.__WF_BOOT__ ||= { promise: null, loaded: false });
-
-  // NOTE: Webflow-exported HTML often contains an inline stub:
-  //   window.Webflow = window.Webflow || [];
-  // That stub is just an Array (so it has .push), but the runtime is NOT loaded yet.
-  // Therefore we must NOT treat "push exists" as "Webflow is ready".
-  const isRuntimeReady = () =>
-    window.Webflow && typeof window.Webflow.require === "function";
-
-  if (S.loaded) return Promise.resolve();
-  if (S.promise) return S.promise;
-
-  S.promise = new Promise((resolve, reject) => {
-    try {
-      // If Webflow runtime is already present (eg. script still in HTML), just resolve.
-      // (Don't confuse the Webflow stub array for the runtime.)
-      if (isRuntimeReady()) {
-        S.loaded = true;
-        resolve();
-        return;
-      }
-
-      const abs = new URL(src, document.baseURI).href;
-
-      // If a matching script tag already exists, wait for it.
-      const existing = Array.from(document.scripts).find((s) => {
-        const ssrc = s.getAttribute("src");
-        return ssrc && new URL(ssrc, document.baseURI).href === abs;
-      });
-
-      if (existing) {
-        // If it's already loaded, resolve immediately.
-        try {
-          if (existing.readyState === "complete" || isRuntimeReady()) {
-            S.loaded = true;
-            resolve();
-            return;
-          }
-        } catch (_) {}
-        existing.addEventListener("load", () => {
-          S.loaded = true;
-          resolve();
-        });
-        existing.addEventListener("error", reject);
-        return;
-      }
-
-      const s = document.createElement("script");
-      // Use the resolved absolute URL so this works from nested routes like /services.
-      s.src = abs;
-      s.async = true;
-      s.type = "text/javascript";
-      s.onload = () => {
-        S.loaded = true;
-        resolve();
-      };
-      s.onerror = reject;
-
-      // Append to body when possible; fallback to head.
-      (document.body || document.head || document.documentElement).appendChild(s);
-    } catch (e) {
-      reject(e);
-    }
-  });
-
-  return S.promise;
-}
-
-// After dynamic load, kick Webflow modules to bind interactions immediately.
-// (Equivalent to what normally happens on DOM ready in a pure Webflow page.)
-function __wfInitAfterLoad() {
-  const wf = window.Webflow;
-  if (!wf || typeof wf.require !== "function") return;
-  const req = wf.require;
-
-  // Interactions
-  try {
-    const ix2 = req("ix2");
-    if (ix2 && typeof ix2.init === "function") ix2.init();
-  } catch (_) {}
-
-  // Common Webflow components used on your page
-  try { req("lottie")?.ready?.(); } catch (_) {}
-  try { req("dropdown")?.ready?.(); } catch (_) {}
-  try { req("tabs")?.ready?.(); } catch (_) {}
-  try { req("slider")?.ready?.(); } catch (_) {}
-  try { req("forms")?.ready?.(); } catch (_) {}
-
-  // Nudge layout calculations
-  try { window.dispatchEvent(new Event("resize")); } catch (_) {}
+})(),
+    u
+  );
 }
 
 function __injectPreStickyIntro() {
@@ -756,7 +629,9 @@ function __injectPreStickyIntro() {
       // Immediately delete any clones (no attribute checks, no id checks except keepNode)
       removeAllInjectedClones(intro);
 
-      // Globals used by your “offset aware” logic elsewhere
+
+// Just tell modules to (re)scan the DOM after injection.
+// Globals used by your “offset aware” logic elsewhere
       const update = () => {
         const top = main.getBoundingClientRect().top;
         const atTop = top <= 0;
@@ -1106,7 +981,24 @@ function __injectHeaderNavigation() {
     }
 
     
-    
+    // After injection: run header init scripts (DOMContentLoaded already fired)
+const runInjectedHeaderScripts = () => {
+  // Only run once
+  if (window.__HEADER_SCRIPTS_INITED) return;
+  window.__HEADER_SCRIPTS_INITED = true;
+
+  if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+    try { window.__INIT_HEADER_SCRIPTS(); } catch (e) {}
+  }
+};
+
+// Wait a tick so any framework patching settles, then run
+requestAnimationFrame(() => {
+  runInjectedHeaderScripts();
+
+  // Kick both the injected header and the injected intro section (if present),
+  // because either can contain data-w-id nodes.
+});
 
 
     
@@ -3668,45 +3560,155 @@ function __injectNewSection() {
 
 function __injectPreloader() {
   try {
-    // Prevent duplicates
-    if (document.querySelector(".load-wrapper")) return;
+    // Version guard (prevents duplicate loaders after soft navigations)
+    const VER = 1;
+    if ((window.__QK_PRELOADER_VER || 0) >= VER) return;
+    window.__QK_PRELOADER_VER = VER;
 
-    const raw = `
-      <div class="page-load-trigger"></div>
-      <div
-        class="load-wrapper"
-        style="
-          -webkit-transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          -moz-transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          -ms-transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          display: flex;
-        "
-      >
-        <div
-          data-w-id="7871eb9d-187e-6140-1607-3dae8e8808d9"
-          data-is-ix2-target="1"
-          class="load-anim"
-          data-animation-type="lottie"
-          data-src="./refined-quack-loader.json"
-          data-loop="0"
-          data-direction="1"
-          data-autoplay="0"
-          data-renderer="svg"
-          data-default-duration="2.3"
-          data-duration="0"
-          data-ix2-initial-state="0"
-          style="pointer-events: none;"
-        ></div>
-      </div>
-    `;
+    // Remove any older instances from previous bundles
+    document.querySelectorAll(".qk-load-wrapper, .qk-page-load-trigger").forEach((n) => n.remove());
 
-    const template = document.createElement("template");
-    template.innerHTML = raw.trim();
+    // Build DOM
+    const trigger = document.createElement("div");
+    trigger.className = "qk-page-load-trigger";
+    trigger.setAttribute("aria-hidden", "true");
 
-    // Insert right at top of body so it overlays everything
-    document.body.insertAdjacentElement("afterbegin", template.content.firstElementChild); // page-load-trigger
-    document.body.insertAdjacentElement("afterbegin", template.content.firstElementChild); // load-wrapper
+    const wrap = document.createElement("div");
+    wrap.className = "qk-load-wrapper";
+    wrap.setAttribute("aria-hidden", "true");
+
+    const animHost = document.createElement("div");
+    animHost.className = "qk-load-anim";
+    animHost.setAttribute("data-lottie-src", "./refined-quack-loader.json");
+
+    // Styles (inline so this works even if CSS isn't loaded yet)
+    // Black full-screen overlay
+    Object.assign(wrap.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#000",
+      zIndex: "2147483647",
+      transform: "translate3d(0,0,0)",
+      willChange: "transform, opacity",
+      pointerEvents: "none",
+    });
+
+    // Lottie box sizing (tweak as needed)
+    Object.assign(animHost.style, {
+      width: "180px",
+      height: "180px",
+      pointerEvents: "none",
+    });
+
+    wrap.appendChild(animHost);
+
+    // Insert at top of body so it overlays everything
+    document.body.insertAdjacentElement("afterbegin", wrap);
+    document.body.insertAdjacentElement("afterbegin", trigger);
+
+    // Ensure we can reveal page if anything goes wrong
+    const forceReveal = (() => {
+      let done = false;
+      return (why) => {
+        if (done) return;
+        done = true;
+
+        // Animate up + out (lift the black overlay)
+        try {
+          wrap.style.transition = "transform 520ms cubic-bezier(0.65, 0, 0.35, 1), opacity 520ms cubic-bezier(0.65, 0, 0.35, 1)";
+          wrap.style.transform = "translate3d(0,-100vh,0)";
+          wrap.style.opacity = "0";
+        } catch (e) {}
+
+        // Remove after transition
+        setTimeout(() => {
+          try { wrap.remove(); } catch (e) {}
+          try { trigger.remove(); } catch (e) {}
+        }, 800);
+
+        // Optional debug hook
+        try { console.log("[preloader] reveal", why); } catch (e) {}
+      };
+    })();
+
+    // If you *need* to block scrolling while loader is up:
+    // const prevOverflow = document.documentElement.style.overflow;
+    // document.documentElement.style.overflow = "hidden";
+
+    const ensureLottie = () =>
+      new Promise((resolve, reject) => {
+        if (window.lottie && typeof window.lottie.loadAnimation === "function") return resolve(window.lottie);
+
+        const existing = document.querySelector('script[data-qk-lottie="1"]');
+        if (existing) {
+          // wait for it
+          existing.addEventListener("load", () => resolve(window.lottie));
+          existing.addEventListener("error", reject);
+          return;
+        }
+
+        const s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js";
+        s.async = true;
+        s.defer = true;
+        s.setAttribute("data-qk-lottie", "1");
+        s.onload = () => (window.lottie ? resolve(window.lottie) : reject(new Error("lottie loaded but window.lottie missing")));
+        s.onerror = () => reject(new Error("failed to load lottie-web"));
+        document.head.appendChild(s);
+      });
+
+    // Play lottie then lift overlay
+    const run = async () => {
+      let lottieApi;
+      try {
+        lottieApi = await ensureLottie();
+      } catch (e) {
+        forceReveal("no-lottie");
+        return;
+      }
+
+      let anim;
+      try {
+        anim = lottieApi.loadAnimation({
+          container: animHost,
+          renderer: "svg",
+          loop: false,
+          autoplay: true,
+          path: animHost.getAttribute("data-lottie-src"),
+          rendererSettings: { progressiveLoad: true, preserveAspectRatio: "xMidYMid meet" },
+        });
+      } catch (e) {
+        forceReveal("loadAnimation-error");
+        return;
+      }
+
+      // If animation metadata never loads, don’t hang forever
+      const hardTimeout = setTimeout(() => forceReveal("timeout"), 7000);
+
+      // Reveal when the animation completes
+      const onComplete = () => {
+        clearTimeout(hardTimeout);
+        try { anim.removeEventListener("complete", onComplete); } catch (e) {}
+        forceReveal("complete");
+      };
+
+      try { anim.addEventListener("complete", onComplete); } catch (e) {}
+
+      // Extra safety: if it’s super short / zero frames
+      setTimeout(() => {
+        try {
+          if (!anim || !anim.totalFrames || anim.totalFrames < 2) forceReveal("no-frames");
+        } catch (e) {}
+      }, 1200);
+    };
+
+    // Start on next frame so layout is ready
+    requestAnimationFrame(run);
 
   } catch (e) {
     console.error("[injectPreloader]", e);
@@ -4419,229 +4421,6 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     }
     requestAnimationFrame(tick);
   })();
-}
-
-
-
-
-// Call this after you inject DOM that contains Webflow interactions (data-w-id).
-// Example: __webflowIX2Kick("#presticky-intro")
-function __webflowIX2Kick(scopeSelectorOrEl) {
-  try {
-    // ---- singleton state ----
-    const S = (window.__WF_IX2_STATE ||= {
-      obs: null,
-      queued: false,
-      tries: 0,
-      maxTries: 18,          // ~3–6s depending on backoff
-      lastRunAt: 0,
-      scope: null,
-      fallbackTimer: 0
-    });
-
-    // Resolve scope
-    const scope =
-      typeof scopeSelectorOrEl === "string"
-        ? document.querySelector(scopeSelectorOrEl)
-        : scopeSelectorOrEl;
-
-    // If user passes a selector and it doesn't exist yet, keep selector and wait
-    S.scope = scope || S.scope || scopeSelectorOrEl;
-
-    // Debounce: collapse many mutation events into one init attempt
-    if (S.queued) return;
-    S.queued = true;
-
-    const schedule = () => {
-      S.queued = false;
-      __wfTryInit();
-    };
-
-    // Next frame is usually too early; do 2 frames for stability
-    requestAnimationFrame(() => requestAnimationFrame(schedule));
-
-    // Install observer once: any future injection/patch will re-kick automatically
-    if (!S.obs) {
-      S.obs = new MutationObserver((mutList) => {
-        // Only react if a node with data-w-id showed up, or our scope appeared
-        let relevant = false;
-
-        for (const m of mutList) {
-          for (const n of m.addedNodes) {
-            if (n.nodeType !== 1) continue;
-            if (n.matches?.("[data-w-id]") || n.querySelector?.("[data-w-id]")) {
-              relevant = true;
-              break;
-            }
-            if (typeof S.scope === "string") {
-              if (n.matches?.(S.scope) || n.querySelector?.(S.scope)) {
-                relevant = true;
-                break;
-              }
-            }
-          }
-          if (relevant) break;
-        }
-
-        if (relevant) __webflowIX2Kick(S.scope);
-      });
-
-      S.obs.observe(document.documentElement, { childList: true, subtree: true });
-    }
-
-    function __wfReady() {
-      return (
-        window.Webflow &&
-        typeof window.Webflow.require === "function" &&
-        window.Webflow.require("ix2") &&
-        typeof window.Webflow.require("ix2").init === "function"
-      );
-    }
-
-    function __resolveScopeEl() {
-      const s = S.scope;
-      if (!s) return null;
-      if (typeof s === "string") return document.querySelector(s);
-      if (s && s.nodeType === 1) return s;
-      return null;
-    }
-
-    function __scopeHasInteractions(el) {
-      if (!el) return false;
-      return !!(el.matches?.("[data-w-id]") || el.querySelector?.("[data-w-id]"));
-    }
-
-    function __hardReinitIX2() {
-      // Safer than destroy/ready/destroy/ready spam:
-      // - destroy ix2 only
-      // - init ix2 only
-      const ix2 = window.Webflow.require("ix2");
-      try { ix2.destroy(); } catch (e) {}
-      try { ix2.init(); } catch (e) {}
-    }
-
-    function __wfTryInit() {
-      const now = performance.now();
-      // Prevent thrashing if many events fire
-      if (now - S.lastRunAt < 120) {
-        __webflowIX2Kick(S.scope);
-        return;
-      }
-      S.lastRunAt = now;
-
-      // Wait for DOM + Webflow
-      const el = __resolveScopeEl();
-      const ready = __wfReady();
-
-      // If we have a scope, only init once scope exists + contains data-w-id
-      if (el && !__scopeHasInteractions(el)) {
-        // scope exists but doesn't yet contain w-id nodes (still injecting)
-        __wfBackoffRetry();
-        return;
-      }
-
-      if (!ready) {
-        __wfBackoffRetry();
-        return;
-      }
-
-      // Use Webflow.push to run when Webflow considers itself ready
-      // (this avoids the “50%” timing issue)
-      window.Webflow.push(() => {
-        // Force a reflow so any initial inline styles are computed before ix2 reads them
-        // (helps with “works when devtools open”)
-        try { document.documentElement.offsetHeight; } catch (e) {}
-
-        __hardReinitIX2();
-
-        // Verify quickly: if elements still stuck (opacity 0 etc), retry
-        __scheduleVerifyAndRetry(el);
-      });
-    }
-
-    function __wfBackoffRetry() {
-      S.tries++;
-      if (S.tries > S.maxTries) {
-        // Optional last-resort reveal (keeps site usable if ix2 refuses)
-        __fallbackReveal();
-        return;
-      }
-
-      // Exponential-ish backoff (fast at first, then slower)
-      const delay = Math.min(60 * S.tries, 600);
-
-      setTimeout(() => {
-        S.queued = false;
-        __webflowIX2Kick(S.scope);
-      }, delay);
-    }
-
-    function __scheduleVerifyAndRetry(scopeEl) {
-      // after init, check on next frames — if still stuck, kick again
-      let checks = 0;
-
-      const verify = () => {
-        checks++;
-
-        const el = scopeEl || __resolveScopeEl();
-        if (!el) return;
-
-        // heuristic: if we still find many nodes with opacity:0 AND data-w-id,
-        // ix2 probably didn’t bind, so reinit again
-        const stuck = el.querySelectorAll("[data-w-id]").length
-          ? Array.from(el.querySelectorAll("[data-w-id]")).some((n) => {
-              const cs = getComputedStyle(n);
-              // lots of Webflow reveal elems start opacity 0 + translateY(120%)
-              return cs.opacity === "0";
-            })
-          : false;
-
-        if (stuck && checks < 6) {
-          // kick again
-          S.queued = false;
-          __webflowIX2Kick(S.scope);
-          return;
-        }
-
-        // reset tries on success-ish
-        if (!stuck) S.tries = 0;
-      };
-
-      requestAnimationFrame(() => requestAnimationFrame(verify));
-      requestAnimationFrame(() => requestAnimationFrame(verify));
-      requestAnimationFrame(() => requestAnimationFrame(verify));
-    }
-
-    function __fallbackReveal() {
-      // Don’t do this immediately; only if we fail many times.
-      // It removes the “hidden forever” problem.
-      if (S.fallbackTimer) return;
-
-      S.fallbackTimer = setTimeout(() => {
-        S.fallbackTimer = 0;
-        const el = __resolveScopeEl();
-        if (!el) return;
-
-        const nodes = el.querySelectorAll("[data-w-id]");
-        nodes.forEach((n) => {
-          // Only rescue things that are still invisible
-          const cs = getComputedStyle(n);
-          if (cs.opacity === "0") {
-            n.style.opacity = "1";
-            // Don’t obliterate all transforms; just remove the common “offscreen” translate
-            // If you prefer: n.style.transform = "none";
-            if (n.style.transform && /translate3d\([^,]+,\s*120%/.test(n.style.transform)) {
-              n.style.transform = "translate3d(0, 0, 0)";
-            }
-          }
-        });
-
-        console.warn("[wf-ix2] Gave up after retries — applied fallback reveal to avoid hidden content.");
-      }, 900);
-    }
-  } catch (e) {
-    console.warn("[wf-ix2] kick error", e);
-  }
 }
 
 
@@ -5510,4 +5289,3 @@ window.__initScrollNavSwap = __initScrollNavSwap;
     );
   };
 })();
-

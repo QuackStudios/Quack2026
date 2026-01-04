@@ -1,3 +1,4 @@
+
 function XH(t, e, n, r) {
   const {
     transformState: i,
@@ -3639,18 +3640,14 @@ function __injectPreloader() {
         "
       >
         <div
-          data-w-id="7871eb9d-187e-6140-1607-3dae8e8808d9"
-          data-is-ix2-target="1"
           class="load-anim"
-          data-animation-type="lottie"
           data-src="./refined-quack-loader.json"
           data-loop="0"
           data-direction="1"
-          data-autoplay="0"
+          data-autoplay="1"
           data-renderer="svg"
           data-default-duration="2.3"
           data-duration="0"
-          data-ix2-initial-state="0"
           style="pointer-events: none;"
         ></div>
       </div>
