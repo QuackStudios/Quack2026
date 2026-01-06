@@ -6929,7 +6929,7 @@ figcaption {
 }
 
 .wrap-transition {
-  background-color: var(--black);
+  background-color: rgb(240, 237, 230);
   color: var(--white);
 }
 

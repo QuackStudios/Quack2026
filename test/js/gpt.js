@@ -1,3 +1,5 @@
+
+
 function XH(t, e, n, r) {
   const {
     transformState: i,
@@ -57,64 +59,46 @@ __injectAfterMain();
 __ensureInjectAfterAfterMain();
 __ensureInjectAfterThird();
 
+__injectColorSync();
+
 // 2) init your header scripts (they may rely on DOM existing)
 if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
   window.__INIT_HEADER_SCRIPTS();
 }
 
-// 3) only after BODY + Webflow exist, reinit Webflow
-(function __safeReinitWebflow() {
-  let tries = 0;
-  const maxTries = 200; // ~10s at 50ms
-  const tick = () => {
-    const wf = window.Webflow;
-
-    // body must exist, and Webflow runtime must be present
-    if (document.body && wf && typeof wf.require === "function") {
-      try { reinitWebflowSoft(); } catch (_) {}
-      return;
-    }
-
-    if (++tries >= maxTries) return;
-    setTimeout(tick, 50);
-  };
-  tick();
-})();
-
-
-    })(),
+})(),
     u
   );
 }
 
+// Drop-in replacement for your existing function
 function __injectPreStickyIntro() {
   try {
-    // Bump version so cached older bundles can’t win.
-    const VER = 4;
+    const VER = 8;
     if ((window.__PRESTICKY_INTRO_VER || 0) >= VER) return;
     window.__PRESTICKY_INTRO_VER = VER;
 
-    // Kill previous loops/observers if any
     if (window.__INTRO_RAF) cancelAnimationFrame(window.__INTRO_RAF);
     window.__INTRO_RAF = 0;
 
-    if (window.__INTRO_OBS) {
-      try { window.__INTRO_OBS.disconnect(); } catch (e) {}
-    }
+    if (window.__INTRO_OBS) { try { window.__INTRO_OBS.disconnect(); } catch (e) {} }
     window.__INTRO_OBS = null;
 
+    if (window.__INTRO_REVEAL_CLEANUP) { try { window.__INTRO_REVEAL_CLEANUP(); } catch (e) {} }
+    window.__INTRO_REVEAL_CLEANUP = null;
+
     const INTRO_ID = "presticky-intro";
+
     const css = [
       "width:100vw",
       "display:flex",
       "align-items:center",
       "justify-content:center",
-      "font-size:48px",
       "font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif",
       "background:white",
       "position:relative",
       "z-index:999",
-      "padding-bottom: 100px"
+      "padding-bottom:100px"
     ].join(";");
 
     const getTargets = () => {
@@ -122,28 +106,172 @@ function __injectPreStickyIntro() {
       const main = pane && pane.querySelector(":scope > main");
       if (!pane || !main) return null;
 
-      // IMPORTANT: wait until Vue has actually rendered the HomeAnimation subtree,
-      // otherwise hydration/patching can “adopt” our injected node.
       const hasHomeAnim =
         !!main.querySelector(".HomeAnimation") &&
         !!main.querySelector(".HomeAnimation-landscape") &&
         !!main.querySelector(".HomeAnimation-landscape-sticky-wrap");
 
       if (!hasHomeAnim) return null;
-
       return { pane, main };
     };
 
-    // Hard guarantee: only ONE injected section exists anywhere
     const removeAllInjectedClones = (keepNode) => {
       document.querySelectorAll(".InjectedTestSection").forEach((el) => {
         if (el !== keepNode) el.remove();
       });
-
-      // Extra paranoia: if something duplicated the ID, keep the first and delete the rest
       const dupes = document.querySelectorAll(`#${CSS.escape(INTRO_ID)}`);
-      if (dupes.length > 1) {
-        dupes.forEach((el, idx) => { if (idx !== 0) el.remove(); });
+      if (dupes.length > 1) dupes.forEach((el, idx) => { if (idx !== 0) el.remove(); });
+    };
+
+    const ensureRevealCss = () => {
+      if (document.getElementById("qk-intro-reveal-css")) return;
+
+      const style = document.createElement("style");
+      style.id = "qk-intro-reveal-css";
+      style.type = "text/css";
+      style.textContent = `
+        /* One class for all hidden-by-default animated elements (keeps layout; no display:none). */
+        #${INTRO_ID} .qk-intro-hidden{
+          opacity:0 ;
+          pointer-events:none !important;
+          will-change:transform, opacity;
+        }
+        #${INTRO_ID} .qk-intro-hidden[data-qk-anim="word"] { transform:translate3d(0,120%,0); }
+        #${INTRO_ID} .qk-intro-hidden[data-qk-anim="fade"] { transform:translate3d(0,18px,0); }
+        #${INTRO_ID} .qk-intro-hidden[data-qk-anim="cards"]{ transform:translate3d(0,6%,0); }
+        #${INTRO_ID} .qk-intro-hidden[data-qk-anim="line"] { transform:scaleX(0); transform-origin:0% 50%; opacity:1 !important; }
+
+        #${INTRO_ID}[data-qk-reveal="1"]{ visibility:visible; }
+      `;
+      document.head.appendChild(style);
+    };
+
+    const initIntroReveal = (intro) => {
+      if (!intro || intro.__qk_reveal_init) return;
+      intro.__qk_reveal_init = true;
+
+      ensureRevealCss();
+      intro.setAttribute("data-qk-reveal", "1");
+
+      const prefersReduced =
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const qAll = (sel) => Array.from(intro.querySelectorAll(sel));
+      const hidden = qAll(".qk-intro-hidden");
+
+      const unhideAll = () => {
+        hidden.forEach((el) => {
+          el.classList.remove("qk-intro-hidden");
+          el.style.opacity = "";
+          el.style.transform = "";
+          el.style.pointerEvents = "";
+        });
+      };
+
+      const canAnimate = !!Element.prototype.animate;
+
+      // Timeline tuning (you asked: smoother/longer opacity, tighter stagger, minimal group gaps)
+      const OPACITY_DUR = 1200; // longer fade so it’s clearly visible
+      const MOVE_DUR = 780;     // motion slightly snappier than fade
+      const STAGGER_WORD = 22;  // tighter
+      const STAGGER_FADE = 24;  // tighter
+      const BASE_WORD = 0;
+      const BASE_FADE = 160;    // overlaps more with words
+      const BASE_LINE = 190;
+      const BASE_CARDS = 260;
+
+      const EASE_MOVE = "cubic-bezier(0.22, 1, 0.36, 1)";
+      const EASE_FADE = "cubic-bezier(0.2, 0.9, 0.2, 1)";
+
+      const startTimeline = () => {
+        if (intro.__qk_revealed) return;
+        intro.__qk_revealed = true;
+
+        if (!canAnimate || prefersReduced) {
+          unhideAll();
+          return;
+        }
+
+        const anim = (el, kf, opt) => {
+          try {
+            const a = el.animate(kf, opt);
+            a.onfinish = () => {
+              el.classList.remove("qk-intro-hidden");
+              el.style.opacity = "";
+              el.style.transform = "";
+              el.style.pointerEvents = "";
+            };
+            return a;
+          } catch (e) {
+            el.classList.remove("qk-intro-hidden");
+            return null;
+          }
+        };
+
+        const words = qAll(".qk-intro-hidden[data-qk-anim='word']");
+        const fades = qAll(".qk-intro-hidden[data-qk-anim='fade']");
+        const lines = qAll(".qk-intro-hidden[data-qk-anim='line']");
+        const cards = qAll(".qk-intro-hidden[data-qk-anim='cards']");
+
+        // Words: slide up + long fade
+        words.forEach((el, i) => {
+          anim(
+            el,
+            [
+              { transform: "translate3d(0,120%,0)", opacity: 0 },
+              { transform: "translate3d(0,0%,0)", opacity: 1 }
+            ],
+            { duration: Math.max(OPACITY_DUR, MOVE_DUR), easing: EASE_MOVE, delay: BASE_WORD + (STAGGER_WORD * i), fill: "both" }
+          );
+        });
+
+        // Line: grow
+        lines.forEach((el) => {
+          anim(
+            el,
+            [
+              { transform: "scaleX(0)", opacity: 1 },
+              { transform: "scaleX(1)", opacity: 1 }
+            ],
+            { duration: 720, easing: EASE_MOVE, delay: BASE_LINE, fill: "both" }
+          );
+        });
+
+        // Fade elements: gentle up + long fade
+        fades.forEach((el, i) => {
+          anim(
+            el,
+            [
+              { transform: "translate3d(0,18px,0)", opacity: 0 },
+              { transform: "translate3d(0,0px,0)", opacity: 1 }
+            ],
+            { duration: OPACITY_DUR, easing: EASE_FADE, delay: BASE_FADE + (STAGGER_FADE * i), fill: "both" }
+          );
+        });
+
+        // Cards: slightly slower and smooth
+        cards.forEach((el, i) => {
+          anim(
+            el,
+            [
+              { transform: "translate3d(0,6%,0)", opacity: 0 },
+              { transform: "translate3d(0,0%,0)", opacity: 1 }
+            ],
+            { duration: 1300, easing: EASE_FADE, delay: BASE_CARDS + (18 * i), fill: "both" }
+          );
+        });
+      };
+
+      const onDone = () => setTimeout(startTimeline, 650); // after overlay lifts
+
+      if (window.__QK_PRELOADER_DONE) onDone();
+      else {
+        window.addEventListener("qk-preloader:done", onDone, { once: true });
+        const t = setTimeout(onDone, 4500);
+        window.__INTRO_REVEAL_CLEANUP = () => {
+          try { clearTimeout(t); } catch (e) {}
+          try { window.removeEventListener("qk-preloader:done", onDone); } catch (e) {}
+        };
       }
     };
 
@@ -160,551 +288,301 @@ function __injectPreStickyIntro() {
         intro.className = "InjectedTestSection";
         intro.setAttribute("data-presticky-intro", "1");
         intro.style.cssText = css;
-        intro.innerHTML = `<section class="section overflow-hidden">
-              <div class="padding-bottom padding-xhuge">
-                <div class="page-padding">
-                  <div class="container-large">
-                    <div class="hero-wrapper is-new">
-                      <h1 class="hero-heading is-new">
-                        <div class="hero-heading_word">
-                          <div
-                            data-w-id="b2cc91f5-e90d-eb2a-5b1a-fe04d92c0734"
-                            class="hero-heading_mask"
-                          >
-                            <div
-                              data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608705"
-                              style="
-                                -webkit-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -moz-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -ms-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                              "
-                              class="hero-heading_text"
-                            >
-                              Build
-                            </div>
-                          </div>
-                          <button
-                            data-w-id="06e4c0f5-ac5c-3bb5-b3af-9de2e4a0d400"
-                            style="opacity: 0"
-                            data-vimeo-lightbox-control="open"
-                            data-vimeo-lightbox-id="1116214405"
-                            class="hero-heading_img is-btn"
-                          >
-                            <div class="video-play">PLAY</div>
-                            <img
-                              src="index/images/r8a3dPeHTsmH.gif"
-                              loading="eager"
-                              width="250"
-                              height="250"
-                              alt=""
-                              class="hero-img-1"
-                            /><img
-                              class="vimeo-thumb"
-                              src="index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus.jpg"
-                              width="1000"
-                              data-vimeo-lightbox-placeholder=""
-                              height="1000"
-                              alt=""
-                              sizes="(max-width: 479px) 97vw, (max-width: 767px) 98vw, 99vw"
-                              loading="eager"
-                              srcset="
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-500.jpg   500w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-800.jpg   800w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-1080.jpg 1080w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-1600.jpg 1600w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-2000.jpg 2000w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-2600.jpg 2600w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-3200.jpg 3200w,
-                                index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus.jpg        3840w
-                              "
-                            />
-                          </button>
-                        </div>
-                        <div class="hero-heading_word">
-                          <div
-                            data-w-id="04a38487-0738-4bad-8bd1-c683087e199d"
-                            class="hero-heading_mask"
-                          >
-                            <div
-                              data-w-id="94fde4fa-43d5-1b6d-47d3-8eea41608e91"
-                              style="
-                                -webkit-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -moz-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -ms-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                              "
-                              class="hero-heading_text"
-                            >
-                              Digital
-                            </div>
-                          </div>
-                        </div>
-                        <div class="hero-heading_word">
-                          <div
-                            data-w-id="5724ed6a-d74b-d35c-6362-37aef0090b40"
-                            class="hero-heading_mask"
-                          >
-                            <div
-                              data-w-id="8cc462ba-2ae2-e655-5eca-bfa87e9d9fd9"
-                              style="
-                                -webkit-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -moz-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -ms-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                              "
-                              class="hero-heading_text"
-                            >
-                              experien­ces
-                            </div>
-                          </div>
-                        </div>
-                        <div class="hero-heading_word">
-                          <div class="hero-heading_img is-img-2">
-                            <img
-                              class="hero-img-2"
-                              src="index/images/VBhquZRBW96M.jpg"
-                              width="446"
-                              height="256"
-                              alt=""
-                              style="opacity: 0"
-                              sizes="(max-width: 479px) 100vw, 446px"
-                              data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e60870f"
-                              loading="eager"
-                              srcset="
-                                index/images/uuHkTi7Cc2zA.jpg  500w,
-                                index/images/WgAkBAOGFNM8.jpg  800w,
-                                index/images/f9qTq29KJnOe.jpg 1080w,
-                                index/images/0aEQoKk2WVYF.jpg 1600w,
-                                index/images/SbjpKOnvNQLP.jpg 2000w,
-                                index/images/C19uR07DGBLZ.jpg 2600w,
-                                index/images/EB3v5xhMllin.jpg 3200w,
-                                index/images/VBhquZRBW96M.jpg 4760w
-                              "
-                            />
-                          </div>
-                          <div
-                            data-w-id="6e3a8d10-eb31-55b6-e19a-17ec9e1c83fd"
-                            class="hero-heading_mask"
-                          >
-                            <div
-                              data-w-id="87c233cf-f1a3-72bf-cf2c-92a1a4b60bba"
-                              style="
-                                -webkit-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -moz-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -ms-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                              "
-                              class="hero-heading_text"
-                            >
-                              that
-                            </div>
-                          </div>
-                        </div>
-                        <div class="hero-heading_word">
-                          <div
-                            data-w-id="98af9948-81f7-83e4-c5c0-63177ed3a374"
-                            class="hero-heading_mask"
-                          >
-                            <div
-                              data-w-id="d50b4bfb-cd58-6208-e28a-0111e0f034d6"
-                              style="
-                                -webkit-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -moz-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -ms-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                              "
-                              class="hero-heading_text"
-                            >
-                              refuse
-                            </div>
-                          </div>
-                          <div class="hero-heading_img is-img-3">
-                            <img
-                              class="hero-img-3"
-                              src="index/images/FxBWSg813AXr.jpg"
-                              width="350"
-                              height="388"
-                              alt=""
-                              style="opacity: 0"
-                              sizes="(max-width: 479px) 100vw, 350px"
-                              data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608711"
-                              loading="eager"
-                              srcset="
-                                index/images/KG4Qacn51ato.jpg  500w,
-                                index/images/ghMAJYhTdViB.jpg  800w,
-                                index/images/WOfQwk88G6LL.jpg 1080w,
-                                index/images/ie2iTLSlSd11.jpg 1600w,
-                                index/images/FxBWSg813AXr.jpg 2000w
-                              "
-                            />
-                          </div>
-                        </div>
-                        <div class="hero-heading_word">
-                          <div
-                            data-w-id="5cc55046-87d2-732e-ed0f-df8e16cb90f0"
-                            class="hero-heading_mask"
-                          >
-                            <div
-                              data-w-id="651266b1-ca34-8285-6d9c-dd8718e29e6f"
-                              style="
-                                -webkit-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -moz-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                -ms-transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                                transform: translate3d(0, 120%, 0)
-                                  scale3d(1, 1, 1) rotateX(0) rotateY(0)
-                                  rotateZ(0) skew(0, 0);
-                              "
-                              class="hero-heading_text"
-                            >
-                            to blend in
-                            </div>
-                          </div>
-                        </div>
-                      </h1>
-                    </div>
-                    <div class="home-intro-grid custom-margin-home">
-                      <div
-                        id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608718-644deb4a"
-                        data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608718"
-                        style="
-                          opacity: 0;
-                          -webkit-transform: translate3d(0, 2rem, 0)
-                            scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                            skew(0, 0);
-                          -moz-transform: translate3d(0, 2rem, 0)
-                            scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                            skew(0, 0);
-                          -ms-transform: translate3d(0, 2rem, 0)
-                            scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                            skew(0, 0);
-                          transform: translate3d(0, 2rem, 0) scale3d(1, 1, 1)
-                            rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                        "
-                        class="hero-button-wrapper"
-                      >
-                        <a href="./services" class="button w-inline-block" style="padding: 1rem 3rem !important;"
-                          ><div class="button-text-wrap" style="font-size: 1.1vw; line-height: 138%;">
-                            Build your website like you give a quack →
-                          </div></a
-                        >
-                      </div>
-                      <div
-                        id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60871b-644deb4a"
-                      >
-                        <div
-                          data-w-id="32640830-ee85-2cfd-3b3b-9287cac19ee6"
-                          style="
-                            -webkit-transform: translate3d(0, 0, 0)
-                              scale3d(0, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            -moz-transform: translate3d(0, 0, 0)
-                              scale3d(0, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            -ms-transform: translate3d(0, 0, 0) scale3d(0, 1, 1)
-                              rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                            transform: translate3d(0, 0, 0) scale3d(0, 1, 1)
-                              rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                          "
-                          class="h-line"
-                        ></div>
-                        <div
-                          data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e60871c"
-                          style="
-                            opacity: 0;
-                            -webkit-transform: translate3d(0, 1rem, 0)
-                              scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            -moz-transform: translate3d(0, 1rem, 0)
-                              scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            -ms-transform: translate3d(0, 1rem, 0)
-                              scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            transform: translate3d(0, 1rem, 0) scale3d(1, 1, 1)
-                              rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                          "
-                          class="eyebrow no-border is--home"
-                        >
-                          Who We Are
-                        </div>
-                        <h2
-                          data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e60871e"
-                          style="
-                            opacity: 0;
-                            -webkit-transform: translate3d(0, 2rem, 0)
-                              scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            -moz-transform: translate3d(0, 2rem, 0)
-                              scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            -ms-transform: translate3d(0, 2rem, 0)
-                              scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                              skew(0, 0);
-                            transform: translate3d(0, 2rem, 0) scale3d(1, 1, 1)
-                              rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                          "
-                          class="home-intro"
-                        >
-                          <span class="spin">✺</span> We partner with fearless brands to create bold digital spaces for brands that refuse to blend in. 
-                        </h2>
-                      </div>
-                    </div>
-                    <section
-                      data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608720"
-                      style="
-                        opacity: 0;
-                        -webkit-transform: translate3d(0, 5%, 0)
-                          scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0)
-                          skew(0, 0);
-                        -moz-transform: translate3d(0, 5%, 0) scale3d(1, 1, 1)
-                          rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                        -ms-transform: translate3d(0, 5%, 0) scale3d(1, 1, 1)
-                          rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                        transform: translate3d(0, 5%, 0) scale3d(1, 1, 1)
-                          rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-                      "
-                      class="home-grid-cards"
-                    >
-                      <a
-                        id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608721-644deb4a"
-                        href="./work/wa-solutions"
-                        class="home-project-card w-inline-block"
-                        ><img
-                          class="card-bg"
-                          src="index/images/9x7qfQC3kWvd.jpg"
-                          width="1216"
-                          height="1564"
-                          alt=""
-                          sizes="100vw"
-                          data-w-id="a5e9ce1a-dc41-a502-5ab4-74a54e608722"
-                          loading="lazy"
-                          srcset="
-                            index/images/9JewMItFwTlB.jpg  500w,
-                            index/images/H1tRswqlSSG9.jpg  800w,
-                            index/images/TcdG5ELSFRMV.jpg 1080w,
-                            index/images/9x7qfQC3kWvd.jpg 1402w
-                          "
-                        />
-                        <div class="project-card-info">
-                          <h3 class="heading-small">WA Solutions</h3>
-                          <div class="project-tag">Logistics</div>
-                        </div></a
-                      >
-                      <div
-                        id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608728-644deb4a"
-                        class="home-text-card"
-                      >
-                        <div>
-                          From digital strategy, brand & user experience design,
-                          and full-stack development, our expertise empowers
-                          brands to look ahead and bring bold concepts to life.
-                        </div>
-                      </div>
-                      <a
-                        id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60872b-644deb4a"
-                        href="./work/seatgeek"
-                        class="home-project-card w-inline-block"
-                        ><div class="project-card-info">
-                          <h3 class="heading-small">SeatGeek</h3>
-                          <div class="project-tag">Entertainment</div>
-                        </div>
-                        <img
-                          src="index/images/CfOdnGOrTEqI.jpg"
-                          loading="lazy"
-                          width="812"
-                          height="1564"
-                          alt=""
-                          srcset="
-                            index/images/NuwtcfOtq8Dc.jpg  500w,
-                            index/images/arRlNJOykmAv.jpg  800w,
-                            index/images/FaMzfaeT8NBH.jpg 1080w,
-                            index/images/ATxTyPreRNWQ.jpg 1600w,
-                            index/images/M3OCu7slz5ap.jpg 2000w,
-                            index/images/iBePSVm2XjQI.jpg 2600w,
-                            index/images/ilIHNtaeexF5.jpg 3200w,
-                            index/images/CfOdnGOrTEqI.jpg 4533w
-                          "
-                          sizes="(max-width: 991px) 100vw, 812px"
-                          class="card-bg"
-                      /></a>
-                      <div
-                        id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608732-644deb4a"
-                        class="home-text-card"
-                      >
-                        <div class="max-width-small">
-                          <div>
-                            SAAS, gaming, finance, sports, logistics, fashion,
-                            insurance, fitness, e-commerce, security,
-                            information technology, <strong>yes</strong>
-                          </div>
-                        </div>
-                      </div>
-                      <a
-                        href="./work/optix"
-                        class="home-project-card w-inline-block"
-                        ><img
-                          src="index/images/jfVlPkP74hkx.webp"
-                          loading="lazy"
-                          width="812"
-                          height="1564"
-                          alt=""
-                          srcset="
-                            index/images/uWt6lfUgmSb3.webp  500w,
-                            index/images/fZlX0UxZHuPR.webp  800w,
-                            index/images/jfVlPkP74hkx.webp 1065w
-                          "
-                          sizes="(max-width: 991px) 100vw, 812px"
-                          class="card-bg"
-                        />
-                        <div class="project-card-info">
-                          <h3 class="heading-small">Optix</h3>
-                          <div class="project-tag">Coworking</div>
-                        </div></a
-                      ><a
-                        href="./work/jackie"
-                        class="home-project-card w-inline-block"
-                        ><img
-                          src="index/images/XjBb8NC4l9zI.png"
-                          loading="lazy"
-                          width="812"
-                          height="1564"
-                          alt=""
-                          class="card-bg"
-                        />
-                        <div class="project-card-info">
-                          <h3 class="heading-small">Jackie</h3>
-                          <div class="project-tag">Fashion</div>
-                        </div></a
-                      >
-                    </section>
-                  </div>
-                </div>
+
+        // FULL HTML (rewritten): removed inline opacity/transform on animated elements,
+        // added qk-intro-hidden + data-qk-anim markers.
+        intro.innerHTML = `
+<section class="section overflow-hidden">
+  <div class="padding-bottom padding-xhuge">
+    <div class="page-padding">
+      <div class="container-large">
+        <div class="hero-wrapper is-new">
+          <h1 class="hero-heading is-new">
+            <div class="hero-heading_word">
+              <div class="hero-heading_mask">
+                <div class="hero-heading_text qk-intro-hidden" data-qk-anim="word">Build</div>
               </div>
-            </section>`;
+
+              <button
+                class="hero-heading_img is-btn qk-intro-hidden"
+                data-qk-anim="fade"
+                data-vimeo-lightbox-control="open"
+                data-vimeo-lightbox-id="1116214405"
+              >
+                <div class="video-play">PLAY</div>
+                <img
+                  src="index/images/r8a3dPeHTsmH.gif"
+                  loading="eager"
+                  width="250"
+                  height="250"
+                  alt=""
+                  class="hero-img-1"
+                />
+                <img
+                  class="vimeo-thumb"
+                  src="index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus.jpg"
+                  width="1000"
+                  height="1000"
+                  alt=""
+                  sizes="(max-width: 479px) 97vw, (max-width: 767px) 98vw, 99vw"
+                  loading="eager"
+                  data-vimeo-lightbox-placeholder=""
+                  srcset="
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-500.jpg   500w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-800.jpg   800w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-1080.jpg 1080w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-1600.jpg 1600w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-2000.jpg 2000w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-2600.jpg 2600w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus-p-3200.jpg 3200w,
+                    index/images/68bb30e3208f760f22b823b9_93847d09e97a953ebb4d929c6b85833d_2055772682-2fdefad43fffdaecc660a9ae2607c315e34b058d849a98c90ebe927ed7b9273c-d_640_region%253Dus.jpg        3840w
+                  "
+                />
+              </button>
+            </div>
+
+            <div class="hero-heading_word">
+              <div class="hero-heading_mask">
+                <div class="hero-heading_text qk-intro-hidden" data-qk-anim="word">Digital</div>
+              </div>
+            </div>
+
+            <div class="hero-heading_word">
+              <div class="hero-heading_mask">
+                <div class="hero-heading_text qk-intro-hidden" data-qk-anim="word">experien­ces</div>
+              </div>
+            </div>
+
+            <div class="hero-heading_word">
+              <div class="hero-heading_img is-img-2">
+                <img
+                  class="hero-img-2 qk-intro-hidden"
+                  data-qk-anim="fade"
+                  src="index/images/VBhquZRBW96M.jpg"
+                  width="446"
+                  height="256"
+                  alt=""
+                  sizes="(max-width: 479px) 100vw, 446px"
+                  loading="eager"
+                  srcset="
+                    index/images/uuHkTi7Cc2zA.jpg  500w,
+                    index/images/WgAkBAOGFNM8.jpg  800w,
+                    index/images/f9qTq29KJnOe.jpg 1080w,
+                    index/images/0aEQoKk2WVYF.jpg 1600w,
+                    index/images/SbjpKOnvNQLP.jpg 2000w,
+                    index/images/C19uR07DGBLZ.jpg 2600w,
+                    index/images/EB3v5xhMllin.jpg 3200w,
+                    index/images/VBhquZRBW96M.jpg 4760w
+                  "
+                />
+              </div>
+              <div class="hero-heading_mask">
+                <div class="hero-heading_text qk-intro-hidden" data-qk-anim="word">that</div>
+              </div>
+            </div>
+
+            <div class="hero-heading_word">
+              <div class="hero-heading_mask">
+                <div class="hero-heading_text qk-intro-hidden" data-qk-anim="word">refuse</div>
+              </div>
+
+              <div class="hero-heading_img is-img-3">
+                <img
+                  class="hero-img-3 qk-intro-hidden"
+                  data-qk-anim="fade"
+                  src="index/images/FxBWSg813AXr.jpg"
+                  width="350"
+                  height="388"
+                  alt=""
+                  sizes="(max-width: 479px) 100vw, 350px"
+                  loading="eager"
+                  srcset="
+                    index/images/KG4Qacn51ato.jpg  500w,
+                    index/images/ghMAJYhTdViB.jpg  800w,
+                    index/images/WOfQwk88G6LL.jpg 1080w,
+                    index/images/ie2iTLSlSd11.jpg 1600w,
+                    index/images/FxBWSg813AXr.jpg 2000w
+                  "
+                />
+              </div>
+            </div>
+
+            <div class="hero-heading_word">
+              <div class="hero-heading_mask">
+                <div class="hero-heading_text qk-intro-hidden" data-qk-anim="word">to blend in</div>
+              </div>
+            </div>
+          </h1>
+        </div>
+
+        <div class="home-intro-grid custom-margin-home">
+          <div
+            id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608718-644deb4a"
+            class="hero-button-wrapper qk-intro-hidden"
+            data-qk-anim="fade"
+          >
+            <a href="./services" class="button w-inline-block" style="padding: 1rem 3rem !important;">
+              <div class="button-text-wrap" style="font-size: 1.1vw; line-height: 138%;">
+                Build your website like you give a quack →
+              </div>
+            </a>
+          </div>
+
+          <div id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60871b-644deb4a">
+            <div class="h-line qk-intro-hidden" data-qk-anim="line"></div>
+
+            <div class="eyebrow no-border is--home qk-intro-hidden" data-qk-anim="fade">
+              Who We Are
+            </div>
+
+            <h2 class="home-intro qk-intro-hidden" data-qk-anim="fade">
+              <span class="spin">✺</span> We partner with fearless brands to create bold digital spaces for brands that refuse to blend in.
+            </h2>
+          </div>
+        </div>
+
+        <section class="home-grid-cards qk-intro-hidden" data-qk-anim="cards">
+          <a
+            id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608721-644deb4a"
+            href="./work/wa-solutions"
+            class="home-project-card w-inline-block"
+          >
+            <img
+              class="card-bg"
+              src="index/images/9x7qfQC3kWvd.jpg"
+              width="1216"
+              height="1564"
+              alt=""
+              sizes="100vw"
+              loading="lazy"
+              srcset="
+                index/images/9JewMItFwTlB.jpg  500w,
+                index/images/H1tRswqlSSG9.jpg  800w,
+                index/images/TcdG5ELSFRMV.jpg 1080w,
+                index/images/9x7qfQC3kWvd.jpg 1402w
+              "
+            />
+            <div class="project-card-info">
+              <h3 class="heading-small">WA Solutions</h3>
+              <div class="project-tag">Logistics</div>
+            </div>
+          </a>
+
+          <div
+            id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608728-644deb4a"
+            class="home-text-card"
+          >
+            <div>
+              From digital strategy, brand & user experience design,
+              and full-stack development, our expertise empowers
+              brands to look ahead and bring bold concepts to life.
+            </div>
+          </div>
+
+          <a
+            id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60872b-644deb4a"
+            href="./work/seatgeek"
+            class="home-project-card w-inline-block"
+          >
+            <div class="project-card-info">
+              <h3 class="heading-small">SeatGeek</h3>
+              <div class="project-tag">Entertainment</div>
+            </div>
+            <img
+              src="index/images/CfOdnGOrTEqI.jpg"
+              loading="lazy"
+              width="812"
+              height="1564"
+              alt=""
+              srcset="
+                index/images/NuwtcfOtq8Dc.jpg  500w,
+                index/images/arRlNJOykmAv.jpg  800w,
+                index/images/FaMzfaeT8NBH.jpg 1080w,
+                index/images/ATxTyPreRNWQ.jpg 1600w,
+                index/images/M3OCu7slz5ap.jpg 2000w,
+                index/images/iBePSVm2XjQI.jpg 2600w,
+                index/images/ilIHNtaeexF5.jpg 3200w,
+                index/images/CfOdnGOrTEqI.jpg 4533w
+              "
+              sizes="(max-width: 991px) 100vw, 812px"
+              class="card-bg"
+            />
+          </a>
+
+          <div
+            id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608732-644deb4a"
+            class="home-text-card"
+          >
+            <div class="max-width-small">
+              <div>
+                SAAS, gaming, finance, sports, logistics, fashion,
+                insurance, fitness, e-commerce, security,
+                information technology, <strong>yes</strong>
+              </div>
+            </div>
+          </div>
+
+          <a href="./work/optix" class="home-project-card w-inline-block">
+            <img
+              src="index/images/jfVlPkP74hkx.webp"
+              loading="lazy"
+              width="812"
+              height="1564"
+              alt=""
+              srcset="
+                index/images/uWt6lfUgmSb3.webp  500w,
+                index/images/fZlX0UxZHuPR.webp  800w,
+                index/images/jfVlPkP74hkx.webp 1065w
+              "
+              sizes="(max-width: 991px) 100vw, 812px"
+              class="card-bg"
+            />
+            <div class="project-card-info">
+              <h3 class="heading-small">Optix</h3>
+              <div class="project-tag">Coworking</div>
+            </div>
+          </a>
+
+          <a href="./work/jackie" class="home-project-card w-inline-block">
+            <img
+              src="index/images/XjBb8NC4l9zI.png"
+              loading="lazy"
+              width="812"
+              height="1564"
+              alt=""
+              class="card-bg"
+            />
+            <div class="project-card-info">
+              <h3 class="heading-small">Jackie</h3>
+              <div class="project-tag">Fashion</div>
+            </div>
+          </a>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+        `;
       } else {
-        // Make sure styling/class stays consistent even if something patched it
         intro.classList.add("InjectedTestSection");
-        if (!intro.getAttribute("data-presticky-intro")) {
-          intro.setAttribute("data-presticky-intro", "1");
-        }
+        if (!intro.getAttribute("data-presticky-intro")) intro.setAttribute("data-presticky-intro", "1");
         if (!intro.style.cssText) intro.style.cssText = css;
       }
 
-      // MUST be: child of .lenisscroll-pane AND immediately before <main>
-      const shouldBeHere =
-        intro.parentElement === pane && intro.nextElementSibling === main;
+      const shouldBeHere = intro.parentElement === pane && intro.nextElementSibling === main;
+      if (!shouldBeHere) pane.insertBefore(intro, main);
 
-      if (!shouldBeHere) {
-        pane.insertBefore(intro, main);
-      }
-
-      // Immediately delete any clones (no attribute checks, no id checks except keepNode)
       removeAllInjectedClones(intro);
 
+      initIntroReveal(intro);
 
-      // Re-init Webflow IX2 so it picks up newly injected nodes
-// HARD Webflow re-init (safe + idempotent)
-// SAFER Webflow re-init: do NOT destroy() the runtime.
-// Just tell modules to (re)scan the DOM after injection.
-const reinitWebflowSoft = (() => {
-  let scheduled = false;
-
-  return () => {
-    if (scheduled) return;
-    scheduled = true;
-
-    const run = () => {
-      scheduled = false;
-
-      const wf = window.Webflow;
-      if (!wf || !wf.require) return;
-
-      const req = wf.require;
-
-      // Re-scan interactions + lottie without nuking runtime.
-      try {
-  const ix2 = req("ix2");
-  ix2?.destroy?.();
-  ix2?.init?.();
-} catch (_) {}
-      try { req("lottie")?.ready?.(); } catch (_) {}
-      try { req("dropdown")?.ready?.(); } catch (_) {}
-      try { req("tabs")?.ready?.(); } catch (_) {}
-      try { req("slider")?.ready?.(); } catch (_) {}
-      try { req("forms")?.ready?.(); } catch (_) {}
-
-      window.dispatchEvent(new Event("resize"));
-    };
-
-    requestAnimationFrame(run);
-    setTimeout(run, 250);
-  };
-})();
-
-
-
-
-      // Globals used by your “offset aware” logic elsewhere
       const update = () => {
         const top = main.getBoundingClientRect().top;
         const atTop = top <= 0;
-
-        // unlock flag for your scroll/animation gating
         window.__INTRO_MAIN_AT_TOP = atTop;
-
-        // intro height in px (for offsetting scroll math elsewhere if needed)
-        window.__INTRO_OFFSET_PX =
-          intro.getBoundingClientRect().height || window.innerHeight;
+        window.__INTRO_OFFSET_PX = intro.getBoundingClientRect().height || window.innerHeight;
       };
 
-      // Only do work when state changes (prevents console spam / pointless writes)
       let lastAtTop = null;
       const loop = () => {
         const top = main.getBoundingClientRect().top;
@@ -714,67 +592,50 @@ const reinitWebflowSoft = (() => {
           lastAtTop = atTop;
           update();
         } else {
-          // Still keep offset fresh in case of responsive changes
-          window.__INTRO_OFFSET_PX =
-            intro.getBoundingClientRect().height || window.innerHeight;
+          window.__INTRO_OFFSET_PX = intro.getBoundingClientRect().height || window.innerHeight;
         }
 
         window.__INTRO_RAF = requestAnimationFrame(loop);
       };
 
-      // Start loop once
       window.__INTRO_RAF = requestAnimationFrame(loop);
 
-      // Re-assert placement if Vue re-patches DOM later (this stops the “duplication”)
       const obs = new MutationObserver(() => {
         const fresh = getTargets();
         if (!fresh) return;
 
         const { pane: p2, main: m2 } = fresh;
-
-        // Re-find the canonical node (in case Vue swapped references)
         const node = document.getElementById(INTRO_ID);
         if (!node) return;
 
-        // Force correct placement
         if (!(node.parentElement === p2 && node.nextElementSibling === m2)) {
           p2.insertBefore(node, m2);
         }
 
-        // Kill any clones anywhere in the DOM (including inside sticky-wrap)
         removeAllInjectedClones(node);
       });
 
       window.__INTRO_OBS = obs;
       obs.observe(document.documentElement, { childList: true, subtree: true });
 
-      // Run one immediate update so globals are correct on first paint
       update();
-
-      // Reset lastAtTop so loop updates correctly after first paint
       lastAtTop = null;
 
       return true;
     };
 
-    // Try now, otherwise wait until Vue finishes creating the subtree.
     if (ensureIntro()) return;
 
     const waiter = new MutationObserver(() => {
-      if (ensureIntro()) {
-        waiter.disconnect();
-      }
+      if (ensureIntro()) waiter.disconnect();
     });
-
     waiter.observe(document.documentElement, { childList: true, subtree: true });
-
-    // Don’t watch forever
-    setTimeout(() => {
-      try { waiter.disconnect(); } catch (e) {}
-    }, 15000);
+    setTimeout(() => { try { waiter.disconnect(); } catch (e) {} }, 15000);
 
   } catch (e) {}
 }
+
+
 
 function __injectHeaderNavigation() {
   try {
@@ -1039,6 +900,26 @@ function __injectHeaderNavigation() {
     } else {
       pane.prepend(header);
     }
+
+    
+    // After injection: run header init scripts (DOMContentLoaded already fired)
+const runInjectedHeaderScripts = () => {
+  // Only run once
+  if (window.__HEADER_SCRIPTS_INITED) return;
+  window.__HEADER_SCRIPTS_INITED = true;
+
+  if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+    try { window.__INIT_HEADER_SCRIPTS(); } catch (e) {}
+  }
+};
+
+// Wait a tick so any framework patching settles, then run
+requestAnimationFrame(() => {
+  runInjectedHeaderScripts();
+
+  // Kick both the injected header and the injected intro section (if present),
+  // because either can contain data-w-id nodes.
+});
 
 
     
@@ -3600,45 +3481,162 @@ function __injectNewSection() {
 
 function __injectPreloader() {
   try {
-    // Prevent duplicates
-    if (document.querySelector(".load-wrapper")) return;
+    // Version guard (prevents duplicate loaders after soft navigations)
+    const VER = 1;
+    if ((window.__QK_PRELOADER_VER || 0) >= VER) return;
+    window.__QK_PRELOADER_VER = VER;
 
-    const raw = `
-      <div class="page-load-trigger"></div>
-      <div
-        class="load-wrapper"
-        style="
-          -webkit-transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          -moz-transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          -ms-transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          transform: translate3d(0, 0vh, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
-          display: flex;
-        "
-      >
-        <div
-          data-w-id="7871eb9d-187e-6140-1607-3dae8e8808d9"
-          data-is-ix2-target="1"
-          class="load-anim"
-          data-animation-type="lottie"
-          data-src="./refined-quack-loader.json"
-          data-loop="0"
-          data-direction="1"
-          data-autoplay="0"
-          data-renderer="svg"
-          data-default-duration="2.3"
-          data-duration="0"
-          data-ix2-initial-state="0"
-          style="pointer-events: none;"
-        ></div>
-      </div>
-    `;
+    // Remove any older instances from previous bundles
+    document.querySelectorAll(".qk-load-wrapper, .qk-page-load-trigger").forEach((n) => n.remove());
 
-    const template = document.createElement("template");
-    template.innerHTML = raw.trim();
+    // Build DOM
+    const trigger = document.createElement("div");
+    trigger.className = "qk-page-load-trigger";
+    trigger.setAttribute("aria-hidden", "true");
 
-    // Insert right at top of body so it overlays everything
-    document.body.insertAdjacentElement("afterbegin", template.content.firstElementChild); // page-load-trigger
-    document.body.insertAdjacentElement("afterbegin", template.content.firstElementChild); // load-wrapper
+    const wrap = document.createElement("div");
+    wrap.className = "qk-load-wrapper";
+    wrap.setAttribute("aria-hidden", "true");
+
+    const animHost = document.createElement("div");
+    animHost.className = "qk-load-anim";
+    animHost.setAttribute("data-lottie-src", "./refined-quack-loader.json");
+
+    // Styles (inline so this works even if CSS isn't loaded yet)
+    // Black full-screen overlay
+    Object.assign(wrap.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#000",
+      zIndex: "2147483647",
+      transform: "translate3d(0,0,0)",
+      willChange: "transform, opacity",
+      pointerEvents: "none",
+    });
+
+    // Lottie box sizing (tweak as needed)
+    Object.assign(animHost.style, {
+      width: "25rem",
+      height: "25rem",
+      pointerEvents: "none",
+    });
+
+    wrap.appendChild(animHost);
+
+    // Insert at top of body so it overlays everything
+    document.body.insertAdjacentElement("afterbegin", wrap);
+    document.body.insertAdjacentElement("afterbegin", trigger);
+
+    // Ensure we can reveal page if anything goes wrong
+    const forceReveal = (() => {
+      let done = false;
+      return (why) => {
+        if (done) return;
+        done = true;
+        // 👇 PUT THE HOOK RIGHT HERE
+            try {
+            window.__QK_PRELOADER_DONE = true;
+            window.dispatchEvent(new Event("qk-preloader:done"));
+          } catch (e) {}
+
+
+
+        // Animate up + out (lift the black overlay)
+        try {
+          wrap.style.transition = "transform 520ms cubic-bezier(0.65, 0, 0.35, 1), opacity 520ms cubic-bezier(0.65, 0, 0.35, 1)";
+          wrap.style.transform = "translate3d(0,-100vh,0)";
+          wrap.style.opacity = "0";
+        } catch (e) {}
+
+        // Remove after transition
+        setTimeout(() => {
+          try { wrap.remove(); } catch (e) {}
+          try { trigger.remove(); } catch (e) {}
+        }, 800);
+
+        // Optional debug hook
+        try { console.log("[preloader] reveal", why); } catch (e) {}
+      };
+    })();
+
+    // If you *need* to block scrolling while loader is up:
+    // const prevOverflow = document.documentElement.style.overflow;
+    // document.documentElement.style.overflow = "hidden";
+
+    const ensureLottie = () =>
+      new Promise((resolve, reject) => {
+        if (window.lottie && typeof window.lottie.loadAnimation === "function") return resolve(window.lottie);
+
+        const existing = document.querySelector('script[data-qk-lottie="1"]');
+        if (existing) {
+          // wait for it
+          existing.addEventListener("load", () => resolve(window.lottie));
+          existing.addEventListener("error", reject);
+          return;
+        }
+
+        const s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js";
+        s.async = true;
+        s.defer = true;
+        s.setAttribute("data-qk-lottie", "1");
+        s.onload = () => (window.lottie ? resolve(window.lottie) : reject(new Error("lottie loaded but window.lottie missing")));
+        s.onerror = () => reject(new Error("failed to load lottie-web"));
+        document.head.appendChild(s);
+      });
+
+    // Play lottie then lift overlay
+    const run = async () => {
+      let lottieApi;
+      try {
+        lottieApi = await ensureLottie();
+      } catch (e) {
+        forceReveal("no-lottie");
+        return;
+      }
+
+      let anim;
+      try {
+        anim = lottieApi.loadAnimation({
+          container: animHost,
+          renderer: "svg",
+          loop: false,
+          autoplay: true,
+          path: animHost.getAttribute("data-lottie-src"),
+          rendererSettings: { progressiveLoad: true, preserveAspectRatio: "xMidYMid meet" },
+        });
+      } catch (e) {
+        forceReveal("loadAnimation-error");
+        return;
+      }
+
+      // If animation metadata never loads, don’t hang forever
+      const hardTimeout = setTimeout(() => forceReveal("timeout"), 7000);
+
+      // Reveal when the animation completes
+      const onComplete = () => {
+        clearTimeout(hardTimeout);
+        try { anim.removeEventListener("complete", onComplete); } catch (e) {}
+        forceReveal("complete");
+      };
+
+      try { anim.addEventListener("complete", onComplete); } catch (e) {}
+
+      // Extra safety: if it’s super short / zero frames
+      setTimeout(() => {
+        try {
+          if (!anim || !anim.totalFrames || anim.totalFrames < 2) forceReveal("no-frames");
+        } catch (e) {}
+      }, 1200);
+    };
+
+    // Start on next frame so layout is ready
+    requestAnimationFrame(run);
 
   } catch (e) {
     console.error("[injectPreloader]", e);
@@ -4356,229 +4354,6 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
 
 
-// Call this after you inject DOM that contains Webflow interactions (data-w-id).
-// Example: __webflowIX2Kick("#presticky-intro")
-function __webflowIX2Kick(scopeSelectorOrEl) {
-  try {
-    // ---- singleton state ----
-    const S = (window.__WF_IX2_STATE ||= {
-      obs: null,
-      queued: false,
-      tries: 0,
-      maxTries: 18,          // ~3–6s depending on backoff
-      lastRunAt: 0,
-      scope: null,
-      fallbackTimer: 0
-    });
-
-    // Resolve scope
-    const scope =
-      typeof scopeSelectorOrEl === "string"
-        ? document.querySelector(scopeSelectorOrEl)
-        : scopeSelectorOrEl;
-
-    // If user passes a selector and it doesn't exist yet, keep selector and wait
-    S.scope = scope || S.scope || scopeSelectorOrEl;
-
-    // Debounce: collapse many mutation events into one init attempt
-    if (S.queued) return;
-    S.queued = true;
-
-    const schedule = () => {
-      S.queued = false;
-      __wfTryInit();
-    };
-
-    // Next frame is usually too early; do 2 frames for stability
-    requestAnimationFrame(() => requestAnimationFrame(schedule));
-
-    // Install observer once: any future injection/patch will re-kick automatically
-    if (!S.obs) {
-      S.obs = new MutationObserver((mutList) => {
-        // Only react if a node with data-w-id showed up, or our scope appeared
-        let relevant = false;
-
-        for (const m of mutList) {
-          for (const n of m.addedNodes) {
-            if (n.nodeType !== 1) continue;
-            if (n.matches?.("[data-w-id]") || n.querySelector?.("[data-w-id]")) {
-              relevant = true;
-              break;
-            }
-            if (typeof S.scope === "string") {
-              if (n.matches?.(S.scope) || n.querySelector?.(S.scope)) {
-                relevant = true;
-                break;
-              }
-            }
-          }
-          if (relevant) break;
-        }
-
-        if (relevant) __webflowIX2Kick(S.scope);
-      });
-
-      S.obs.observe(document.documentElement, { childList: true, subtree: true });
-    }
-
-    function __wfReady() {
-      return (
-        window.Webflow &&
-        typeof window.Webflow.require === "function" &&
-        window.Webflow.require("ix2") &&
-        typeof window.Webflow.require("ix2").init === "function"
-      );
-    }
-
-    function __resolveScopeEl() {
-      const s = S.scope;
-      if (!s) return null;
-      if (typeof s === "string") return document.querySelector(s);
-      if (s && s.nodeType === 1) return s;
-      return null;
-    }
-
-    function __scopeHasInteractions(el) {
-      if (!el) return false;
-      return !!(el.matches?.("[data-w-id]") || el.querySelector?.("[data-w-id]"));
-    }
-
-    function __hardReinitIX2() {
-      // Safer than destroy/ready/destroy/ready spam:
-      // - destroy ix2 only
-      // - init ix2 only
-      const ix2 = window.Webflow.require("ix2");
-      try { ix2.destroy(); } catch (e) {}
-      try { ix2.init(); } catch (e) {}
-    }
-
-    function __wfTryInit() {
-      const now = performance.now();
-      // Prevent thrashing if many events fire
-      if (now - S.lastRunAt < 120) {
-        __webflowIX2Kick(S.scope);
-        return;
-      }
-      S.lastRunAt = now;
-
-      // Wait for DOM + Webflow
-      const el = __resolveScopeEl();
-      const ready = __wfReady();
-
-      // If we have a scope, only init once scope exists + contains data-w-id
-      if (el && !__scopeHasInteractions(el)) {
-        // scope exists but doesn't yet contain w-id nodes (still injecting)
-        __wfBackoffRetry();
-        return;
-      }
-
-      if (!ready) {
-        __wfBackoffRetry();
-        return;
-      }
-
-      // Use Webflow.push to run when Webflow considers itself ready
-      // (this avoids the “50%” timing issue)
-      window.Webflow.push(() => {
-        // Force a reflow so any initial inline styles are computed before ix2 reads them
-        // (helps with “works when devtools open”)
-        try { document.documentElement.offsetHeight; } catch (e) {}
-
-        __hardReinitIX2();
-
-        // Verify quickly: if elements still stuck (opacity 0 etc), retry
-        __scheduleVerifyAndRetry(el);
-      });
-    }
-
-    function __wfBackoffRetry() {
-      S.tries++;
-      if (S.tries > S.maxTries) {
-        // Optional last-resort reveal (keeps site usable if ix2 refuses)
-        __fallbackReveal();
-        return;
-      }
-
-      // Exponential-ish backoff (fast at first, then slower)
-      const delay = Math.min(60 * S.tries, 600);
-
-      setTimeout(() => {
-        S.queued = false;
-        __webflowIX2Kick(S.scope);
-      }, delay);
-    }
-
-    function __scheduleVerifyAndRetry(scopeEl) {
-      // after init, check on next frames — if still stuck, kick again
-      let checks = 0;
-
-      const verify = () => {
-        checks++;
-
-        const el = scopeEl || __resolveScopeEl();
-        if (!el) return;
-
-        // heuristic: if we still find many nodes with opacity:0 AND data-w-id,
-        // ix2 probably didn’t bind, so reinit again
-        const stuck = el.querySelectorAll("[data-w-id]").length
-          ? Array.from(el.querySelectorAll("[data-w-id]")).some((n) => {
-              const cs = getComputedStyle(n);
-              // lots of Webflow reveal elems start opacity 0 + translateY(120%)
-              return cs.opacity === "0";
-            })
-          : false;
-
-        if (stuck && checks < 6) {
-          // kick again
-          S.queued = false;
-          __webflowIX2Kick(S.scope);
-          return;
-        }
-
-        // reset tries on success-ish
-        if (!stuck) S.tries = 0;
-      };
-
-      requestAnimationFrame(() => requestAnimationFrame(verify));
-      requestAnimationFrame(() => requestAnimationFrame(verify));
-      requestAnimationFrame(() => requestAnimationFrame(verify));
-    }
-
-    function __fallbackReveal() {
-      // Don’t do this immediately; only if we fail many times.
-      // It removes the “hidden forever” problem.
-      if (S.fallbackTimer) return;
-
-      S.fallbackTimer = setTimeout(() => {
-        S.fallbackTimer = 0;
-        const el = __resolveScopeEl();
-        if (!el) return;
-
-        const nodes = el.querySelectorAll("[data-w-id]");
-        nodes.forEach((n) => {
-          // Only rescue things that are still invisible
-          const cs = getComputedStyle(n);
-          if (cs.opacity === "0") {
-            n.style.opacity = "1";
-            // Don’t obliterate all transforms; just remove the common “offscreen” translate
-            // If you prefer: n.style.transform = "none";
-            if (n.style.transform && /translate3d\([^,]+,\s*120%/.test(n.style.transform)) {
-              n.style.transform = "translate3d(0, 0, 0)";
-            }
-          }
-        });
-
-        console.warn("[wf-ix2] Gave up after retries — applied fallback reveal to avoid hidden content.");
-      }, 900);
-    }
-  } catch (e) {
-    console.warn("[wf-ix2] kick error", e);
-  }
-}
-
-
-
-
 /* =========================================================
    Header + Services scripts (converted from DOMContentLoaded)
    Call: window.__INIT_HEADER_SCRIPTS()
@@ -4628,24 +4403,6 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
       warn("GSAP missing. initNavigation skipped.");
       return;
     }
-
-    // Safe GSAP.set: ignore null/undefined targets (happens when injected DOM isn't ready yet)
-    const gsapSafeSet = (targets, vars) => {
-      const flatten = (t) => {
-        if (!t) return [];
-        if (t.nodeType === 1 || t === window || t === document) return [t];
-        if (Array.isArray(t)) return t.flatMap(flatten);
-        // NodeList / HTMLCollection
-        if (typeof t.length === "number") return Array.from(t).flatMap(flatten);
-        return [t];
-      };
-      const list = flatten(targets).filter(Boolean);
-      if (!list.length) {
-        try { __wfWarn && __wfWarn("GSAP.set skipped (no valid targets)", { targets, vars }); } catch (e) {}
-        return;
-      }
-      return gsapSafeSet(list, vars);
-    };
 
     const els = {
       navWrap: document.querySelector(".x_nav_wrap"),
@@ -4720,28 +4477,28 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
     let currentConfig = null;
 
     const setInitialStyles = (cfg) => {
-      gsapSafeSet(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
-      gsapSafeSet(els.navLeft, { width: cfg.closedLeftWidth });
-      gsapSafeSet([els.navBg, els.navContent], { display: "none", opacity: 0 });
-      gsapSafeSet([els.navLeftInner], { display: "none", opacity: 0 });
-      gsapSafeSet(els.closeIcon, { display: "none" });
-      gsapSafeSet([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
-      gsapSafeSet(els.openIcon, { display: "block" });
-      gsapSafeSet(els.navRight, { height: "auto" });
-      gsapSafeSet(els.navBtnBg, { opacity: 100 });
+      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
+      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
+      window.gsap.set(els.closeIcon, { display: "none" });
+      window.gsap.set([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set(els.openIcon, { display: "block" });
+      window.gsap.set(els.navRight, { height: "auto" });
+      window.gsap.set(els.navBtnBg, { opacity: 100 });
     };
 
     const setMobileInitialStyles = (cfg) => {
-      gsapSafeSet(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
-      gsapSafeSet(els.navLeft, { width: cfg.closedLeftWidth });
-      gsapSafeSet([els.navBg, els.navContent], { display: "none", opacity: 0 });
-      gsapSafeSet([els.navLeftInner], { display: "none", opacity: 0 });
-      gsapSafeSet(els.closeIcon, { display: "none" });
-      gsapSafeSet([els.navSocials, els.navLogo], { opacity: 0 });
-      gsapSafeSet(els.openIcon, { display: "block" });
-      gsapSafeSet([els.navBtnBg, els.navList], { opacity: 100 });
-      gsapSafeSet(els.navRight, { height: "0rem" });
-      gsapSafeSet(els.navContent, { display: "none", opacity: 0 });
+      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
+      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
+      window.gsap.set(els.closeIcon, { display: "none" });
+      window.gsap.set([els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set(els.openIcon, { display: "block" });
+      window.gsap.set([els.navBtnBg, els.navList], { opacity: 100 });
+      window.gsap.set(els.navRight, { height: "0rem" });
+      window.gsap.set(els.navContent, { display: "none", opacity: 0 });
     };
 
     const setupDesktopAnimation = (cfg) => {
@@ -4924,6 +4681,182 @@ function __webflowIX2Kick(scopeSelectorOrEl) {
       });
     }
   }
+
+        /* 2.5 the colour change one */
+        function __injectColorSync() {
+        try {
+          const VER = 1;
+          if ((window.__COLOR_SYNC_VER || 0) >= VER) return;
+          window.__COLOR_SYNC_VER = VER;
+
+          const DEBUG = false;
+          const log = (...a) => DEBUG && console.log("[color-sync]", ...a);
+
+          // If you re-init (route changes), clean old triggers
+          if (window.__COLOR_SYNC_CLEANUP) {
+            try { window.__COLOR_SYNC_CLEANUP(); } catch (e) {}
+          }
+          window.__COLOR_SYNC_CLEANUP = null;
+
+          const waitFor = (testFn, onOk, opts) => {
+            const tries = (opts && opts.tries) || 240;
+            const every = (opts && opts.every) || 50;
+            const label = (opts && opts.label) || "waitFor";
+            let n = 0;
+
+            const tick = () => {
+              n++;
+              let ok = false;
+              try { ok = !!testFn(); } catch (e) {}
+              if (ok) return onOk();
+              if (n >= tries) return log("timeout", label);
+              setTimeout(tick, every);
+            };
+
+            tick();
+          };
+
+          const ORANGE_BG   = "#b24a1d";
+          const OFFWHITE_TX = "#f9f9f9";
+          const OFFWHITE_BG = "#f0ede6";
+          const ORANGE_TX   = "#b24a1d";
+
+          const SMOOTH_DUR = 0.8; // seconds
+
+          // Wait for GSAP + ScrollTrigger + elements
+          waitFor(
+            () =>
+              window.gsap &&
+              window.ScrollTrigger &&
+              document.querySelector(".fade-grey-to-black") &&
+              document.querySelector(".wrap-transition"),
+            () => {
+              const gsap = window.gsap;
+              const ScrollTrigger = window.ScrollTrigger;
+
+              // In case plugin isn't registered yet
+              try { gsap.registerPlugin(ScrollTrigger); } catch (e) {}
+
+              const fade = document.querySelector(".fade-grey-to-black");
+              const wrap = document.querySelector(".wrap-transition");
+              if (!fade || !wrap) {
+                log("Missing elements", { fade: !!fade, wrap: !!wrap });
+                return;
+              }
+
+              // Kill any prior triggers created by this module (if reinit)
+              const killMine = () => {
+                try {
+                  ScrollTrigger.getAll().forEach((st) => {
+                    if (st && st.vars && st.vars.id && String(st.vars.id).startsWith("qk-color-sync")) {
+                      st.kill(true);
+                    }
+                  });
+                } catch (e) {}
+              };
+              killMine();
+
+              const toOrangeState = () => {
+                gsap.to([fade, wrap], {
+                  backgroundColor: ORANGE_BG,
+                  color: OFFWHITE_TX,
+                  duration: SMOOTH_DUR,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
+              };
+
+              const toOffwhiteState = () => {
+                gsap.to([fade, wrap], {
+                  backgroundColor: OFFWHITE_BG,
+                  color: ORANGE_TX,
+                  duration: SMOOTH_DUR,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
+              };
+
+              // INITIAL STATE
+              gsap.set(wrap, { backgroundColor: ORANGE_BG, color: OFFWHITE_TX });
+
+              // PHASE 1 — ORIGINAL LOGIC
+              gsap.timeline({
+                scrollTrigger: {
+                  id: "qk-color-sync-phase1",
+                  trigger: fade,
+                  start: "center 80%",
+                  end: "center 50%",
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                },
+              }).fromTo(
+                fade,
+                { backgroundColor: "#f9f9f9", color: "#000" },
+                { backgroundColor: ORANGE_BG, color: OFFWHITE_TX, overwrite: "auto", ease: "none" }
+              );
+
+              gsap.to(fade.querySelectorAll(".challenge-item"), {
+                "--bg-color": "#0000",
+                scrollTrigger: {
+                  id: "qk-color-sync-items",
+                  trigger: fade,
+                  start: "center 80%",
+                  end: "center 50%",
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                },
+                overwrite: "auto",
+                ease: "none",
+              });
+
+              // PHASE 2 — HANDOFF (smooth instead of snap)
+              const handoffST = ScrollTrigger.create({
+                id: "qk-color-sync-handoff",
+                trigger: wrap,
+                start: "top 50%",
+                end: "top 20%",
+                scrub: true,
+                invalidateOnRefresh: true,
+
+                onLeaveBack: () => {
+                  toOrangeState();
+                  if (DEBUG) log("leaveBack -> tween BOTH to orange");
+                },
+
+                onLeave: () => {
+                  toOffwhiteState();
+                  if (DEBUG) log("leave -> tween BOTH to offwhite");
+                },
+              });
+
+              gsap.fromTo(
+                [fade, wrap],
+                { backgroundColor: ORANGE_BG, color: OFFWHITE_TX },
+                {
+                  backgroundColor: OFFWHITE_BG,
+                  color: ORANGE_TX,
+                  ease: "none",
+                  overwrite: "auto",
+                  immediateRender: false,
+                  scrollTrigger: handoffST,
+                }
+              );
+
+              // Cleanup for route changes / reinits
+              window.__COLOR_SYNC_CLEANUP = () => {
+                try { killMine(); } catch (e) {}
+              };
+
+              // If Lenis / layout changes, refresh triggers after things settle
+              try { setTimeout(() => ScrollTrigger.refresh(), 250); } catch (e) {}
+
+              log("init OK");
+            },
+            { tries: 400, every: 50, label: "__injectColorSync(gsap+elements)" }
+          );
+        } catch (e) {}
+      }     
+
 
   /* -----------------------------
      3) Lenis integration + scroll lock
@@ -5453,6 +5386,8 @@ window.__initScrollNavSwap = __initScrollNavSwap;
 
         // Lenis lock wiring
         __initLenisLocking();
+
+       
 
         log("All header/scripts init attempted.");
       },

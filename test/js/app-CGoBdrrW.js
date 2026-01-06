@@ -49579,6 +49579,7 @@ function KH(t) {
 
 
 
+
 function XH(t, e, n, r) {
   const {
     transformState: i,
@@ -49638,6 +49639,8 @@ __injectAfterMain();
 __ensureInjectAfterAfterMain();
 __ensureInjectAfterThird();
 
+__injectColorSync();
+
 // 2) init your header scripts (they may rely on DOM existing)
 if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
   window.__INIT_HEADER_SCRIPTS();
@@ -49647,6 +49650,248 @@ if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
     u
   );
 }
+
+
+
+
+/* -----------------------------
+   INJECT: Color Sync (GLOBAL) — WRAP-TRANSITION TRIGGER (ALWAYS-ON LOGS)
+   - ALWAYS logs (no toggle needed), but rate-limited to avoid console spam.
+   - Deterministic trigger: flips nav/logo styling when `.wrap-transition` crosses
+     a line just below the header bottom.
+   - Also sanity-checks `.wrap-transition` background; if it's transparent, we log it.
+     (We do NOT force a color by default—just report what's going on.)
+
+   Optional overrides (set in console):
+     window.__COLOR_SYNC_FORCE_REINIT = true;
+     window.__COLOR_SYNC_TARGET = ".wrap-transition";
+     window.__COLOR_SYNC_OFFSET = 8;
+     window.__FORCE_COLOR_SYNC = "dark" | "light" | null;
+   ----------------------------- */
+function __injectColorSync() {
+  try {
+    const VER = 41; // wrap-safe letter reveal
+    const TAG = "[line-reveal]";
+    const info = (...a) => console.info(TAG, ...a);
+    const warn = (...a) => console.warn(TAG, ...a);
+
+    const vNow = window.__COLOR_SYNC_VER || 0;
+    if (vNow >= VER) {
+      info("skip (already initialized)", { vNow, VER });
+      return;
+    }
+    window.__COLOR_SYNC_VER = VER;
+
+    info("called", { VER, prev: vNow, readyState: document.readyState, url: location.href });
+
+    const waitFor = (testFn, onOk, opts = {}) => {
+      const tries = opts.tries ?? 800;
+      const delay = opts.delay ?? 50;
+      const label = opts.label ?? "waitFor";
+      let n = 0;
+      const tick = () => {
+        n++;
+        let ok = false;
+        try { ok = !!testFn(); } catch {}
+        if (ok) return onOk();
+        if (n >= tries) return warn("waitFor TIMEOUT", { label, tries });
+        setTimeout(tick, delay);
+      };
+      tick();
+    };
+
+    // Colors
+    const BRIGHT = [178, 74, 29]; // rgb(178, 74, 29)
+    const DULL   = [Math.round(178*0.75), Math.round(74*0.75), Math.round(29*0.75)];
+    const rgb = (c) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    const mix = (a, b, t) => ([
+      Math.round(a[0] + (b[0] - a[0]) * t),
+      Math.round(a[1] + (b[1] - a[1]) * t),
+      Math.round(a[2] + (b[2] - a[2]) * t),
+    ]);
+
+    // CSS to preserve wrapping
+    const STYLE_ID = "qk-line-reveal-css-wrapsafe";
+    if (!document.getElementById(STYLE_ID)) {
+      const style = document.createElement("style");
+      style.id = STYLE_ID;
+      style.textContent = `
+        .line-reveal { white-space: normal; word-break: normal; overflow-wrap: break-word; }
+        .line-reveal__ch { display:inline; white-space: normal; }
+      `;
+      document.head.appendChild(style);
+      info("CSS injected", { STYLE_ID });
+    }
+
+    const WRAP_SEL = ".wrap-transition";
+    const TARGET_SEL = `${WRAP_SEL} .big-quote[split-text], ${WRAP_SEL} .big-quote`;
+    const getTarget = () => document.querySelector(TARGET_SEL);
+
+    // Build chars once; allow natural wrapping.
+    const buildChars = (el) => {
+  if (!el || el.__lrBuilt) return;
+
+  // Normalize whitespace so indentation/newlines don’t become “characters”
+  const text = (el.textContent || "").replace(/\s+/g, " ").trim();
+  if (!text) return;
+
+  el.__lrBuilt = true;
+  el.classList.add("line-reveal");
+
+  el.textContent = "";
+  const chars = [];
+
+  for (const ch of text) {
+    // Keep spaces as plain text nodes (no span)
+    if (ch === " ") {
+      el.appendChild(document.createTextNode(" "));
+      continue;
+    }
+
+    const sp = document.createElement("span");
+    sp.className = "line-reveal__ch";
+    sp.textContent = ch;
+    sp.style.color = rgb(DULL);
+    el.appendChild(sp);
+    chars.push(sp);
+  }
+
+  el.__lrChars = chars;
+  console.info("[line-reveal] built chars", { count: chars.length });
+};
+
+
+    // Reveal config: per visual line (group by offsetTop)
+    const START_Y = 0.85;
+    const END_Y   = 0.45;
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+const update = () => {
+  try {
+    const el = getTarget();
+    if (!el) {
+      console.warn("[line-reveal] update: target missing");
+      return;
+    }
+
+    if (!el.__lrBuilt) buildChars(el);
+    const chars = el.__lrChars;
+    if (!chars || !chars.length) {
+      console.warn("[line-reveal] update: no chars built");
+      return;
+    }
+
+    // 1) Group visible chars into visual lines by offsetTop
+    const lines = [];
+    let currentTop = null;
+    let current = [];
+    for (const sp of chars) {
+      const top = sp.offsetTop;
+      if (currentTop === null) currentTop = top;
+      if (top !== currentTop) {
+        lines.push(current);
+        current = [];
+        currentTop = top;
+      }
+      current.push(sp);
+    }
+    if (current.length) lines.push(current);
+
+    // 2) One global progress for the entire block
+    // Start when element TOP hits 85% viewport.
+    // Finish when element BOTTOM hits 25% viewport.
+    const vh = window.innerHeight;
+    const rect = el.getBoundingClientRect();
+    const START_Y = vh * 0.85;
+    const END_Y = vh * 0.55;
+
+    // This maps:
+    // rect.top = START_Y        -> t = 0
+    // rect.bottom = END_Y       -> t = 1
+    const distance = (rect.height + (START_Y - END_Y));
+    const t = clamp01((START_Y - rect.top) / distance);
+
+    // Always-on log (rate-limited)
+    const ls = (window.__LINE_REVEAL_LOG ||= { last: 0 });
+    const now = Date.now();
+    if (now - ls.last > 600) {
+      ls.last = now;
+      console.log("[line-reveal] t:", t.toFixed(3), {
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        height: Math.round(rect.height),
+        lines: lines.length,
+        chars: chars.length
+      });
+    }
+
+    // 3) Spend progress across lines sequentially
+    const total = lines.reduce((sum, line) => sum + line.length, 0);
+    let remaining = t * total;
+
+    for (const line of lines) {
+      const n = line.length;
+      const revealed = Math.max(0, Math.min(n, remaining));
+      const iFull = Math.floor(revealed);
+      const frac = revealed - iFull;
+
+      for (let i = 0; i < n; i++) {
+        if (i < iFull) line[i].style.color = rgb(BRIGHT);
+        else if (i === iFull) line[i].style.color = rgb(mix(DULL, BRIGHT, frac));
+        else line[i].style.color = rgb(DULL);
+      }
+
+      remaining -= n; // next line only starts after this one is fully revealed
+    }
+  } catch (e) {
+    console.error("[line-reveal] update failed:", e);
+  }
+};
+
+
+    
+
+    let raf = 0;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        update();
+      });
+    };
+
+    waitFor(
+      () => document.querySelector(WRAP_SEL) && getTarget(),
+      () => {
+        info("initialized", { TARGET_SEL });
+
+        window.addEventListener("scroll", schedule, { passive: true });
+        window.addEventListener("resize", () => {
+          // rebuild on resize to get correct wrapping + offsetTop grouping
+          const el = getTarget();
+          if (el) {
+            const text = el.textContent.replace(/\u00A0/g, " "); // restore spaces
+            el.textContent = text;
+            el.__lrBuilt = false;
+            el.__lrChars = null;
+          }
+          schedule();
+        });
+
+        setTimeout(schedule, 50);
+        setTimeout(schedule, 250);
+        setTimeout(schedule, 900);
+      },
+      { tries: 900, delay: 50, label: "line-reveal target" }
+    );
+
+  } catch (e) {
+    console.error("[line-reveal] failed", e);
+  }
+}
+window.__injectColorSync = __injectColorSync;
+
+
 
 // Drop-in replacement for your existing function
 function __injectPreStickyIntro() {
@@ -54259,6 +54504,182 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     }
   }
 
+        /* 2.5 the colour change one */
+        function __injectColorSync__nested_do_not_use() {
+        try {
+          const VER = 1;
+          if ((window.__COLOR_SYNC_VER || 0) >= VER) return;
+          window.__COLOR_SYNC_VER = VER;
+
+          const DEBUG = false;
+          const log = (...a) => DEBUG && console.log("[color-sync]", ...a);
+
+          // If you re-init (route changes), clean old triggers
+          if (window.__COLOR_SYNC_CLEANUP) {
+            try { window.__COLOR_SYNC_CLEANUP(); } catch (e) {}
+          }
+          window.__COLOR_SYNC_CLEANUP = null;
+
+          const waitFor = (testFn, onOk, opts) => {
+            const tries = (opts && opts.tries) || 240;
+            const every = (opts && opts.every) || 50;
+            const label = (opts && opts.label) || "waitFor";
+            let n = 0;
+
+            const tick = () => {
+              n++;
+              let ok = false;
+              try { ok = !!testFn(); } catch (e) {}
+              if (ok) return onOk();
+              if (n >= tries) return log("timeout", label);
+              setTimeout(tick, every);
+            };
+
+            tick();
+          };
+
+          const ORANGE_BG   = "#b24a1d";
+          const OFFWHITE_TX = "#f9f9f9";
+          const OFFWHITE_BG = "#f0ede6";
+          const ORANGE_TX   = "#b24a1d";
+
+          const SMOOTH_DUR = 0.8; // seconds
+
+          // Wait for GSAP + ScrollTrigger + elements
+          waitFor(
+            () =>
+              window.gsap &&
+              window.ScrollTrigger &&
+              document.querySelector(".fade-grey-to-black") &&
+              document.querySelector(".wrap-transition"),
+            () => {
+              const gsap = window.gsap;
+              const ScrollTrigger = window.ScrollTrigger;
+
+              // In case plugin isn't registered yet
+              try { gsap.registerPlugin(ScrollTrigger); } catch (e) {}
+
+              const fade = document.querySelector(".fade-grey-to-black");
+              const wrap = document.querySelector(".wrap-transition");
+              if (!fade || !wrap) {
+                log("Missing elements", { fade: !!fade, wrap: !!wrap });
+                return;
+              }
+
+              // Kill any prior triggers created by this module (if reinit)
+              const killMine = () => {
+                try {
+                  ScrollTrigger.getAll().forEach((st) => {
+                    if (st && st.vars && st.vars.id && String(st.vars.id).startsWith("qk-color-sync")) {
+                      st.kill(true);
+                    }
+                  });
+                } catch (e) {}
+              };
+              killMine();
+
+              const toOrangeState = () => {
+                gsap.to([fade, wrap], {
+                  backgroundColor: ORANGE_BG,
+                  color: OFFWHITE_TX,
+                  duration: SMOOTH_DUR,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
+              };
+
+              const toOffwhiteState = () => {
+                gsap.to([fade, wrap], {
+                  backgroundColor: OFFWHITE_BG,
+                  color: ORANGE_TX,
+                  duration: SMOOTH_DUR,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
+              };
+
+              // INITIAL STATE
+              gsap.set(wrap, { backgroundColor: ORANGE_BG, color: OFFWHITE_TX });
+
+              // PHASE 1 — ORIGINAL LOGIC
+              gsap.timeline({
+                scrollTrigger: {
+                  id: "qk-color-sync-phase1",
+                  trigger: fade,
+                  start: "center 80%",
+                  end: "center 50%",
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                },
+              }).fromTo(
+                fade,
+                { backgroundColor: "#f9f9f9", color: "#000" },
+                { backgroundColor: ORANGE_BG, color: OFFWHITE_TX, overwrite: "auto", ease: "none" }
+              );
+
+              gsap.to(fade.querySelectorAll(".challenge-item"), {
+                "--bg-color": "#0000",
+                scrollTrigger: {
+                  id: "qk-color-sync-items",
+                  trigger: fade,
+                  start: "center 80%",
+                  end: "center 50%",
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                },
+                overwrite: "auto",
+                ease: "none",
+              });
+
+              // PHASE 2 — HANDOFF (smooth instead of snap)
+              const handoffST = ScrollTrigger.create({
+                id: "qk-color-sync-handoff",
+                trigger: wrap,
+                start: "top 50%",
+                end: "top 20%",
+                scrub: true,
+                invalidateOnRefresh: true,
+
+                onLeaveBack: () => {
+                  toOrangeState();
+                  if (DEBUG) log("leaveBack -> tween BOTH to orange");
+                },
+
+                onLeave: () => {
+                  toOffwhiteState();
+                  if (DEBUG) log("leave -> tween BOTH to offwhite");
+                },
+              });
+
+              gsap.fromTo(
+                [fade, wrap],
+                { backgroundColor: ORANGE_BG, color: OFFWHITE_TX },
+                {
+                  backgroundColor: OFFWHITE_BG,
+                  color: ORANGE_TX,
+                  ease: "none",
+                  overwrite: "auto",
+                  immediateRender: false,
+                  scrollTrigger: handoffST,
+                }
+              );
+
+              // Cleanup for route changes / reinits
+              window.__COLOR_SYNC_CLEANUP = () => {
+                try { killMine(); } catch (e) {}
+              };
+
+              // If Lenis / layout changes, refresh triggers after things settle
+              try { setTimeout(() => ScrollTrigger.refresh(), 250); } catch (e) {}
+
+              log("init OK");
+            },
+            { tries: 400, every: 50, label: "__injectColorSync(gsap+elements)" }
+          );
+        } catch (e) {}
+      }     
+
+
   /* -----------------------------
      3) Lenis integration + scroll lock
      (safe: reuses existing instance)
@@ -54787,6 +55208,8 @@ window.__initScrollNavSwap = __initScrollNavSwap;
 
         // Lenis lock wiring
         __initLenisLocking();
+
+       
 
         log("All header/scripts init attempted.");
       },
