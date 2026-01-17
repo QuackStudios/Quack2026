@@ -5181,8 +5181,13 @@
 }
 .HomeAnimation-landscape-sticky-wrap[data-v-3059f735] {
   width: 100%;
-  height: 650vh;
+  height: 650lvh;
   margin-bottom: -100lvh;
+}
+@media (max-width: 1920px) {
+  .HomeAnimation-landscape-sticky-wrap[data-v-3059f735] {
+    height: 750lvh;
+  }
 }
 .HomeAnimation-landscape-sticky[data-v-3059f735] {
   top: 0;

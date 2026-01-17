@@ -3781,7 +3781,7 @@ figcaption {
 
 .heading-massive {
   text-transform: uppercase;
-  font-size: 16vw;
+  font-size: 14vw;
   font-weight: 400;
   line-height: 75%;
   position: relative;
@@ -4783,7 +4783,7 @@ figcaption {
 }
 
 .footer-logo {
-  width: 2.75rem;
+  width: 18rem;
   margin-bottom: 4rem;
 }
 

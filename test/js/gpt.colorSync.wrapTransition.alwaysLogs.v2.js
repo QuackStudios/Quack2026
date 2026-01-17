@@ -2993,7 +2993,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Brand Clarity
+                            Brand Strategy
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3105,7 +3105,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Strategic Positioning
+                            Copywriting
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3122,40 +3122,7 @@ function __injectNewSection() {
                 >
               </div>
              
-              <div class="x_bc-header_services_card_wrap">
-                <a
-                  data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="./digital-marketing"
-                  class="x_bc-header_services_card_link w-inline-block"
-                  ><div class="x_bc-header_services_card_inner-02">
-                    <div class="x_bc-header_services_card_inner is-06">
-                      <img
-                        src="index/images/6813429b07113242088e834c_image%20%2816%29.avif"
-                        loading="eager"
-                        alt=""
-                        class="x_bc-header_services_card_img"
-                      />
-                      <div class="x_bc-header_services_card_bottom">
-                        <div class="x_bc-header_services_card_title_wrap">
-                          <div
-                            class="x_bc-header_services_card_title x_u-heading-4"
-                          >
-                            SEO
-                          </div>
-                          <div
-                            class="x_bc-header_services_card_more x_u-s-body"
-                          >
-                            Learn more
-                          </div>
-                        </div>
-                        <div class="x_bc-header_services_card_num x_u-s-body">
-                          06
-                        </div>
-                      </div>
-                    </div>
-                  </div></a
-                >
-              </div>
+             
               
               <div class="x_bc-header_services_card_wrap">
                 <a
@@ -3180,7 +3147,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Brand Clarity
+                            Brand Strategy
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3292,7 +3259,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Strategic Positioning
+                            Copywriting
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3309,40 +3276,7 @@ function __injectNewSection() {
                 >
               </div>
               
-              <div class="x_bc-header_services_card_wrap">
-                <a
-                  data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="./digital-marketing"
-                  class="x_bc-header_services_card_link w-inline-block"
-                  ><div class="x_bc-header_services_card_inner-02">
-                    <div class="x_bc-header_services_card_inner is-06">
-                      <img
-                        src="index/images/6813429b07113242088e834c_image%20%2816%29.avif"
-                        loading="eager"
-                        alt=""
-                        class="x_bc-header_services_card_img"
-                      />
-                      <div class="x_bc-header_services_card_bottom">
-                        <div class="x_bc-header_services_card_title_wrap">
-                          <div
-                            class="x_bc-header_services_card_title x_u-heading-4"
-                          >
-                            SEO
-                          </div>
-                          <div
-                            class="x_bc-header_services_card_more x_u-s-body"
-                          >
-                            Learn more
-                          </div>
-                        </div>
-                        <div class="x_bc-header_services_card_num x_u-s-body">
-                          06
-                        </div>
-                      </div>
-                    </div>
-                  </div></a
-                >
-              </div>
+             
              
               <div class="x_bc-header_services_card_wrap">
                 <a
@@ -3367,7 +3301,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Brand Clarity
+                            Brand Strategy
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3479,7 +3413,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Strategic Positioning
+                            Copywriting
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3496,40 +3430,7 @@ function __injectNewSection() {
                 >
               </div>
               
-              <div class="x_bc-header_services_card_wrap">
-                <a
-                  data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="./digital-marketing"
-                  class="x_bc-header_services_card_link w-inline-block"
-                  ><div class="x_bc-header_services_card_inner-02">
-                    <div class="x_bc-header_services_card_inner is-06">
-                      <img
-                        src="index/images/6813429b07113242088e834c_image%20%2816%29.avif"
-                        loading="eager"
-                        alt=""
-                        class="x_bc-header_services_card_img"
-                      />
-                      <div class="x_bc-header_services_card_bottom">
-                        <div class="x_bc-header_services_card_title_wrap">
-                          <div
-                            class="x_bc-header_services_card_title x_u-heading-4"
-                          >
-                            SEO
-                          </div>
-                          <div
-                            class="x_bc-header_services_card_more x_u-s-body"
-                          >
-                            Learn more
-                          </div>
-                        </div>
-                        <div class="x_bc-header_services_card_num x_u-s-body">
-                          06
-                        </div>
-                      </div>
-                    </div>
-                  </div></a
-                >
-              </div>
+             
               
               <div class="x_bc-header_services_card_wrap">
                 <a
@@ -3554,7 +3455,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Brand Clarity
+                            Brand Strategy
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3666,7 +3567,7 @@ function __injectNewSection() {
                           <div
                             class="x_bc-header_services_card_title x_u-heading-4"
                           >
-                            Strategic Positioning
+                            Copywriting
                           </div>
                           <div
                             class="x_bc-header_services_card_more x_u-s-body"
@@ -3683,40 +3584,7 @@ function __injectNewSection() {
                 >
               </div>
              
-              <div class="x_bc-header_services_card_wrap">
-                <a
-                  data-w-id="f265d215-420e-dbfa-7bb0-a07f1543e334"
-                  href="./digital-marketing"
-                  class="x_bc-header_services_card_link w-inline-block"
-                  ><div class="x_bc-header_services_card_inner-02">
-                    <div class="x_bc-header_services_card_inner is-06">
-                      <img
-                        src="index/images/6813429b07113242088e834c_image%20%2816%29.avif"
-                        loading="eager"
-                        alt=""
-                        class="x_bc-header_services_card_img"
-                      />
-                      <div class="x_bc-header_services_card_bottom">
-                        <div class="x_bc-header_services_card_title_wrap">
-                          <div
-                            class="x_bc-header_services_card_title x_u-heading-4"
-                          >
-                            SEO
-                          </div>
-                          <div
-                            class="x_bc-header_services_card_more x_u-s-body"
-                          >
-                            Learn more
-                          </div>
-                        </div>
-                        <div class="x_bc-header_services_card_num x_u-s-body">
-                          06
-                        </div>
-                      </div>
-                    </div>
-                  </div></a
-                >
-              </div>
+             
               
             </div>
           </div>
