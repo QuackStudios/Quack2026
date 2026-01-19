@@ -2043,7 +2043,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Neue Montreal;
-  src: url("../fonts/RmCPi47wAuwX.woff2") format("woff2");
+  src: url("../fonts/658034939cf2ecccadebab9a_PPNeueMontreal-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -2051,7 +2051,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Neue Montreal;
-  src: url("../fonts/Q3xg5NC9KUCg.woff2") format("woff2");
+  src: url("../fonts/65803493d13b05b9130dc7da_PPNeueMontreal-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -2059,7 +2059,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Mori;
-  src: url("../fonts/mbBEZQRLEQSc.woff2") format("woff2");
+  src: url("../fonts/65abf27968ecdb628600dcbf_PPMori-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -2067,7 +2067,7 @@ textarea.w-input, textarea.w-select {
 
 @font-face {
   font-family: PP Neue Montreal;
-  src: url("../fonts/Io3YUdBSHKpg.woff2") format("woff2");
+  src: url("../fonts/65ae70507a57deb0d72e1c5f_ppneuemontreal-book.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -2131,7 +2131,14 @@ textarea.w-input, textarea.w-select {
   height: 12px;
 }
 
-
+.w-checkbox-input--inputType-custom.w--redirected-checked {
+  background-color: #3898ec;
+  background-image: url("../images/custom-checkbox-checkmark.589d534424.svg");
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-color: #3898ec;
+}
 
 .w-checkbox-input--inputType-custom.w--redirected-focus {
   box-shadow: 0 0 3px 1px #3898ec;
@@ -3108,6 +3115,9 @@ figcaption {
 
 .container-large {
   width: 100%;
+  max-width: 90rem;
+  margin-left: auto;
+  margin-right: auto;
   padding-bottom: 0;
   transition: opacity .2s;
   position: relative;
@@ -3174,12 +3184,12 @@ figcaption {
 }
 
 .button {
-  background-color: #e65d25;
+  background-color: var(--black);
   color: var(--white);
   text-align: center;
   text-transform: uppercase;
   cursor: pointer;
-  border: 1px solid #e65d25;
+  border: 1px solid #000;
   border-radius: 3.5rem;
   align-self: flex-start;
   padding: 2rem 3rem;
@@ -3192,7 +3202,7 @@ figcaption {
 .button:hover {
   color: var(--black);
   background-color: #0000;
-  border: 1px solid #e65d25;
+  border: 1px solid #000;
 }
 
 .button.is-text {
@@ -3503,12 +3513,6 @@ figcaption {
   position: fixed;
   inset: 1.5rem 0% auto;
 }
-.x_bc-header_services_inner{
-  overflow-y: auto;              /* or auto */
-  overscroll-behavior: contain;  /* stops scroll chaining */
-  -webkit-overflow-scrolling: touch;
-}
-
 
 .logo {
   z-index: 3;
@@ -3663,7 +3667,7 @@ figcaption {
 .challenge-div {
   grid-column-gap: 1.5rem;
   grid-row-gap: 1.5rem;
-  color: #f6f2ee;
+  color: var(--grey-60);
   font-size: 1.5rem;
 }
 
@@ -3766,7 +3770,7 @@ figcaption {
 }
 
 .quote-client {
-  color: rgb(178, 74, 29);
+  color: var(--grey-60);
   text-transform: uppercase;
   font-size: 1rem;
   line-height: 100%;
@@ -3774,7 +3778,7 @@ figcaption {
 
 .heading-massive {
   text-transform: uppercase;
-  font-size: 14vw;
+  font-size: 25vw;
   font-weight: 400;
   line-height: 75%;
   position: relative;
@@ -4776,7 +4780,7 @@ figcaption {
 }
 
 .footer-logo {
-  width: 18rem;
+  width: 2.75rem;
   margin-bottom: 4rem;
 }
 
@@ -5818,7 +5822,7 @@ figcaption {
 }
 
 .challenge-number {
-  color: white;
+  color: var(--grey-60);
   word-break: normal;
   overflow-wrap: normal;
   margin-top: .5rem;
@@ -5827,7 +5831,7 @@ figcaption {
 }
 
 .challenge-heading {
-  color: #f6f2ee;
+  color: var(--white);
   letter-spacing: -1px;
   margin-bottom: 1.75rem;
   font-size: 3.125rem;
@@ -6922,7 +6926,7 @@ figcaption {
 }
 
 .wrap-transition {
-  background-color: rgb(240, 237, 230);
+  background-color: var(--black);
   color: var(--white);
 }
 
@@ -8113,7 +8117,7 @@ figcaption {
   pointer-events: auto;
   color: var(--white);
   cursor: pointer;
-  background-image: url("../images/e96FADqHLnlv.gif");
+  background-image: url("../images/68620de3caa38f003c5100b9_dumb-dumber.gif");
   background-repeat: no-repeat;
   background-size: cover;
   justify-content: center;
@@ -8439,7 +8443,7 @@ figcaption {
 }
 
 .load-wrapper {
-  z-index: 1000000;
+  z-index: 1000;
   background-color: var(--black);
   justify-content: center;
   align-items: center;
@@ -8450,11 +8454,9 @@ figcaption {
   inset: 0%;
 }
 
-
-header.navigation {
-  overscroll-behavior: contain;
+.load-anim {
+  width: 20rem;
 }
-
 
 .surprise {
   background-color: var(--white);
@@ -8489,7 +8491,7 @@ header.navigation {
 }
 
 .fade-grey-to-black {
-  background-color: #1e1d1b;
+  background-color: var(--grey-2);
   color: var(--black);
 }
 
