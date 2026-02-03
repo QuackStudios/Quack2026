@@ -46463,7 +46463,7 @@ const IE = { render: MD },
         }),
         R = xe(() => {
           const le = k.value,
-            he = ["Empowering innovators", "to build the future", "of energy"];
+            he = ["Kicking Digital", "mediocrity in", "the pixels"];
           let Se = !0;
           return (
             he.forEach((Ie, j) => {

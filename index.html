@@ -7898,6 +7898,256 @@
 })();
 </script>
 
+<script>
+(() => {
+  const TAG = "[HomeHeroTitleOverride]";
+  const NEW_LINES = [
+    "Kicking digital",
+    "mediocrity in the",
+    "pixels"
+  ];
+
+  function isEmptyWrapperState(titleEl) {
+    const nodes = titleEl.querySelectorAll('.HomeHero-title-line div[aria-hidden="true"]');
+    if (!nodes.length) return false;
+    return Array.from(nodes).every(n => (n.textContent || "").trim() === "");
+  }
+
+  function setLine(lineEl, text) {
+    const nodes = Array.from(lineEl.querySelectorAll('div[aria-hidden="true"]'));
+    if (!nodes.length) return false;
+
+    const words = (text || "").trim().split(/\s+/).filter(Boolean);
+
+    for (let i = 0; i < nodes.length; i++) {
+      if (i < nodes.length - 1) nodes[i].textContent = words[i] ?? "";
+      else nodes[i].textContent = words.slice(i).join(" ") || "";
+    }
+
+    if (lineEl.hasAttribute("aria-label")) {
+      lineEl.setAttribute("aria-label", words.join(" "));
+    }
+
+    return true;
+  }
+
+  function applyToOneTitle(titleEl, reason) {
+    const lines = Array.from(titleEl.querySelectorAll(".HomeHero-title-line"));
+    if (!lines.length) return false;
+
+    // Most sites have 3 lines; if more, we fill first 3 and blank the rest safely
+    for (let i = 0; i < lines.length; i++) {
+      const desired = NEW_LINES[i] ?? "";
+      setLine(lines[i], desired);
+    }
+
+    // Debug: show first line’s current wrapper texts
+    const first = lines[0];
+    const w = first ? Array.from(first.querySelectorAll('div[aria-hidden="true"]')).map(n => n.textContent) : [];
+    console.log(TAG, reason, "applied to one .HomeHero-title. line0 words:", w);
+
+    return true;
+  }
+
+  function applyAll(reason = "applyAll") {
+    const titles = Array.from(document.querySelectorAll(".HomeHero-title"));
+    if (!titles.length) {
+      console.log(TAG, reason, "no .HomeHero-title found");
+      return false;
+    }
+
+    titles.forEach((t, idx) => applyToOneTitle(t, `${reason} title#${idx}`));
+    return true;
+  }
+
+  // 1) Wait until the site has built its split nodes ("built chars" phase)
+  // We'll detect readiness when wrappers exist (aria-hidden nodes exist).
+  function ready() {
+    const any = document.querySelector('.HomeHero-title-line div[aria-hidden="true"]');
+    return !!any;
+  }
+
+  let tries = 0;
+  const boot = setInterval(() => {
+    tries++;
+    if (ready()) {
+      console.log(TAG, "ready: aria-hidden word nodes exist. applying...");
+      applyAll("boot");
+      clearInterval(boot);
+    } else if (tries % 20 === 0) {
+      console.log(TAG, "waiting for split nodes...", tries);
+    }
+    if (tries > 400) clearInterval(boot);
+  }, 50);
+
+  // 2) MutationObserver: if the plugin wipes words (empty wrappers), refill immediately
+  window.addEventListener("load", () => {
+    const heroRoots = Array.from(document.querySelectorAll(".HomeHero-title"));
+    if (!heroRoots.length) {
+      console.log(TAG, "load: no .HomeHero-title roots");
+      return;
+    }
+
+    console.log(TAG, "load: observing", heroRoots.length, ".HomeHero-title roots");
+
+    heroRoots.forEach((root, idx) => {
+      const obs = new MutationObserver(() => {
+        // If wrappers exist but are empty, the reveal plugin just cleared/rebuilt. Refill.
+        if (isEmptyWrapperState(root)) {
+          console.log(TAG, `observer: detected EMPTY wrapper state on title#${idx}. refilling...`);
+          applyToOneTitle(root, `observer refill title#${idx}`);
+        }
+      });
+
+      obs.observe(root, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true
+      });
+    });
+
+    // 3) A few delayed applies, because these reveal plugins often rebuild multiple times
+    [200, 600, 1200, 2000, 3200].forEach(ms => {
+      setTimeout(() => applyAll(`timeout ${ms}ms`), ms);
+    });
+  });
+})();
+</script>
+
+
+<script>
+(() => {
+  const TAG = "[HomeSwirlTitlesTitle1Override]";
+
+  // Your new copy:
+  const NEW_SENTENCE =
+    "If you've outgrown your website, it's costing you growth, clarity and credibility.";
+
+  // Optional: how to split across the existing 4 groups (lines) for nicer layout.
+  // If you don't care, we can auto-fill sequentially, but this looks better.
+  const NEW_LINES = [
+    "If you've outgrown your website,",
+    "it's costing you growth,",
+    "clarity and credibility",
+  ];
+
+  function getTitle1Root() {
+    // Title1 is the first .HomeSwirlTitles-title-wrap on the page
+    const wraps = document.querySelectorAll(".HomeSwirlTitles-title-wrap");
+    return wraps[0] ? wraps[0].querySelector(".HomeSwirlTitles-title") : null;
+  }
+
+  function debugGroup(groupEl) {
+    const aria = groupEl.getAttribute("aria-label");
+    const nodes = Array.from(groupEl.querySelectorAll('div[aria-hidden="true"]'));
+    const texts = nodes.map(n => (n.textContent || "").trim());
+    return { aria, nodeCount: nodes.length, texts };
+  }
+
+  function setGroupWords(groupEl, newLineText) {
+    const wordNodes = Array.from(groupEl.querySelectorAll('div[aria-hidden="true"]'));
+    if (!wordNodes.length) return false;
+
+    const words = (newLineText || "").trim().split(/\s+/).filter(Boolean);
+
+    // Fill existing nodes only; pack remainder into last node
+    for (let i = 0; i < wordNodes.length; i++) {
+      if (i < wordNodes.length - 1) {
+        wordNodes[i].textContent = words[i] ?? "";
+      } else {
+        wordNodes[i].textContent = words.slice(i).join(" ") || "";
+      }
+    }
+
+    // Update aria-label to match visible line text
+    groupEl.setAttribute("aria-label", words.join(" "));
+
+    return true;
+  }
+
+  function applyOnce(reason = "applyOnce") {
+    const title = getTitle1Root();
+    if (!title) {
+      console.log(TAG, reason, "No title root found yet");
+      return false;
+    }
+
+    const groups = Array.from(title.querySelectorAll('div[role="group"]'));
+    if (!groups.length) {
+      console.log(TAG, reason, "No role=group lines found yet");
+      return false;
+    }
+
+    console.log(TAG, reason, "Found groups:", groups.length);
+    groups.forEach((g, i) => console.log(TAG, "BEFORE group", i, debugGroup(g)));
+
+    // Apply NEW_LINES onto existing groups; extra groups get blank
+    for (let i = 0; i < groups.length; i++) {
+      const desired = NEW_LINES[i] ?? "";
+      const ok = setGroupWords(groups[i], desired);
+      console.log(TAG, "SET group", i, "->", desired, "ok?", ok);
+    }
+
+    groups.forEach((g, i) => console.log(TAG, "AFTER  group", i, debugGroup(g)));
+
+    // Also update the container's full text aria if needed
+    title.setAttribute("aria-label", NEW_SENTENCE);
+
+    return true;
+  }
+
+  // Keep forcing briefly to beat late init (GSAP/Vue)
+  const start = Date.now();
+  const FORCE_FOR_MS = 6000;
+
+  let tries = 0;
+  const timer = setInterval(() => {
+    tries++;
+    const ok = applyOnce(`interval ${Date.now() - start}ms`);
+    if ((Date.now() - start) > FORCE_FOR_MS || tries > 200) {
+      clearInterval(timer);
+      console.log(TAG, "Stopped forcing");
+    }
+  }, 120);
+
+  // If it reverts later, re-apply (scoped observer)
+  window.addEventListener("load", () => {
+    applyOnce("load");
+
+    const wrap = document.querySelectorAll(".HomeSwirlTitles-title-wrap")[0];
+    if (!wrap) {
+      console.log(TAG, "load: wrap not found");
+      return;
+    }
+
+    console.log(TAG, "load: attaching MutationObserver");
+
+    const obs = new MutationObserver(() => {
+      // If any group aria-label contains the old copy, re-apply
+      const title = getTitle1Root();
+      if (!title) return;
+
+      const ariaText = Array.from(title.querySelectorAll('div[role="group"]'))
+        .map(g => (g.getAttribute("aria-label") || "").toLowerCase())
+        .join(" | ");
+
+      const reverted =
+        ariaText.includes("breakthrough") ||
+        ariaText.includes("platform") ||
+        ariaText.includes("innovation") ||
+        ariaText.includes("future");
+
+      if (reverted) {
+        console.log(TAG, "observer: detected revert, reapplying...");
+        applyOnce("observer");
+      }
+    });
+
+    obs.observe(wrap, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label"] });
+  });
+})();
+</script>
 
 
   </body>
