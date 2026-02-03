@@ -3481,6 +3481,9 @@ figcaption {
   position: absolute;
   inset: 0%;
 }
+.home-grid-cards > :last-child {
+  grid-column: 2 / span 2;
+}
 
 .card-bg.image-cover {
   height: 110%;

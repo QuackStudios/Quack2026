@@ -42498,7 +42498,7 @@ const xE = { render: M4 },
       platform focused on accelerating
       clean energy innovation and building
       the industries of the future`.trim(),
-        title2: "Energy is prosperity",
+        title2: "Our aproach isn't traditional. It's better.",
         images: [
           { id: 0, src: tD },
           { id: 1, src: nD },

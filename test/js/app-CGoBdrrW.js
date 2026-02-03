@@ -42475,21 +42475,21 @@ const xE = { render: M4 },
     },
   },
   eD = _t(Z4, [["__scopeId", "data-v-6f4e13e6"]]),
-  tD = "/assets/mediaswirl-1@2x-BnmEsBkb.webp",
-  nD = "/assets/mediaswirl-2@2x-Cj07mDi-.webp",
-  rD = "/assets/mediaswirl-3@2x-HAT8tFyE.webp",
-  iD = "/assets/mediaswirl-4@2x-Dqbow5UR.webp",
-  oD = "/assets/mediaswirl-5@2x-D3af6shk.webp",
-  sD = "/assets/mediaswirl-6@2x-soDYuKkW.webp",
-  aD = "/assets/mediaswirl-7@2x-BWMLbOS2.webp",
-  lD = "/assets/mediaswirl-8@2x-DmLJDpg0.webp",
-  uD = "/assets/mediaswirl-9@2x-DPL8GeNt.webp",
-  cD = "/assets/mediaswirl-10@2x-BHrUQZCI.webp",
-  fD = "/assets/mediaswirl-11@2x-BG58g1Ow.webp",
-  dD = "/assets/mediaswirl-12@2x-DoAy-BYk.webp",
-  hD = "/assets/mediaswirl-13@2x-DImtqJBE.webp",
-  pD = "/assets/mediaswirl-14@2x-BM3rNPwo.webp",
-  mD = "/assets/mediaswirl-15@2x-f8ACBS_2.webp",
+  tD = "/swirl-images/1.png",
+  nD = "/swirl-images/2.png",
+  rD = "/swirl-images/3.png",
+  iD = "/swirl-images/4.png",
+  oD = "/swirl-images/5.png",
+  sD = "/swirl-images/6.png",
+  aD = "/swirl-images/7.png",
+  lD = "/swirl-images/8.png",
+  uD = "/swirl-images/9.png",
+  cD = "/swirl-images/10.png",
+  fD = "/swirl-images/11.png",
+  dD = "/swirl-images/12.png",
+  hD = "/swirl-images/13.png",
+  pD = "/swirl-images/14.png",
+  mD = "/swirl-images/15.png",
   gc = {
     desktop: {
       content: {
@@ -42498,7 +42498,7 @@ const xE = { render: M4 },
       platform focused on accelerating
       clean energy innovation and building
       the industries of the future`.trim(),
-        title2: "Energy is prosperity",
+        title2: "Our approach isn't traditional. It's better",
         images: [
           { id: 0, src: tD },
           { id: 1, src: nD },
@@ -50639,9 +50639,9 @@ function __injectPreStickyIntro() {
               height="1564"
               alt=""
               srcset="
-                hero-3.png  500w,
-                hero-3.png  800w,
-                hero-3.png 1065w
+                9.png  500w,
+                9.png  800w,
+                9.png 1065w
               "
               sizes="(max-width: 991px) 100vw, 812px"
               class="card-bg"
@@ -50652,20 +50652,6 @@ function __injectPreStickyIntro() {
             </div>
           </a>
 
-          <a  class="home-project-card w-inline-block">
-            <img
-              src="5.png"
-              loading="lazy"
-              width="812"
-              height="1564"
-              alt=""
-              class="card-bg"
-            />
-            <div class="project-card-info">
-              <h3 class="heading-small">Jackie</h3>
-              <div class="project-tag">Fashion</div>
-            </div>
-          </a>
         </section>
       </div>
     </div>
