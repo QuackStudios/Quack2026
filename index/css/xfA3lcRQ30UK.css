@@ -3476,7 +3476,7 @@ figcaption {
   background-clip: border-box;
   border: 0 solid #000;
   width: 100%;
-  height: 110%;
+  height: 100%;
   display: block;
   position: absolute;
   inset: 0%;

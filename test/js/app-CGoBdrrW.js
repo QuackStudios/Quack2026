@@ -50557,27 +50557,26 @@ function __injectPreStickyIntro() {
         <section class="home-grid-cards qk-intro-hidden" data-qk-anim="cards">
           <a
             id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608721-644deb4a"
-            href="./work/wa-solutions"
             class="home-project-card w-inline-block"
           >
             <img
               class="card-bg"
-              src="index/images/9x7qfQC3kWvd.jpg"
+              src="hero-1.png"
               width="1216"
               height="1564"
               alt=""
               sizes="100vw"
               loading="lazy"
               srcset="
-                index/images/9JewMItFwTlB.jpg  500w,
-                index/images/H1tRswqlSSG9.jpg  800w,
-                index/images/TcdG5ELSFRMV.jpg 1080w,
-                index/images/9x7qfQC3kWvd.jpg 1402w
+                hero-1.png  500w,
+                hero-1.png  800w,
+                hero-1.png 1080w,
+                hero-1.png 1402w
               "
             />
             <div class="project-card-info">
-              <h3 class="heading-small">WA Solutions</h3>
-              <div class="project-tag">Logistics</div>
+              <h3 class="heading-small">Porsche</h3>
+              <div class="project-tag">Vehicles</div>
             </div>
           </a>
 
@@ -50586,15 +50585,14 @@ function __injectPreStickyIntro() {
             class="home-text-card"
           >
             <div>
-              From digital strategy, brand & user experience design,
+              From brand strategy, UX/UI design,
               and full-stack development, our expertise empowers
-              brands to look ahead and bring bold concepts to life.
+              brands to grow and bring bold concepts to life.
             </div>
           </div>
 
           <a
             id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60872b-644deb4a"
-            href="./work/seatgeek"
             class="home-project-card w-inline-block"
           >
             <div class="project-card-info">
@@ -50602,20 +50600,20 @@ function __injectPreStickyIntro() {
               <div class="project-tag">Entertainment</div>
             </div>
             <img
-              src="index/images/CfOdnGOrTEqI.jpg"
+              src="4.png"
               loading="lazy"
               width="812"
               height="1564"
               alt=""
               srcset="
-                index/images/NuwtcfOtq8Dc.jpg  500w,
-                index/images/arRlNJOykmAv.jpg  800w,
-                index/images/FaMzfaeT8NBH.jpg 1080w,
-                index/images/ATxTyPreRNWQ.jpg 1600w,
-                index/images/M3OCu7slz5ap.jpg 2000w,
-                index/images/iBePSVm2XjQI.jpg 2600w,
-                index/images/ilIHNtaeexF5.jpg 3200w,
-                index/images/CfOdnGOrTEqI.jpg 4533w
+                4.png  500w,
+                4.png  800w,
+                4.png 1080w,
+                4.png 1600w,
+                4.png 2000w,
+                4.png 2600w,
+                4.png 3200w,
+                4.png 4533w
               "
               sizes="(max-width: 991px) 100vw, 812px"
               class="card-bg"
@@ -50635,17 +50633,17 @@ function __injectPreStickyIntro() {
             </div>
           </div>
 
-          <a href="./work/optix" class="home-project-card w-inline-block">
+          <a class="home-project-card w-inline-block">
             <img
-              src="index/images/jfVlPkP74hkx.webp"
+              src="hero-3.png"
               loading="lazy"
               width="812"
               height="1564"
               alt=""
               srcset="
-                index/images/uWt6lfUgmSb3.webp  500w,
-                index/images/fZlX0UxZHuPR.webp  800w,
-                index/images/jfVlPkP74hkx.webp 1065w
+                hero-3.png  500w,
+                hero-3.png  800w,
+                hero-3.png 1065w
               "
               sizes="(max-width: 991px) 100vw, 812px"
               class="card-bg"
@@ -50656,9 +50654,9 @@ function __injectPreStickyIntro() {
             </div>
           </a>
 
-          <a href="./work/jackie" class="home-project-card w-inline-block">
+          <a  class="home-project-card w-inline-block">
             <img
-              src="index/images/XjBb8NC4l9zI.png"
+              src="5.png"
               loading="lazy"
               width="812"
               height="1564"
