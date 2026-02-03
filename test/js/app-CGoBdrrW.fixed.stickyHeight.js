@@ -50347,7 +50347,7 @@ function __injectPreStickyIntro() {
                 data-vimeo-lightbox-control="open"
                 data-vimeo-lightbox-id="1116214405"
               >
-                <div class="video-play">PLAY</div>
+                <div class="video-play"></div>
                 <img
                   src="index/images/r8a3dPeHTsmH.gif"
                   loading="eager"
