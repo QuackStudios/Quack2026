@@ -7837,44 +7837,54 @@
 
 <script>
 (() => {
-  // Put your phrase into the EXISTING 3 word-nodes (or however many nodes exist).
-  // In your screenshot, it's 3 nodes: ["Energy", "is", "prosperity"].
-  // We'll map to: ["Our approach isn't traditional.", "It's", "better."] and bold "better."
-  const WORDS = ["Our approach isn't traditional.", "It's", "better."];
+  // Map text to the EXISTING word nodes (3 in your case)
+  const WORDS = [
+    "Our approach isn’t traditional.",
+    "It’s",
+    "better."
+  ];
+
+  // Index at which bolding should start (0-based)
+  const BOLD_FROM_INDEX = 1;
 
   function updateTitle2Words() {
     const wraps = document.querySelectorAll(".HomeSwirlTitles-title-wrap");
     const title2Wrap = wraps[1];
     if (!title2Wrap) return false;
 
-    const group = title2Wrap.querySelector('.HomeSwirlTitles-title [role="group"]');
+    const group = title2Wrap.querySelector(
+      '.HomeSwirlTitles-title [role="group"]'
+    );
     if (!group) return false;
 
-    const wordNodes = Array.from(group.querySelectorAll('div[aria-hidden="true"]'));
+    const wordNodes = Array.from(
+      group.querySelectorAll('div[aria-hidden="true"]')
+    );
     if (!wordNodes.length) return false;
 
-    // Fill existing nodes, don't add/remove nodes
+    // Fill nodes and apply bolding without touching structure
     for (let i = 0; i < wordNodes.length; i++) {
       wordNodes[i].textContent = WORDS[i] ?? "";
-      // Bold ONLY the last intended word (here: "better.")
-      wordNodes[i].style.fontWeight = (i === WORDS.length - 1) ? "700" : "400";
+      wordNodes[i].style.fontWeight =
+        i >= BOLD_FROM_INDEX ? "700" : "400";
     }
 
-    // Accessibility label should be plain text (no <strong>)
-    const label = WORDS.filter(Boolean).join(" ").trim();
-    if (group.hasAttribute("aria-label")) group.setAttribute("aria-label", label);
+    // Keep aria-label accurate (plain text only)
+    const label = WORDS.filter(Boolean).join(" ");
+    if (group.hasAttribute("aria-label")) {
+      group.setAttribute("aria-label", label);
+    }
 
     return true;
   }
 
-  // Wait for Vue to render it
+  // Wait for Vue to render
   let tries = 0;
   const timer = setInterval(() => {
-    tries++;
-    if (updateTitle2Words() || tries > 200) clearInterval(timer);
+    if (updateTitle2Words() || ++tries > 200) clearInterval(timer);
   }, 50);
 
-  // If the app re-renders on scroll, keep it applied (scoped observer)
+  // Re-apply if Vue/GSAP re-renders
   window.addEventListener("load", () => {
     updateTitle2Words();
 
@@ -7882,12 +7892,11 @@
     const title2Wrap = wraps[1];
     if (!title2Wrap) return;
 
-    const obs = new MutationObserver(() => updateTitle2Words());
+    const obs = new MutationObserver(updateTitle2Words);
     obs.observe(title2Wrap, { childList: true, subtree: true });
   });
 })();
 </script>
-
 
 
 
