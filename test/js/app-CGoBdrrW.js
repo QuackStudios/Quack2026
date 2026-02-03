@@ -14945,7 +14945,7 @@ function lL(t) {
     return ~~(e * 1e3 + (e < 0 ? -0.5 : 0.5)) / 1e3;
   },
   cL = /[-+=.]*\d+[.e\-+]*\d*[e\-+]*\d*/gi,
-  fL = /[cLlsSaAhHvVtTqQ]/g,
+  fL = /[cLlsShHvVtTqQ]/g,
   dL = function (e) {
     var n = e.length,
       r = uL,
@@ -50626,9 +50626,7 @@ function __injectPreStickyIntro() {
           >
             <div class="max-width-small">
               <div>
-                SAAS, gaming, finance, sports, logistics, fashion,
-                insurance, fitness, e-commerce, security,
-                information technology, <strong>yes</strong>
+                Startups, digital products, finance, health, retail, logistics, media, education, entertainment, enterprise, <strong>yes</strong>
               </div>
             </div>
           </div>
