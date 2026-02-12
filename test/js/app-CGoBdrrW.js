@@ -42706,12 +42706,24 @@ const xE = { render: M4 },
         _ = structuredClone(gc.desktop.animation.rects),
         g = U(!1);
       Ne(
-        () => g.value,
-        (F) => {
-          F && r("load");
-        },
-        { immediate: !0 }
-      );
+  () => g.value,
+  (F) => {
+    if (!F) return;
+    r("load");
+
+    // Force a resync AFTER the browser has painted with correct layout + image aspects
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try {
+          w();   // recompute progress using current viewport + scroll
+          y();   // recompute translate/scale for all images immediately
+        } catch (e) {}
+      });
+    });
+  },
+  { immediate: !0 }
+);
+
       function b() {
         h == null || h.kill(), (h = o.timeline({ paused: !0 }));
         const F = h,
@@ -42861,10 +42873,18 @@ const xE = { render: M4 },
         Cn(R),
         So(k),
         Ct(() => {
-          Lt(() => {
-            (s.value = !0), b();
-          });
-        }),
+  Lt(() => {
+    (s.value = !0), b();
+
+    // extra safety: resync after mount as well
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try { w(); y(); } catch (e) {}
+      });
+    });
+  });
+}),
+
         Vt(() => {
           h == null || h.kill(), c.splice(0, c.length), (x = 0);
         });
@@ -45906,12 +45926,24 @@ const IE = { render: MD },
         _ = structuredClone(gc.desktop.animation.rects),
         g = U(!1);
       Ne(
-        () => g.value,
-        (F) => {
-          F && r("load");
-        },
-        { immediate: !0 }
-      );
+  () => g.value,
+  (F) => {
+    if (!F) return;
+    r("load");
+
+    // Force a resync AFTER the browser has painted with correct layout + image aspects
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try {
+          w();   // recompute progress using current viewport + scroll
+          y();   // recompute translate/scale for all images immediately
+        } catch (e) {}
+      });
+    });
+  },
+  { immediate: !0 }
+);
+
       function b() {
         h == null || h.kill(), (h = o.timeline({ paused: !0 }));
         const F = h;
@@ -46041,10 +46073,18 @@ const IE = { render: MD },
         Cn(R),
         So(k),
         Ct(() => {
-          Lt(() => {
-            (s.value = !0), b();
-          });
-        }),
+  Lt(() => {
+    (s.value = !0), b();
+
+    // extra safety: resync after mount as well
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try { w(); y(); } catch (e) {}
+      });
+    });
+  });
+}),
+
         Vt(() => {
           h == null || h.kill(), c.splice(0, c.length), (x = 0);
         });

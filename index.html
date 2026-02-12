@@ -32,12 +32,71 @@
 
    
     <script src="./test/js/UIv48y3MkN15.js" defer=""></script>
-    <script
-      type="module"
-      async=""
-      crossorigin=""
-      src="./test/js/app-CGoBdrrW.js"
-    ></script>
+    <script type="module">
+  // Prevent scroll restoration races (navigation/back)
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+  function waitForStableViewport(frames = 3, eps = 1) {
+    return new Promise((resolve) => {
+      let stable = 0;
+      let last = null;
+
+      const step = () => {
+        const vv = window.visualViewport;
+        const cur = {
+          w: window.innerWidth,
+          h: window.innerHeight,
+          vw: vv ? vv.width : null,
+          vh: vv ? vv.height : null,
+        };
+
+        const same =
+          last &&
+          Math.abs(cur.w - last.w) <= eps &&
+          Math.abs(cur.h - last.h) <= eps &&
+          (cur.vw == null || Math.abs(cur.vw - last.vw) <= eps) &&
+          (cur.vh == null || Math.abs(cur.vh - last.vh) <= eps);
+
+        stable = same ? stable + 1 : 0;
+        last = cur;
+
+        if (stable >= frames) resolve();
+        else requestAnimationFrame(step);
+      };
+
+      requestAnimationFrame(step);
+    });
+  }
+
+  async function boot() {
+    // Let the browser finish initial layout + scroll position
+    await new Promise(r => requestAnimationFrame(r));
+    await new Promise(r => requestAnimationFrame(r));
+
+    // Wait for fonts (prevents layout shift affecting measurements)
+    if (document.fonts?.ready) {
+      try { await document.fonts.ready; } catch {}
+    }
+
+    // Wait for viewport to stop changing for a few frames
+    await waitForStableViewport(3, 1);
+
+    // Now load your big bundled app
+    await import("./test/js/app-CGoBdrrW.js");
+
+    // Optional: one more tick after load (helps scroll/resize-driven stuff)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.dispatchEvent(new Event("resize"));
+        window.dispatchEvent(new Event("scroll"));
+      });
+    });
+  }
+
+  // Run on normal load AND when coming back via back/forward cache
+  window.addEventListener("pageshow", boot, { once: true });
+</script>
+
     <style>
       @font-face {
         font-family: Saans;
