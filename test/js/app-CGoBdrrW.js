@@ -53997,13 +53997,13 @@ function __injectAfterThirdAnchor() {
                       </div>
                     </div>
                   </div>
-                  <div class="enquiry-cards-flex">
+                  <div data-w-id="cb6201a7-ef8a-b4d8-1858-987925710764" class="enquiry-cards-flex">
                     <a
                       data-prevent-transition=""
                       data-w-id="21ca679e-a158-6eb5-a63f-ddd0dbd67d8f"
                       href="https://bravepeople.typeform.com/getstarted"
                       target="_blank"
-                      class="enquiry-card__wrap is--black w-inline-block"
+                      class="enquiry-card__wrap number-one is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
                           <div class="enquiry-card-heading">Launch your</div>
@@ -54055,10 +54055,10 @@ function __injectAfterThirdAnchor() {
                         "
                         alt=""
                         class="card-bg" />
-                      <div class="enquiry-card__overlay"></div></a
+                      <div class="enquiry-card__overlay number-one"></div></a
                     ><a
                       href="./build-a-digital-product"
-                      class="enquiry-card__wrap is--black w-inline-block"
+                      class="enquiry-card__wrap number-two is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
                           <div class="enquiry-card-heading">
@@ -54110,7 +54110,7 @@ function __injectAfterThirdAnchor() {
                         "
                         alt=""
                         class="card-bg" />
-                      <div class="enquiry-card__overlay"></div></a
+                      <div class="enquiry-card__overlay number-two"></div></a
                     ><link rel="prefetch" href="./build-a-digital-product" />
                   </div>
                 </div>

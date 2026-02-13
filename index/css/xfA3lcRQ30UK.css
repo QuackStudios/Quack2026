@@ -7981,6 +7981,17 @@ figcaption {
   padding-top: 7.5rem;
 }
 
+.enquiry-card__wrap.number-one:hover .enquiry-card__overlay.number-one {
+  opacity: 0.5;
+  background-color: black;
+}
+
+/* Card 2 */
+.enquiry-card__wrap.number-two:hover .enquiry-card__overlay.number-two {
+  opacity: 0.5;
+  background-color: black;
+}
+
 .enquiry-card__overlay {
   z-index: 1;
   background-color: var(--tint);
@@ -7989,6 +8000,9 @@ figcaption {
   height: 100%;
   position: absolute;
   inset: 0% 0% auto;
+  transition:
+    opacity 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    background-color 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .enquiry-card__overlay.align-bottom {

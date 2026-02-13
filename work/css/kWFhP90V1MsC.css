@@ -3251,7 +3251,7 @@ figcaption {
   color: var(--black);
   justify-content: flex-end;
   align-items: center;
-  width: 15rem;
+  width: 15rem !important;
   height: 3.75rem;
   padding: 0 1rem;
   transition: color .3s cubic-bezier(.455, .03, .515, .955), background-color .3s cubic-bezier(.455, .03, .515, .955);
@@ -3717,8 +3717,8 @@ figcaption {
 
 .card-tag.no--caps {
   text-transform: none;
-  color: currentColor;
-  border-color: currentColor;
+  color: white !important;
+  border-color: white !important;
 }
 
 .card-tag.no--caps.text-color-white {
@@ -6523,7 +6523,7 @@ figcaption {
 .enquiry-card-heading {
   letter-spacing: -1px;
   white-space: nowrap;
-  color: currentColor;
+  color: white !important;
   margin-right: .5rem;
   font-size: 3.75rem;
   font-weight: 500;
@@ -7223,9 +7223,6 @@ figcaption {
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
   pointer-events: auto;
-  flex-wrap: wrap;
-  flex: 1;
-  justify-content: space-between;
   display: flex;
 }
 
@@ -7932,11 +7929,10 @@ figcaption {
   color: var(--black);
   border-radius: 2.5rem;
   flex-direction: column;
-  flex: 1;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%;
-  min-width: 40rem;
+  width: 30rem;
+  min-width: 20rem;
   height: 48.75rem;
   padding: 10.5rem 3.75rem 3.75rem;
   font-size: 1.5rem;
@@ -7945,6 +7941,7 @@ figcaption {
   display: flex;
   position: relative;
   overflow: hidden;
+  gap: 2vh;
 }
 
 .enquiry-card__wrap:hover {
@@ -7974,7 +7971,8 @@ figcaption {
 
 .enquiry-card__overlay {
   z-index: 1;
-  background-color: var(--tint);
+  background-color: black !important;
+  opacity: 0.5 !important;
   pointer-events: none;
   width: 100%;
   height: 100%;
@@ -8009,6 +8007,9 @@ figcaption {
   white-space: nowrap;
   position: absolute;
   left: 1rem;
+  display: inline-block !important;
+    transform: none !important;
+    opacity: 1 !important;
 }
 
 .big-cta__text {
@@ -8471,7 +8472,7 @@ figcaption {
 }
 
 .enquiry-card-p {
-  color: currentColor;
+  color: white !important;
   display: flex;
 }
 
