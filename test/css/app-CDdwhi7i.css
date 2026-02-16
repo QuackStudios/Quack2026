@@ -3282,6 +3282,11 @@
   background-color: white;
   opacity: 0;
 }
+
+.HomeSwirlTitles-logo {
+  opacity: 0.1 !important;
+}
+
 .HomeSwirlTitles-logo[data-v-9da85970] {
   width: min(29vw, 16.1svh);
   height: min(29vw, 16.1svh);
@@ -4960,8 +4965,8 @@
   opacity: 0;
 }
 .HomeSwirlTitles-logo[data-v-79c990d7] {
-  width: 22.7vh;
-  height: 22.7vh;
+  width: 19.7vh;
+  height: 19.7vh;
 }
 .HomeSwirlTitles-logo.green[data-v-79c990d7] {
   color: white;
