@@ -49646,7 +49646,8 @@ function XH(t, e, n, r) {
       c.mount(a, true);
 
       // 1) inject everything first
-      __injectPreloader();
+      window.__QK_PRELOADER_DONE = true;
+window.dispatchEvent(new Event("qk-preloader:done"));
       __injectHeaderNavigation();
       __injectPreStickyIntro();
       __injectScrollMenu();
@@ -50566,7 +50567,7 @@ function __injectPreStickyIntro() {
             </div>
 
             <h2 class="home-intro qk-intro-hidden" data-qk-anim="fade">
-              <span class="spin">✺</span> We partner with fearless brands to create bold digital spaces for brands that refuse to blend in.
+              <span class="spin">✺</span> Who said building a website was rocket science? Come on, pull up a chair.
             </h2>
           </div>
         </div>
@@ -50602,9 +50603,7 @@ function __injectPreStickyIntro() {
             class="home-text-card"
           >
             <div>
-              From brand strategy, UX/UI design,
-              and full-stack development, our expertise empowers
-              brands to grow and bring bold concepts to life.
+              We design, build and manage websites for businesses that lack the time for the runaround.
             </div>
           </div>
 
@@ -50643,7 +50642,7 @@ function __injectPreStickyIntro() {
           >
             <div class="max-width-small">
               <div>
-                Startups, digital products, finance, health, retail, logistics, media, education, entertainment, enterprise, <strong>yes</strong>
+                Startups, digital products, finance, health, retail, logistics, media, education, entertainment, not-for-profit? <strong>Yes.</strong>
               </div>
             </div>
           </div>
@@ -52698,7 +52697,7 @@ function __injectScrollMenu() {
                   class="x_nav_contact-btn_link is-consult w-inline-block open-koalender"
                   data-cal-open
                   ><div class="x_nav_contact-btn_text">
-                    Get free consultation
+                    Let's talk →
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -53664,26 +53663,17 @@ function __injectAfterMain() {
                   <div class="container-large">
                     <div class="quote-component">
                       <div scrub-each-word="" split-text="" class="big-quote">
-                        "QuackStudios delivered a website that is nothing short of extraordinary. The design is truly unique and captures our brand’s 
-                        essence in a way we never imagined. The team’s professionalism, creativity, and attention to detail throughout the project were 
-                        impeccable. Communication was seamless, and they went above and beyond to ensure every aspect was perfect. Our new website stands 
-                        out in every way, and we’ve received countless compliments on it. I highly recommend QuackStudios to anyone looking for an exceptional, 
-                        one-of-a-kind online presence"
+                        You've seen the ads.
+"Your website is costing you clarity and dominance." Blah blah blah.
+
+
+Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
+
+
+
+If that sounds refreshingly boring... you're our kind of person.
                       </div>
-                      <div class="quote-author">
-                        <div class="quote-avatar">
-                          <img
-                            src="Natasha_Headshot.jpg"
-                            loading="lazy"
-                            alt=""
-                            class="quote-avatar-img"
-                          />
-                        </div>
-                        <div class="quote-client">
-                          Natasha Juresic<br />CEO of LMM Developments
-                        </div>
-                      </div>
-                    </div>
+                     
                   </div>
                 </div>
               </div>
@@ -53960,7 +53950,7 @@ function __injectAfterThirdAnchor() {
                           split-text=""
                           class="heading-large"
                         >
-                          Choose Your Engagement Model
+                          Two ways to work with us.
                         </h2>
                       </div>
                       <div class="max-width-medium">
@@ -53983,21 +53973,17 @@ function __injectAfterThirdAnchor() {
                       class="enquiry-card__wrap number-one is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
-                          <div class="enquiry-card-heading">Launch your</div>
-                          <div class="div-block">
-                            <div class="enquiry-card-heading anim">Website</div>
-                            <div class="enquiry-card-heading anim">Brand</div>
-                          </div>
+                          <div class="enquiry-card-heading">Build it</div>
+                          
                         </div>
                         <div class="card-tag no--caps">Fixed Scope</div>
                       </div>
                       <div class="card-text anim">
                         <div class="enquiry-card-p">
-                          A focused, end-to-end website build to establish a strong digital presence. 
-                          From content and design through to development and deployment, we deliver a high-performance site with a clear scope, timeline, and outcome.
+                        You need a website. We design it, build it, launch it. Clear timeline, clear price, no surprises.
                         </div>
                         <div class="button is-icon is-card">
-                          <div class="button-text">Start Your Build</div>
+                          <div class="button-text"> Let's scope it </div>
                           <div class="button-arrow w-embed">
                             <svg
                               width="26"
@@ -54039,20 +54025,19 @@ function __injectAfterThirdAnchor() {
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
                           <div class="enquiry-card-heading">
-                            Evolve Your Brand
+                            Keep it running
                           </div>
                         </div>
                         <div class="card-tag no--caps">
-                          Ongoing Partnership
+                          Ongoing support
                         </div>
                       </div>
                       <div class="card-text anim">
                         <div class="enquiry-card-p">
-                          An ongoing strategic and technical partnership for growing businesses. 
-                          Brand strategy, custom development, performance optimisation, and long-term support through a flexible, scalable engagement.
+                          We stick around to update, optimise and grow your site as your business grows. No lock-in contracts.
                           </div>
                         <div class="button is-icon is-card">
-                          <div class="button-text">Explore Partnership</div>
+                          <div class="button-text">Learn more</div>
                           <div class="button-arrow w-embed">
                             <svg
                               width="26"

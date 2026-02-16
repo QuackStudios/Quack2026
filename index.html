@@ -8122,16 +8122,16 @@
     }
 
     console.log(TAG, reason, "Found groups:", groups.length);
-    groups.forEach((g, i) => console.log(TAG, "BEFORE group", i, debugGroup(g)));
+
 
     // Apply NEW_LINES onto existing groups; extra groups get blank
     for (let i = 0; i < groups.length; i++) {
       const desired = NEW_LINES[i] ?? "";
       const ok = setGroupWords(groups[i], desired);
-      console.log(TAG, "SET group", i, "->", desired, "ok?", ok);
+     
     }
 
-    groups.forEach((g, i) => console.log(TAG, "AFTER  group", i, debugGroup(g)));
+   
 
     // Also update the container's full text aria if needed
     title.setAttribute("aria-label", NEW_SENTENCE);

@@ -1,4 +1,10 @@
-
+function KH(t) {
+  try {
+    return JSON.parse(t || "{}");
+  } catch (e) {
+    return console.error("[SSG] On state deserialization -", e, t), {};
+  }
+}
 
 function XH(t, e, n, r) {
   const {
@@ -46,30 +52,533 @@ function XH(t, e, n, r) {
   return (
     (async () => {
       const { app: c, router: h } = await u();
-     await h.isReady();
-c.mount(a, true);
+      await h.isReady();
+      c.mount(a, true);
 
-// 1) inject everything first
-__injectPreloader();
-__injectHeaderNavigation();
-__injectPreStickyIntro();
-__injectScrollMenu();
-__injectNewSection();
-__injectAfterMain();
-__ensureInjectAfterAfterMain();
-__ensureInjectAfterThird();
+      // 1) inject everything first
+      __injectPreloader();
+      __injectHeaderNavigation();
+      __injectPreStickyIntro();
+      __injectScrollMenu();
+      __injectNewSection();
+      __injectAfterMain();
+      __ensureInjectAfterAfterMain();
+      __ensureInjectAfterThird();
 
-__injectColorSync();
+      __injectColorSync();
+      __injectShiftHeadingsScroll();
+      __injectHomeStickyAutoHeight();
 
-// 2) init your header scripts (they may rely on DOM existing)
-if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
-  window.__INIT_HEADER_SCRIPTS();
-}
-
-})(),
+      // 2) init your header scripts (they may rely on DOM existing)
+      if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+        window.__INIT_HEADER_SCRIPTS();
+      }
+    })(),
     u
   );
 }
+
+/* -----------------------------
+   INJECT: Color Sync (GLOBAL) — WRAP-TRANSITION TRIGGER (ALWAYS-ON LOGS)
+   - ALWAYS logs (no toggle needed), but rate-limited to avoid console spam.
+   - Deterministic trigger: flips nav/logo styling when `.wrap-transition` crosses
+     a line just below the header bottom.
+   - Also sanity-checks `.wrap-transition` background; if it's transparent, we log it.
+     (We do NOT force a color by default—just report what's going on.)
+
+   Optional overrides (set in console):
+     window.__COLOR_SYNC_FORCE_REINIT = true;
+     window.__COLOR_SYNC_TARGET = ".wrap-transition";
+     window.__COLOR_SYNC_OFFSET = 8;
+     window.__FORCE_COLOR_SYNC = "dark" | "light" | null;
+   ----------------------------- */
+function __injectColorSync() {
+  try {
+    const VER = 42; // bidirectional, alpha-based reveal
+    const TAG = "[line-reveal]";
+    const info = (...a) => console.info(TAG, ...a);
+    const warn = (...a) => console.warn(TAG, ...a);
+
+    const vNow = window.__COLOR_SYNC_VER || 0;
+    if (vNow >= VER) {
+      info("skip (already initialized)", { vNow, VER });
+      return;
+    }
+    window.__COLOR_SYNC_VER = VER;
+
+    info("called", {
+      VER,
+      prev: vNow,
+      readyState: document.readyState,
+      url: location.href,
+    });
+
+    const waitFor = (testFn, onOk, opts = {}) => {
+      const tries = opts.tries ?? 800;
+      const delay = opts.delay ?? 50;
+      const label = opts.label ?? "waitFor";
+      let n = 0;
+      const tick = () => {
+        n++;
+        let ok = false;
+        try {
+          ok = !!testFn();
+        } catch {}
+        if (ok) return onOk();
+        if (n >= tries) return warn("waitFor TIMEOUT", { label, tries });
+        setTimeout(tick, delay);
+      };
+      tick();
+    };
+
+    // --- Colors (bright = solid, dull = same RGB with alpha) ---
+    const BRIGHT = [178, 74, 29]; // rgb(178, 74, 29)
+    const DULL_A = 0.3; // 30% opacity
+
+    const rgb = (c) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    const rgba = (c, a) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+    const mixAlpha = (a0, a1, t) => a0 + (a1 - a0) * t;
+
+    // --- CSS to preserve wrapping ---
+    const STYLE_ID = "qk-line-reveal-css-wrapsafe";
+    if (!document.getElementById(STYLE_ID)) {
+      const style = document.createElement("style");
+      style.id = STYLE_ID;
+      style.textContent = `
+        .line-reveal { white-space: normal; word-break: normal; overflow-wrap: break-word; }
+        .line-reveal__ch { display:inline; white-space: normal; }
+      `;
+      document.head.appendChild(style);
+      info("CSS injected", { STYLE_ID });
+    }
+
+    const WRAP_SEL = ".wrap-transition";
+    const TARGET_SEL = `${WRAP_SEL} .big-quote[split-text], ${WRAP_SEL} .big-quote`;
+    const getTarget = () => document.querySelector(TARGET_SEL);
+
+    // --- Build chars once; allow natural wrapping. ---
+    const buildChars = (el) => {
+      if (!el || el.__lrBuilt) return;
+
+      // Normalize whitespace so indentation/newlines don’t become “characters”
+      const text = (el.textContent || "").replace(/\s+/g, " ").trim();
+      if (!text) return;
+
+      el.__lrBuilt = true;
+      el.classList.add("line-reveal");
+
+      el.textContent = "";
+      const chars = [];
+
+      for (const ch of text) {
+        // Keep spaces as plain text nodes (no span)
+        if (ch === " ") {
+          el.appendChild(document.createTextNode(" "));
+          continue;
+        }
+
+        const sp = document.createElement("span");
+        sp.className = "line-reveal__ch";
+        sp.textContent = ch;
+        sp.style.color = rgba(BRIGHT, DULL_A); // start dull (alpha)
+        el.appendChild(sp);
+        chars.push(sp);
+      }
+
+      el.__lrChars = chars;
+      console.info("[line-reveal] built chars", { count: chars.length });
+    };
+
+    // --- Update (bidirectional by design; colors are recomputed every tick) ---
+    const update = () => {
+      const el = getTarget();
+      if (!el) return;
+
+      if (!el.__lrBuilt) buildChars(el);
+      const chars = el.__lrChars;
+      if (!chars || !chars.length) return;
+
+      // 1) Group visible chars into visual lines by offsetTop
+      const lines = [];
+      let currentTop = null;
+      let current = [];
+      for (const sp of chars) {
+        const top = sp.offsetTop;
+        if (currentTop === null) currentTop = top;
+        if (top !== currentTop) {
+          lines.push(current);
+          current = [];
+          currentTop = top;
+        }
+        current.push(sp);
+      }
+      if (current.length) lines.push(current);
+
+      // 2) One global progress for the entire block (0..1)
+      // Start when element TOP hits 85% viewport.
+      // Finish when element BOTTOM hits 55% viewport. (tweak if needed)
+      const vh = window.innerHeight;
+      const rect = el.getBoundingClientRect();
+      const START_PX = vh * 0.85;
+      const END_PX = vh * 0.55;
+
+      // rect.top = START_PX -> t=0
+      // rect.bottom = END_PX -> t=1
+      const distance = rect.height + (START_PX - END_PX);
+      const t = clamp01((START_PX - rect.top) / distance);
+
+      // 3) Spend progress across lines sequentially (line 2 only starts after line 1 finishes)
+      const total = lines.reduce((sum, line) => sum + line.length, 0);
+      let remaining = t * total;
+
+      // Deadzone so first char of a new line doesn’t instantly brighten
+      const EPS = 0.15;
+
+      for (const line of lines) {
+        const n = line.length;
+
+        let revealed = Math.max(0, Math.min(n, remaining));
+        revealed = Math.max(0, revealed - EPS);
+
+        const iFull = Math.floor(revealed);
+        const frac = revealed - iFull;
+
+        for (let i = 0; i < n; i++) {
+          if (revealed <= 0) {
+            line[i].style.color = rgba(BRIGHT, DULL_A);
+            continue;
+          }
+
+          if (i < iFull) {
+            line[i].style.color = rgb(BRIGHT);
+          } else if (i === iFull) {
+            // Smooth alpha ramp for active char
+            const a = mixAlpha(DULL_A, 1, frac);
+            line[i].style.color = rgba(BRIGHT, a);
+          } else {
+            line[i].style.color = rgba(BRIGHT, DULL_A);
+          }
+        }
+
+        remaining -= n;
+      }
+    };
+
+    // --- Scheduling (scroll parents + RAF fallback) ---
+    let raf = 0;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        try {
+          update();
+        } catch (e) {
+          console.error("[line-reveal] update failed:", e);
+        }
+      });
+    };
+
+    const getScrollParents = (el) => {
+      const parents = [];
+      const isScrollable = (node) => {
+        const s = getComputedStyle(node);
+        const oy = s.overflowY;
+        return (
+          (oy === "auto" || oy === "scroll") &&
+          node.scrollHeight > node.clientHeight + 1
+        );
+      };
+
+      let p = el?.parentElement;
+      while (p && p !== document.body) {
+        if (isScrollable(p)) parents.push(p);
+        p = p.parentElement;
+      }
+      parents.push(window); // always include window fallback
+      return parents;
+    };
+
+    waitFor(
+      () => document.querySelector(WRAP_SEL) && getTarget(),
+      () => {
+        info("initialized", { TARGET_SEL });
+
+        const targetEl = getTarget();
+        const scrollParents = getScrollParents(targetEl);
+        console.log(
+          "[line-reveal] scrollParents:",
+          scrollParents.map((x) =>
+            x === window ? "window" : x.className || x.tagName
+          )
+        );
+
+        const onScroll = () => schedule();
+        const onResize = () => {
+          const el = getTarget();
+          if (el) {
+            // rebuild because line breaks change
+            const text = el.textContent || "";
+            el.textContent = text;
+            el.__lrBuilt = false;
+            el.__lrChars = null;
+          }
+          schedule();
+        };
+
+        // attach listeners (capture helps with nested scrollers)
+        scrollParents.forEach((sp) => {
+          if (sp === window)
+            window.addEventListener("scroll", onScroll, { passive: true });
+          else
+            sp.addEventListener("scroll", onScroll, {
+              passive: true,
+              capture: true,
+            });
+        });
+        window.addEventListener("resize", onResize);
+
+        // RAF fallback (guaranteed bidirectional even with smooth scrolling)
+        let running = true;
+        const loop = () => {
+          if (!running) return;
+          update();
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+
+        window.__COLOR_SYNC_STATE = {
+          cleanup: () => {
+            running = false;
+            scrollParents.forEach((sp) => {
+              try {
+                if (sp === window)
+                  window.removeEventListener("scroll", onScroll);
+                else
+                  sp.removeEventListener("scroll", onScroll, { capture: true });
+              } catch {}
+            });
+            try {
+              window.removeEventListener("resize", onResize);
+            } catch {}
+          },
+        };
+
+        // initial kicks
+        setTimeout(schedule, 50);
+        setTimeout(schedule, 250);
+        setTimeout(schedule, 900);
+      },
+      { tries: 900, delay: 50, label: "line-reveal target" }
+    );
+  } catch (e) {
+    console.error("[line-reveal] failed", e);
+  }
+}
+window.__injectColorSync = __injectColorSync;
+
+function __injectShiftHeadingsScroll() {
+  try {
+    const VER = 1;
+    if ((window.__SHIFT_HEADINGS_VER || 0) >= VER) {
+      console.log("[shift-headings] skip (already initialized)");
+      return;
+    }
+    window.__SHIFT_HEADINGS_VER = VER;
+
+    console.log("[shift-headings] called", {
+      url: location.href,
+      readyState: document.readyState,
+    });
+
+    const waitFor = (testFn, onOk, opts = {}) => {
+      const tries = opts.tries ?? 500;
+      const delay = opts.delay ?? 50;
+      const label = opts.label ?? "waitFor";
+      let n = 0;
+      const tick = () => {
+        n++;
+        let ok = false;
+        try {
+          ok = !!testFn();
+        } catch (e) {}
+        if (ok) {
+          console.log("[shift-headings] waitFor OK", { label, tries: n });
+          return onOk();
+        }
+        if (n >= tries) {
+          console.warn("[shift-headings] waitFor TIMEOUT", { label, tries });
+          return;
+        }
+        setTimeout(tick, delay);
+      };
+      tick();
+    };
+
+    // Light CSS help (optional, but improves smoothness)
+    const STYLE_ID = "qk-shift-headings-css";
+    if (!document.getElementById(STYLE_ID)) {
+      const style = document.createElement("style");
+      style.id = STYLE_ID;
+      style.textContent = `
+        .shift-right, .shift-left { will-change: transform; display: inline-block; }
+      `;
+      document.head.appendChild(style);
+      console.log("[shift-headings] CSS injected");
+    }
+
+    // Targets
+    const rightEls = () =>
+      Array.from(document.querySelectorAll(".shift-right"));
+    const leftEls = () => Array.from(document.querySelectorAll(".shift-left"));
+
+    // Find a reasonable "trigger section":
+    // we pick the closest section ancestor that contains BOTH shift-left and shift-right.
+    const findTriggerSection = () => {
+      const r = rightEls()[0];
+      const l = leftEls()[0];
+      if (!r || !l) return null;
+
+      // climb up from one of them to a section that contains the other
+      let node = r.closest("section");
+      while (node) {
+        if (
+          node.querySelector(".shift-left") &&
+          node.querySelector(".shift-right")
+        )
+          return node;
+        node = node.parentElement
+          ? node.parentElement.closest("section")
+          : null;
+      }
+      // fallback: common ancestor div
+      return r.closest(".section") || r.closest("section") || null;
+    };
+
+    // Easing similar to Webflow-ish smoothness
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+    // Controls (tweakable without editing code)
+    // how far to move at full progress
+    const getDistancePx = () => window.__SHIFT_HEADINGS_DISTANCE_PX ?? 260;
+
+    const getLeftMult = () => window.__SHIFT_LEFT_MULT ?? 0.65; // <— reduce left travel
+    const getRightMult = () => window.__SHIFT_RIGHT_MULT ?? 1.0;
+
+    // where within viewport the animation should start/finish (as a fraction of vh)
+    const getStartY = () => window.__SHIFT_HEADINGS_START_Y ?? 0.99;
+    const getEndY = () => window.__SHIFT_HEADINGS_END_Y ?? 0.1;
+
+    let raf = 0;
+
+    const apply = (progress01) => {
+      const dist = getDistancePx();
+      const eased = easeOutCubic(progress01);
+
+      // 🔧 START POSITION for shift-left (this is what you want)
+      const LEFT_START_PX = window.__SHIFT_LEFT_START_PX ?? 160;
+
+      // optional: reduce how far it travels
+      const LEFT_TRAVEL_MULT = window.__SHIFT_LEFT_MULT ?? 0.6;
+
+      const xRight = dist * eased;
+      const xLeft = LEFT_START_PX + -dist * LEFT_TRAVEL_MULT * eased;
+
+      rightEls().forEach((el) => {
+        el.style.transform = `translate3d(${xRight}px, 0, 0)`;
+      });
+      leftEls().forEach((el) => {
+        el.style.transform = `translate3d(${xLeft}px, 0, 0)`;
+      });
+
+      // Always-on but not spammy
+      const ls = (window.__SHIFT_HEADINGS_LOG ||= { last: 0 });
+      const now = Date.now();
+      if (now - ls.last > 800) {
+        ls.last = now;
+        console.log("[shift-headings] progress", progress01.toFixed(3), {
+          xRight: Math.round(xRight),
+          xLeft: Math.round(xLeft),
+        });
+      }
+    };
+
+    const computeProgress = (section) => {
+      const r = section.getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      const startPx = vh * getStartY();
+      const endPx = vh * getEndY();
+
+      // progress 0 when section top hits startPx
+      // progress 1 when section bottom hits endPx
+      const distance = r.height + (startPx - endPx);
+      const t = clamp01((startPx - r.top) / distance);
+      return t;
+    };
+
+    const update = (reason = "raf") => {
+      raf = 0;
+
+      const section = findTriggerSection();
+      if (!section) {
+        console.warn(
+          "[shift-headings] update: trigger section not found (missing .shift-left/.shift-right?)"
+        );
+        return;
+      }
+
+      const t = computeProgress(section);
+      apply(t);
+    };
+
+    const schedule = (reason = "event") => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => update(reason));
+    };
+
+    waitFor(
+      () => rightEls().length && leftEls().length,
+      () => {
+        const section = findTriggerSection();
+        console.log("[shift-headings] initialized", {
+          rightCount: rightEls().length,
+          leftCount: leftEls().length,
+          triggerSection: section
+            ? section.className || section.tagName
+            : "null",
+        });
+
+        window.addEventListener("scroll", () => schedule("scroll"), {
+          passive: true,
+        });
+        window.addEventListener("resize", () => schedule("resize"));
+
+        // store cleanup like your other patterns
+        window.__SHIFT_HEADINGS_STATE = {
+          cleanup: () => {
+            try {
+              window.removeEventListener("scroll", () => schedule("scroll"));
+            } catch {}
+            try {
+              window.removeEventListener("resize", () => schedule("resize"));
+            } catch {}
+          },
+        };
+
+        // initial paints after layout settles
+        schedule("init");
+        setTimeout(() => schedule("init-250"), 250);
+        setTimeout(() => schedule("init-900"), 900);
+      },
+      { tries: 700, delay: 50, label: "shift-headings targets" }
+    );
+  } catch (e) {
+    console.error("[shift-headings] failed", e);
+  }
+}
+window.__injectShiftHeadingsScroll = __injectShiftHeadingsScroll;
 
 // Drop-in replacement for your existing function
 function __injectPreStickyIntro() {
@@ -81,10 +590,18 @@ function __injectPreStickyIntro() {
     if (window.__INTRO_RAF) cancelAnimationFrame(window.__INTRO_RAF);
     window.__INTRO_RAF = 0;
 
-    if (window.__INTRO_OBS) { try { window.__INTRO_OBS.disconnect(); } catch (e) {} }
+    if (window.__INTRO_OBS) {
+      try {
+        window.__INTRO_OBS.disconnect();
+      } catch (e) {}
+    }
     window.__INTRO_OBS = null;
 
-    if (window.__INTRO_REVEAL_CLEANUP) { try { window.__INTRO_REVEAL_CLEANUP(); } catch (e) {} }
+    if (window.__INTRO_REVEAL_CLEANUP) {
+      try {
+        window.__INTRO_REVEAL_CLEANUP();
+      } catch (e) {}
+    }
     window.__INTRO_REVEAL_CLEANUP = null;
 
     const INTRO_ID = "presticky-intro";
@@ -98,7 +615,7 @@ function __injectPreStickyIntro() {
       "background:white",
       "position:relative",
       "z-index:999",
-      "padding-bottom:100px"
+      "padding-bottom:100px",
     ].join(";");
 
     const getTargets = () => {
@@ -120,7 +637,10 @@ function __injectPreStickyIntro() {
         if (el !== keepNode) el.remove();
       });
       const dupes = document.querySelectorAll(`#${CSS.escape(INTRO_ID)}`);
-      if (dupes.length > 1) dupes.forEach((el, idx) => { if (idx !== 0) el.remove(); });
+      if (dupes.length > 1)
+        dupes.forEach((el, idx) => {
+          if (idx !== 0) el.remove();
+        });
     };
 
     const ensureRevealCss = () => {
@@ -154,7 +674,8 @@ function __injectPreStickyIntro() {
       intro.setAttribute("data-qk-reveal", "1");
 
       const prefersReduced =
-        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       const qAll = (sel) => Array.from(intro.querySelectorAll(sel));
       const hidden = qAll(".qk-intro-hidden");
@@ -172,11 +693,11 @@ function __injectPreStickyIntro() {
 
       // Timeline tuning (you asked: smoother/longer opacity, tighter stagger, minimal group gaps)
       const OPACITY_DUR = 1200; // longer fade so it’s clearly visible
-      const MOVE_DUR = 780;     // motion slightly snappier than fade
-      const STAGGER_WORD = 22;  // tighter
-      const STAGGER_FADE = 24;  // tighter
+      const MOVE_DUR = 780; // motion slightly snappier than fade
+      const STAGGER_WORD = 22; // tighter
+      const STAGGER_FADE = 24; // tighter
       const BASE_WORD = 0;
-      const BASE_FADE = 160;    // overlaps more with words
+      const BASE_FADE = 160; // overlaps more with words
       const BASE_LINE = 190;
       const BASE_CARDS = 260;
 
@@ -219,9 +740,14 @@ function __injectPreStickyIntro() {
             el,
             [
               { transform: "translate3d(0,120%,0)", opacity: 0 },
-              { transform: "translate3d(0,0%,0)", opacity: 1 }
+              { transform: "translate3d(0,0%,0)", opacity: 1 },
             ],
-            { duration: Math.max(OPACITY_DUR, MOVE_DUR), easing: EASE_MOVE, delay: BASE_WORD + (STAGGER_WORD * i), fill: "both" }
+            {
+              duration: Math.max(OPACITY_DUR, MOVE_DUR),
+              easing: EASE_MOVE,
+              delay: BASE_WORD + STAGGER_WORD * i,
+              fill: "both",
+            }
           );
         });
 
@@ -231,7 +757,7 @@ function __injectPreStickyIntro() {
             el,
             [
               { transform: "scaleX(0)", opacity: 1 },
-              { transform: "scaleX(1)", opacity: 1 }
+              { transform: "scaleX(1)", opacity: 1 },
             ],
             { duration: 720, easing: EASE_MOVE, delay: BASE_LINE, fill: "both" }
           );
@@ -243,9 +769,14 @@ function __injectPreStickyIntro() {
             el,
             [
               { transform: "translate3d(0,18px,0)", opacity: 0 },
-              { transform: "translate3d(0,0px,0)", opacity: 1 }
+              { transform: "translate3d(0,0px,0)", opacity: 1 },
             ],
-            { duration: OPACITY_DUR, easing: EASE_FADE, delay: BASE_FADE + (STAGGER_FADE * i), fill: "both" }
+            {
+              duration: OPACITY_DUR,
+              easing: EASE_FADE,
+              delay: BASE_FADE + STAGGER_FADE * i,
+              fill: "both",
+            }
           );
         });
 
@@ -255,9 +786,14 @@ function __injectPreStickyIntro() {
             el,
             [
               { transform: "translate3d(0,6%,0)", opacity: 0 },
-              { transform: "translate3d(0,0%,0)", opacity: 1 }
+              { transform: "translate3d(0,0%,0)", opacity: 1 },
             ],
-            { duration: 1300, easing: EASE_FADE, delay: BASE_CARDS + (18 * i), fill: "both" }
+            {
+              duration: 1300,
+              easing: EASE_FADE,
+              delay: BASE_CARDS + 18 * i,
+              fill: "both",
+            }
           );
         });
       };
@@ -269,8 +805,12 @@ function __injectPreStickyIntro() {
         window.addEventListener("qk-preloader:done", onDone, { once: true });
         const t = setTimeout(onDone, 4500);
         window.__INTRO_REVEAL_CLEANUP = () => {
-          try { clearTimeout(t); } catch (e) {}
-          try { window.removeEventListener("qk-preloader:done", onDone); } catch (e) {}
+          try {
+            clearTimeout(t);
+          } catch (e) {}
+          try {
+            window.removeEventListener("qk-preloader:done", onDone);
+          } catch (e) {}
         };
       }
     };
@@ -309,7 +849,7 @@ function __injectPreStickyIntro() {
                 data-vimeo-lightbox-control="open"
                 data-vimeo-lightbox-id="1116214405"
               >
-                <div class="video-play">PLAY</div>
+                <div class="video-play"></div>
                 <img
                   src="index/images/r8a3dPeHTsmH.gif"
                   loading="eager"
@@ -436,7 +976,7 @@ function __injectPreStickyIntro() {
             </div>
 
             <h2 class="home-intro qk-intro-hidden" data-qk-anim="fade">
-              <span class="spin">✺</span> We partner with fearless brands to create bold digital spaces for brands that refuse to blend in.
+              <span class="spin">✺</span> Who said building a website was rocket science? Come on, pull up a chair.
             </h2>
           </div>
         </div>
@@ -444,27 +984,26 @@ function __injectPreStickyIntro() {
         <section class="home-grid-cards qk-intro-hidden" data-qk-anim="cards">
           <a
             id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608721-644deb4a"
-            href="./work/wa-solutions"
             class="home-project-card w-inline-block"
           >
             <img
               class="card-bg"
-              src="index/images/9x7qfQC3kWvd.jpg"
+              src="hero-1.png"
               width="1216"
               height="1564"
               alt=""
               sizes="100vw"
               loading="lazy"
               srcset="
-                index/images/9JewMItFwTlB.jpg  500w,
-                index/images/H1tRswqlSSG9.jpg  800w,
-                index/images/TcdG5ELSFRMV.jpg 1080w,
-                index/images/9x7qfQC3kWvd.jpg 1402w
+                hero-1.png  500w,
+                hero-1.png  800w,
+                hero-1.png 1080w,
+                hero-1.png 1402w
               "
             />
             <div class="project-card-info">
-              <h3 class="heading-small">WA Solutions</h3>
-              <div class="project-tag">Logistics</div>
+              <h3 class="heading-small">Porsche</h3>
+              <div class="project-tag">Vehicles</div>
             </div>
           </a>
 
@@ -473,15 +1012,14 @@ function __injectPreStickyIntro() {
             class="home-text-card"
           >
             <div>
-              From digital strategy, brand & user experience design,
+              From brand strategy, UX/UI design,
               and full-stack development, our expertise empowers
-              brands to look ahead and bring bold concepts to life.
+              brands to grow and bring bold concepts to life.
             </div>
           </div>
 
           <a
             id="w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60872b-644deb4a"
-            href="./work/seatgeek"
             class="home-project-card w-inline-block"
           >
             <div class="project-card-info">
@@ -489,20 +1027,20 @@ function __injectPreStickyIntro() {
               <div class="project-tag">Entertainment</div>
             </div>
             <img
-              src="index/images/CfOdnGOrTEqI.jpg"
+              src="4.png"
               loading="lazy"
               width="812"
               height="1564"
               alt=""
               srcset="
-                index/images/NuwtcfOtq8Dc.jpg  500w,
-                index/images/arRlNJOykmAv.jpg  800w,
-                index/images/FaMzfaeT8NBH.jpg 1080w,
-                index/images/ATxTyPreRNWQ.jpg 1600w,
-                index/images/M3OCu7slz5ap.jpg 2000w,
-                index/images/iBePSVm2XjQI.jpg 2600w,
-                index/images/ilIHNtaeexF5.jpg 3200w,
-                index/images/CfOdnGOrTEqI.jpg 4533w
+                4.png  500w,
+                4.png  800w,
+                4.png 1080w,
+                4.png 1600w,
+                4.png 2000w,
+                4.png 2600w,
+                4.png 3200w,
+                4.png 4533w
               "
               sizes="(max-width: 991px) 100vw, 812px"
               class="card-bg"
@@ -515,24 +1053,22 @@ function __injectPreStickyIntro() {
           >
             <div class="max-width-small">
               <div>
-                SAAS, gaming, finance, sports, logistics, fashion,
-                insurance, fitness, e-commerce, security,
-                information technology, <strong>yes</strong>
+                Startups, digital products, finance, health, retail, logistics, media, education, entertainment, enterprise, <strong>yes</strong>
               </div>
             </div>
           </div>
 
-          <a href="./work/optix" class="home-project-card w-inline-block">
+          <a class="home-project-card w-inline-block">
             <img
-              src="index/images/jfVlPkP74hkx.webp"
+              src="hero-3.png"
               loading="lazy"
               width="812"
               height="1564"
               alt=""
               srcset="
-                index/images/uWt6lfUgmSb3.webp  500w,
-                index/images/fZlX0UxZHuPR.webp  800w,
-                index/images/jfVlPkP74hkx.webp 1065w
+                9.png  500w,
+                9.png  800w,
+                9.png 1065w
               "
               sizes="(max-width: 991px) 100vw, 812px"
               class="card-bg"
@@ -543,20 +1079,6 @@ function __injectPreStickyIntro() {
             </div>
           </a>
 
-          <a href="./work/jackie" class="home-project-card w-inline-block">
-            <img
-              src="index/images/XjBb8NC4l9zI.png"
-              loading="lazy"
-              width="812"
-              height="1564"
-              alt=""
-              class="card-bg"
-            />
-            <div class="project-card-info">
-              <h3 class="heading-small">Jackie</h3>
-              <div class="project-tag">Fashion</div>
-            </div>
-          </a>
         </section>
       </div>
     </div>
@@ -565,11 +1087,13 @@ function __injectPreStickyIntro() {
         `;
       } else {
         intro.classList.add("InjectedTestSection");
-        if (!intro.getAttribute("data-presticky-intro")) intro.setAttribute("data-presticky-intro", "1");
+        if (!intro.getAttribute("data-presticky-intro"))
+          intro.setAttribute("data-presticky-intro", "1");
         if (!intro.style.cssText) intro.style.cssText = css;
       }
 
-      const shouldBeHere = intro.parentElement === pane && intro.nextElementSibling === main;
+      const shouldBeHere =
+        intro.parentElement === pane && intro.nextElementSibling === main;
       if (!shouldBeHere) pane.insertBefore(intro, main);
 
       removeAllInjectedClones(intro);
@@ -580,7 +1104,8 @@ function __injectPreStickyIntro() {
         const top = main.getBoundingClientRect().top;
         const atTop = top <= 0;
         window.__INTRO_MAIN_AT_TOP = atTop;
-        window.__INTRO_OFFSET_PX = intro.getBoundingClientRect().height || window.innerHeight;
+        window.__INTRO_OFFSET_PX =
+          intro.getBoundingClientRect().height || window.innerHeight;
       };
 
       let lastAtTop = null;
@@ -592,7 +1117,8 @@ function __injectPreStickyIntro() {
           lastAtTop = atTop;
           update();
         } else {
-          window.__INTRO_OFFSET_PX = intro.getBoundingClientRect().height || window.innerHeight;
+          window.__INTRO_OFFSET_PX =
+            intro.getBoundingClientRect().height || window.innerHeight;
         }
 
         window.__INTRO_RAF = requestAnimationFrame(loop);
@@ -629,13 +1155,17 @@ function __injectPreStickyIntro() {
     const waiter = new MutationObserver(() => {
       if (ensureIntro()) waiter.disconnect();
     });
-    waiter.observe(document.documentElement, { childList: true, subtree: true });
-    setTimeout(() => { try { waiter.disconnect(); } catch (e) {} }, 15000);
-
+    waiter.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+    setTimeout(() => {
+      try {
+        waiter.disconnect();
+      } catch (e) {}
+    }, 15000);
   } catch (e) {}
 }
-
-
 
 function __injectHeaderNavigation() {
   try {
@@ -879,10 +1409,10 @@ function __injectHeaderNavigation() {
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa67f" class="link-text is-5">Careers</div>
             </a>
 
-            <a data-button-hover="" href="./work-with-us" class="button is-nav w-inline-block">
+            <a data-button-hover="" href="./contact" class="button is-nav w-inline-block">
               <div data-button-text="" class="button-anim__text">Work With Us</div>
             </a>
-            <link rel="prefetch" href="./work-with-us" />
+            <link rel="prefetch" href="./contact" />
             <div class="menu-bg"></div>
           </div>
         </div>
@@ -891,7 +1421,8 @@ function __injectHeaderNavigation() {
 
     // Insert INSIDE lenis pane as sibling of presticky-intro (preferred)
     const presticky = pane.querySelector("#presticky-intro");
-    const main = pane.querySelector(":scope > main") || pane.querySelector("main");
+    const main =
+      pane.querySelector(":scope > main") || pane.querySelector("main");
 
     if (presticky) {
       pane.insertBefore(header, presticky);
@@ -901,38 +1432,34 @@ function __injectHeaderNavigation() {
       pane.prepend(header);
     }
 
-    
     // After injection: run header init scripts (DOMContentLoaded already fired)
-const runInjectedHeaderScripts = () => {
-  // Only run once
-  if (window.__HEADER_SCRIPTS_INITED) return;
-  window.__HEADER_SCRIPTS_INITED = true;
+    const runInjectedHeaderScripts = () => {
+      // Only run once
+      if (window.__HEADER_SCRIPTS_INITED) return;
+      window.__HEADER_SCRIPTS_INITED = true;
 
-  if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
-    try { window.__INIT_HEADER_SCRIPTS(); } catch (e) {}
-  }
-};
+      if (typeof window.__INIT_HEADER_SCRIPTS === "function") {
+        try {
+          window.__INIT_HEADER_SCRIPTS();
+        } catch (e) {}
+      }
+    };
 
-// Wait a tick so any framework patching settles, then run
-requestAnimationFrame(() => {
-  runInjectedHeaderScripts();
+    // Wait a tick so any framework patching settles, then run
+    requestAnimationFrame(() => {
+      runInjectedHeaderScripts();
 
-  // Kick both the injected header and the injected intro section (if present),
-  // because either can contain data-w-id nodes.
-});
-
-
-    
-
+      // Kick both the injected header and the injected intro section (if present),
+      // because either can contain data-w-id nodes.
+    });
   } catch (e) {
     console.error("[header inject]", e);
   }
 }
 
-
 function __injectScrollMenu() {
   try {
-     const pane = document.querySelector(".lenisscroll-pane");
+    const pane = document.querySelector(".lenisscroll-pane");
     if (!pane) return;
 
     // Prevent duplicates by checking for the root class itself
@@ -2640,7 +3167,7 @@ function __injectScrollMenu() {
           <div fs-scrolldisable-element="when-visible" class="x_nav_bg"></div>
         </div>
     `;
-  
+
     // Parse HTML without wrapping div
     const template = document.createElement("template");
     template.innerHTML = raw.trim();
@@ -2658,7 +3185,6 @@ function __injectScrollMenu() {
     } else {
       pane.prepend(fragment.firstElementChild);
     }
-
   } catch (e) {
     console.error("[injectScrollMenu]", e);
   }
@@ -3340,12 +3866,10 @@ function __injectNewSection() {
     } else {
       pane.appendChild(node);
     }
-
   } catch (e) {
     console.error("[injectNewSection]", e);
   }
 }
-
 
 function __injectPreloader() {
   try {
@@ -3355,7 +3879,9 @@ function __injectPreloader() {
     window.__QK_PRELOADER_VER = VER;
 
     // Remove any older instances from previous bundles
-    document.querySelectorAll(".qk-load-wrapper, .qk-page-load-trigger").forEach((n) => n.remove());
+    document
+      .querySelectorAll(".qk-load-wrapper, .qk-page-load-trigger")
+      .forEach((n) => n.remove());
 
     // Build DOM
     const trigger = document.createElement("div");
@@ -3407,28 +3933,33 @@ function __injectPreloader() {
         if (done) return;
         done = true;
         // 👇 PUT THE HOOK RIGHT HERE
-            try {
-            window.__QK_PRELOADER_DONE = true;
-            window.dispatchEvent(new Event("qk-preloader:done"));
-          } catch (e) {}
-
-
+        try {
+          window.__QK_PRELOADER_DONE = true;
+          window.dispatchEvent(new Event("qk-preloader:done"));
+        } catch (e) {}
 
         // Animate up + out (lift the black overlay)
         try {
-          wrap.style.transition = "transform 520ms cubic-bezier(0.65, 0, 0.35, 1), opacity 520ms cubic-bezier(0.65, 0, 0.35, 1)";
+          wrap.style.transition =
+            "transform 520ms cubic-bezier(0.65, 0, 0.35, 1), opacity 520ms cubic-bezier(0.65, 0, 0.35, 1)";
           wrap.style.transform = "translate3d(0,-100vh,0)";
           wrap.style.opacity = "0";
         } catch (e) {}
 
         // Remove after transition
         setTimeout(() => {
-          try { wrap.remove(); } catch (e) {}
-          try { trigger.remove(); } catch (e) {}
+          try {
+            wrap.remove();
+          } catch (e) {}
+          try {
+            trigger.remove();
+          } catch (e) {}
         }, 800);
 
         // Optional debug hook
-        try { console.log("[preloader] reveal", why); } catch (e) {}
+        try {
+          console.log("[preloader] reveal", why);
+        } catch (e) {}
       };
     })();
 
@@ -3438,7 +3969,8 @@ function __injectPreloader() {
 
     const ensureLottie = () =>
       new Promise((resolve, reject) => {
-        if (window.lottie && typeof window.lottie.loadAnimation === "function") return resolve(window.lottie);
+        if (window.lottie && typeof window.lottie.loadAnimation === "function")
+          return resolve(window.lottie);
 
         const existing = document.querySelector('script[data-qk-lottie="1"]');
         if (existing) {
@@ -3449,11 +3981,15 @@ function __injectPreloader() {
         }
 
         const s = document.createElement("script");
-        s.src = "https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js";
+        s.src =
+          "https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js";
         s.async = true;
         s.defer = true;
         s.setAttribute("data-qk-lottie", "1");
-        s.onload = () => (window.lottie ? resolve(window.lottie) : reject(new Error("lottie loaded but window.lottie missing")));
+        s.onload = () =>
+          window.lottie
+            ? resolve(window.lottie)
+            : reject(new Error("lottie loaded but window.lottie missing"));
         s.onerror = () => reject(new Error("failed to load lottie-web"));
         document.head.appendChild(s);
       });
@@ -3476,7 +4012,10 @@ function __injectPreloader() {
           loop: false,
           autoplay: true,
           path: animHost.getAttribute("data-lottie-src"),
-          rendererSettings: { progressiveLoad: true, preserveAspectRatio: "xMidYMid meet" },
+          rendererSettings: {
+            progressiveLoad: true,
+            preserveAspectRatio: "xMidYMid meet",
+          },
         });
       } catch (e) {
         forceReveal("loadAnimation-error");
@@ -3489,23 +4028,27 @@ function __injectPreloader() {
       // Reveal when the animation completes
       const onComplete = () => {
         clearTimeout(hardTimeout);
-        try { anim.removeEventListener("complete", onComplete); } catch (e) {}
+        try {
+          anim.removeEventListener("complete", onComplete);
+        } catch (e) {}
         forceReveal("complete");
       };
 
-      try { anim.addEventListener("complete", onComplete); } catch (e) {}
+      try {
+        anim.addEventListener("complete", onComplete);
+      } catch (e) {}
 
       // Extra safety: if it’s super short / zero frames
       setTimeout(() => {
         try {
-          if (!anim || !anim.totalFrames || anim.totalFrames < 2) forceReveal("no-frames");
+          if (!anim || !anim.totalFrames || anim.totalFrames < 2)
+            forceReveal("no-frames");
         } catch (e) {}
       }, 1200);
     };
 
     // Start on next frame so layout is ready
     requestAnimationFrame(run);
-
   } catch (e) {
     console.error("[injectPreloader]", e);
   }
@@ -3517,7 +4060,7 @@ function __injectAfterMain() {
     if (!pane) return;
 
     // Target the exact main you mentioned
-    const main = pane.querySelector('main[data-v-ea5deaed]');
+    const main = pane.querySelector("main[data-v-ea5deaed]");
     if (!main) return;
 
     // Prevent duplicates (pick a unique class in your injected HTML)
@@ -3531,34 +4074,22 @@ function __injectAfterMain() {
                   <div class="container-large">
                     <div class="quote-component">
                       <div scrub-each-word="" split-text="" class="big-quote">
-                        "The Brave People team has done a masterful job at
-                        capturing the essence of FCF and projecting it through
-                        our site, mobile apps and branding elements. Always game
-                        for the next challenge, they continue to work closely
-                        with our product, tech and marketing groups under
-                        aggressive timelines to deliver creative which
-                        consistently exceeds expectations and delights our fans.
-                        Simply put, Brave People crushes it."
+                        You've seen the ads.
+"Your website is costing you clarity and dominance." Blah blah blah.
+
+
+Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
+
+
+
+If that sounds refreshingly boring... you're our kind of person.
                       </div>
-                      <div class="quote-author">
-                        <div class="quote-avatar">
-                          <img
-                            src="index/images/68708c314208a7a24e201324_steve-adler-headshot%201.png"
-                            loading="lazy"
-                            alt=""
-                            class="quote-avatar-img"
-                          />
-                        </div>
-                        <div class="quote-client">
-                          Steve Adler<br />CTO of Fan Controlled Football
-                        </div>
-                      </div>
-                    </div>
+                     
                   </div>
                 </div>
               </div>
             </section>
-            <section class="section overflow-hidden">
+            <section class="section overflow-hidden" style="color:rgb(178, 74, 29);">
               <div class="padding-section-large is--brands">
                 <div class="page-padding">
                   <div class="container-large">
@@ -3729,248 +4260,31 @@ function __injectAfterMain() {
 
     // ✅ Insert *after* the main
     main.insertAdjacentElement("afterend", node);
-
   } catch (e) {
     console.error("[injectAfterMain]", e);
   }
 }
-
 
 function __injectAfterAfterMain() {
   try {
     const pane = document.querySelector(".lenisscroll-pane");
     if (!pane) return false;
 
-    const anchor = pane.querySelector('[data-injected="after-main"]') || pane.querySelector(".x_after_main_component");
+    const anchor =
+      pane.querySelector('[data-injected="after-main"]') ||
+      pane.querySelector(".x_after_main_component");
     if (!anchor) return false;
 
     // Prevent duplicates using DOM state, not by relying on raw HTML
     if (pane.querySelector('[data-injected="after-after-main"]')) return true;
 
     const raw = `
-      <section class="section background-color-tint overflow-hidden"  >
+      <section class="section background-color-tint overflow-hidden"  style="display: none !important">
             <div class="page-padding">
               <div class="container-large">
                 <div class="clients-component">
                   <div class="w-dyn-list">
-                    <div role="list" class="clients-grid w-dyn-items">
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/cSN2H2d8onCr.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/wZTWEJi7HNNw.png 500w,
-                            index/images/cSN2H2d8onCr.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/ISdVvM7XG50N.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/ClG89ht9KyWN.png 500w,
-                            index/images/ISdVvM7XG50N.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/zG8wjN232OSf.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/BC8Np3ELk75L.png 500w,
-                            index/images/zG8wjN232OSf.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/5FvZnLl5LpF4.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/noOssspoxAcT.png 500w,
-                            index/images/5FvZnLl5LpF4.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/3fUKc8AXfEv3.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/ypaa0hw3G1KL.png 500w,
-                            index/images/3fUKc8AXfEv3.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/MeW4Ur8A1w6t.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/qWvWVGVBDIvm.png 500w,
-                            index/images/MeW4Ur8A1w6t.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/8jk2gg4nO0x7.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/XaAAidlS3pbJ.png 500w,
-                            index/images/8jk2gg4nO0x7.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/vDJJpU03ttEY.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/UDCnZL8VOApY.png 500w,
-                            index/images/vDJJpU03ttEY.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/qM03caFPqmhp.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/t6MQ9Cz9fYfD.png 500w,
-                            index/images/qM03caFPqmhp.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/F8qRmpdlmfS9.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/MworQnhH9g2q.png 500w,
-                            index/images/F8qRmpdlmfS9.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/LSywx6g8uiFc.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/Fb26qle3IHMu.png 500w,
-                            index/images/LSywx6g8uiFc.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                      <div
-                        id="w-node-_5ae52ac4-7be5-1755-b763-148024eb95e1-61a90b20"
-                        role="listitem"
-                        class="client-item w-dyn-item"
-                      >
-                        <img
-                          src="index/images/Kw79EOgGIgC6.png"
-                          loading="lazy"
-                          id="w-node-f4986d5d-6787-023a-4f9b-234561a90b22-61a90b20"
-                          alt=""
-                          sizes="100vw"
-                          srcset="
-                            index/images/Jfwb41rWzpwC.png 500w,
-                            index/images/Kw79EOgGIgC6.png 730w
-                          "
-                          class="client-logo"
-                        />
-                      </div>
-                    </div>
+                    
                   </div>
                 </div>
               </div>
@@ -3978,7 +4292,6 @@ function __injectAfterAfterMain() {
           </section>
     `;
 
-    
     const template = document.createElement("template");
     template.innerHTML = raw.trim();
 
@@ -3990,13 +4303,11 @@ function __injectAfterAfterMain() {
 
     anchor.insertAdjacentElement("afterend", node);
     return true;
-
   } catch (e) {
     console.error("[injectAfterAfterMain]", e);
     return false;
   }
 }
-
 
 function __ensureInjectAfterAfterMain(maxFrames = 240) {
   let frames = 0;
@@ -4010,11 +4321,9 @@ function __ensureInjectAfterAfterMain(maxFrames = 240) {
   })();
 }
 
-
-
 function __injectAfterThirdAnchor() {
   try {
-   const pane = document.querySelector(".lenisscroll-pane");
+    const pane = document.querySelector(".lenisscroll-pane");
     if (!pane) return false;
 
     const anchor = pane.querySelector('[data-injected="after-after-main"]');
@@ -4030,7 +4339,7 @@ function __injectAfterThirdAnchor() {
                   <div class="flex-vertical">
                     <a
                       data-button-hover=""
-                      href="./work-with-us"
+                      href="./contact"
                       class="big-cta w-inline-block"
                       ><div data-button-text="" class="big-cta__text">
                         Work With Us
@@ -4052,7 +4361,7 @@ function __injectAfterThirdAnchor() {
                           split-text=""
                           class="heading-large"
                         >
-                          Choose Your project Path
+                          Choose Your Engagement Model
                         </h2>
                       </div>
                       <div class="max-width-medium">
@@ -4061,22 +4370,21 @@ function __injectAfterThirdAnchor() {
                           split-text=""
                           class="text-size-medium"
                         >
-                          Going from 0-1 or breaking into your next stage of
-                          growth? We specialize in all of the above.
+                          Whether you’re launching something new or scaling an existing business, we offer clear paths to get you there.
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="enquiry-cards-flex">
+                  <div data-w-id="cb6201a7-ef8a-b4d8-1858-987925710764" class="enquiry-cards-flex">
                     <a
                       data-prevent-transition=""
                       data-w-id="21ca679e-a158-6eb5-a63f-ddd0dbd67d8f"
                       href="https://bravepeople.typeform.com/getstarted"
                       target="_blank"
-                      class="enquiry-card__wrap is--black w-inline-block"
+                      class="enquiry-card__wrap number-one is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
-                          <div class="enquiry-card-heading">Build a</div>
+                          <div class="enquiry-card-heading">Launch your</div>
                           <div class="div-block">
                             <div class="enquiry-card-heading anim">Website</div>
                             <div class="enquiry-card-heading anim">Brand</div>
@@ -4086,12 +4394,11 @@ function __injectAfterThirdAnchor() {
                       </div>
                       <div class="card-text anim">
                         <div class="enquiry-card-p">
-                          Plan-driven, fixed timelines, deliverable-centric.
-                          Focus your effort and investment toward singular
-                          business needs with precision.
+                          A focused, end-to-end website build to establish a strong digital presence. 
+                          From content and design through to development and deployment, we deliver a high-performance site with a clear scope, timeline, and outcome.
                         </div>
                         <div class="button is-icon is-card">
-                          <div class="button-text">Work With Us</div>
+                          <div class="button-text">Start Your Build</div>
                           <div class="button-arrow w-embed">
                             <svg
                               width="26"
@@ -4126,28 +4433,27 @@ function __injectAfterThirdAnchor() {
                         "
                         alt=""
                         class="card-bg" />
-                      <div class="enquiry-card__overlay"></div></a
+                      <div class="enquiry-card__overlay number-one"></div></a
                     ><a
                       href="./build-a-digital-product"
-                      class="enquiry-card__wrap is--black w-inline-block"
+                      class="enquiry-card__wrap number-two is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
                           <div class="enquiry-card-heading">
-                            Build a Digital Product
+                            Evolve Your Brand
                           </div>
                         </div>
                         <div class="card-tag no--caps">
-                          Flexible Subscription
+                          Ongoing Partnership
                         </div>
                       </div>
                       <div class="card-text anim">
                         <div class="enquiry-card-p">
-                          Change-driven, flexible roadmaps, people-centric. Add
-                          seasoned creatives to your team to launch or iterate
-                          on a digital product.
-                        </div>
+                          An ongoing strategic and technical partnership for growing businesses. 
+                          Brand strategy, custom development, performance optimisation, and long-term support through a flexible, scalable engagement.
+                          </div>
                         <div class="button is-icon is-card">
-                          <div class="button-text">Work With Us</div>
+                          <div class="button-text">Explore Partnership</div>
                           <div class="button-arrow w-embed">
                             <svg
                               width="26"
@@ -4182,7 +4488,7 @@ function __injectAfterThirdAnchor() {
                         "
                         alt=""
                         class="card-bg" />
-                      <div class="enquiry-card__overlay"></div></a
+                      <div class="enquiry-card__overlay number-two"></div></a
                     ><link rel="prefetch" href="./build-a-digital-product" />
                   </div>
                 </div>
@@ -4199,13 +4505,11 @@ function __injectAfterThirdAnchor() {
 
     anchor.insertAdjacentElement("afterend", node);
     return true;
-
   } catch (e) {
     console.error("[injectAfterThird]", e);
     return false;
   }
 }
-
 
 function __ensureInjectAfterThird(maxFrames = 240) {
   let frames = 0;
@@ -4218,9 +4522,6 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     requestAnimationFrame(tick);
   })();
 }
-
-
-
 
 /* =========================================================
    Header + Services scripts (converted from DOMContentLoaded)
@@ -4345,21 +4646,35 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     let currentConfig = null;
 
     const setInitialStyles = (cfg) => {
-      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navWrap, {
+        width: cfg.closedWidth,
+        height: cfg.closedHeight,
+      });
       window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
-      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navBg, els.navContent], {
+        display: "none",
+        opacity: 0,
+      });
       window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
       window.gsap.set(els.closeIcon, { display: "none" });
-      window.gsap.set([els.navList, els.navSocials, els.navLogo], { opacity: 0 });
+      window.gsap.set([els.navList, els.navSocials, els.navLogo], {
+        opacity: 0,
+      });
       window.gsap.set(els.openIcon, { display: "block" });
       window.gsap.set(els.navRight, { height: "auto" });
       window.gsap.set(els.navBtnBg, { opacity: 100 });
     };
 
     const setMobileInitialStyles = (cfg) => {
-      window.gsap.set(els.navWrap, { width: cfg.closedWidth, height: cfg.closedHeight });
+      window.gsap.set(els.navWrap, {
+        width: cfg.closedWidth,
+        height: cfg.closedHeight,
+      });
       window.gsap.set(els.navLeft, { width: cfg.closedLeftWidth });
-      window.gsap.set([els.navBg, els.navContent], { display: "none", opacity: 0 });
+      window.gsap.set([els.navBg, els.navContent], {
+        display: "none",
+        opacity: 0,
+      });
       window.gsap.set([els.navLeftInner], { display: "none", opacity: 0 });
       window.gsap.set(els.closeIcon, { display: "none" });
       window.gsap.set([els.navSocials, els.navLogo], { opacity: 0 });
@@ -4371,36 +4686,98 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     const setupDesktopAnimation = (cfg) => {
       tl.clear();
-      tl.to(els.navWrap, { width: cfg.navWrapWidth, duration: 0.2, ease: "none" }, 0)
-        .to(els.navLeft, { width: cfg.navLeftWidth, duration: 0.2, ease: "none" }, 0)
-        .to(els.navWrap, { height: cfg.navWrapHeight, duration: 0.2, ease: "none" })
+      tl.to(
+        els.navWrap,
+        { width: cfg.navWrapWidth, duration: 0.2, ease: "none" },
+        0
+      )
+        .to(
+          els.navLeft,
+          { width: cfg.navLeftWidth, duration: 0.2, ease: "none" },
+          0
+        )
+        .to(els.navWrap, {
+          height: cfg.navWrapHeight,
+          duration: 0.2,
+          ease: "none",
+        })
         .set(els.closeIcon, { display: "block" }, 0)
         .set(els.openIcon, { display: "none" }, 0)
-        .to(els.navBg, { display: "block", opacity: 0.6, duration: 0.2, ease: "power2.out" }, 0)
-        .to(els.navLeftInner, { display: "flex", opacity: 1, duration: 0.2, ease: "none" }, 0.2)
+        .to(
+          els.navBg,
+          { display: "block", opacity: 0.6, duration: 0.2, ease: "power2.out" },
+          0
+        )
+        .to(
+          els.navLeftInner,
+          { display: "flex", opacity: 1, duration: 0.2, ease: "none" },
+          0.2
+        )
         .to(els.navLogo, { opacity: 1, duration: 0.2, ease: "none" }, 0.4)
         .to(els.navList, { opacity: 1, duration: 0.2, ease: "none" })
         .to(els.navSocials, { opacity: 1, duration: 0.2, ease: "none" })
-        .to(els.navContent, { display: "block", opacity: 1, duration: 0.2, ease: "none" }, "-=0.2");
+        .to(
+          els.navContent,
+          { display: "block", opacity: 1, duration: 0.2, ease: "none" },
+          "-=0.2"
+        );
     };
 
     const setupMobileAnimation = (cfg) => {
       tl.clear();
-      tl.to(els.navWrap, { width: cfg.navWrapWidth, duration: 0.2, ease: mobileEasing.wrapWidth }, 0)
-        .to(els.navWrap, { height: cfg.navWrapHeight, duration: 0.2, ease: mobileEasing.wrapHeight })
+      tl.to(
+        els.navWrap,
+        {
+          width: cfg.navWrapWidth,
+          duration: 0.2,
+          ease: mobileEasing.wrapWidth,
+        },
+        0
+      )
+        .to(els.navWrap, {
+          height: cfg.navWrapHeight,
+          duration: 0.2,
+          ease: mobileEasing.wrapHeight,
+        })
         .set(els.closeIcon, { display: "block" }, 0)
         .set(els.openIcon, { display: "none" }, 0)
-        .to(els.navBg, { display: "block", opacity: 0.6, duration: 0.2, ease: mobileEasing.bg }, 0)
-        .to(els.navLeftInner, { display: "block", opacity: 1, duration: 0.2, ease: "power3.in" });
+        .to(
+          els.navBg,
+          {
+            display: "block",
+            opacity: 0.6,
+            duration: 0.2,
+            ease: mobileEasing.bg,
+          },
+          0
+        )
+        .to(els.navLeftInner, {
+          display: "block",
+          opacity: 1,
+          duration: 0.2,
+          ease: "power3.in",
+        });
     };
 
     const setupMobileSubmenuAnimation = (cfg) => {
       submenuTl.clear();
       submenuTl
-        .to(els.navWrap, { height: cfg.expandedHeight, duration: 0.2, ease: "none" })
-        .to(els.navRight, { height: cfg.rightExpandedHeight, duration: 0.25, ease: "none" }, 0)
+        .to(els.navWrap, {
+          height: cfg.expandedHeight,
+          duration: 0.2,
+          ease: "none",
+        })
+        .to(
+          els.navRight,
+          { height: cfg.rightExpandedHeight, duration: 0.25, ease: "none" },
+          0
+        )
         .to(els.navList, { opacity: 0, duration: 0.1, ease: "none" }, "-=0.3")
-        .to(els.navContent, { display: "block", opacity: 1, duration: 0.1, ease: "none" }, 0.4);
+        .to(
+          els.navContent,
+          { display: "block", opacity: 1, duration: 0.1, ease: "none" },
+          0.4
+        );
     };
 
     const openMenu = () => {
@@ -4411,10 +4788,14 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     const closeMenu = () => {
       if (!submenuTl.reversed()) {
         submenuTl.reverse().then(() => {
-          tl.reverse().then(() => els.navBtnBg && els.navBtnBg.classList.remove("is-active"));
+          tl.reverse().then(
+            () => els.navBtnBg && els.navBtnBg.classList.remove("is-active")
+          );
         });
       } else {
-        tl.reverse().then(() => els.navBtnBg && els.navBtnBg.classList.remove("is-active"));
+        tl.reverse().then(
+          () => els.navBtnBg && els.navBtnBg.classList.remove("is-active")
+        );
       }
     };
 
@@ -4424,7 +4805,8 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     const getConfig = (width) => {
       if (width > configs.large.minWidth) return configs.large;
-      if (width > configs.mobile.maxWidth && width <= configs.medium.maxWidth) return configs.medium;
+      if (width > configs.mobile.maxWidth && width <= configs.medium.maxWidth)
+        return configs.medium;
       if (width <= configs.mobile.maxWidth) return configs.mobile;
       return null;
     };
@@ -4466,7 +4848,9 @@ function __ensureInjectAfterThird(maxFrames = 240) {
       });
 
     els.navMobileBacks &&
-      els.navMobileBacks.forEach((btn) => bindOnce(btn, "nav_mob_back", "click", closeSubmenu));
+      els.navMobileBacks.forEach((btn) =>
+        bindOnce(btn, "nav_mob_back", "click", closeSubmenu)
+      );
 
     bindOnce(window, "nav_resize", "resize", handleResize);
 
@@ -4499,12 +4883,18 @@ function __ensureInjectAfterThird(maxFrames = 240) {
       window.gsap.set(media, { rotation });
     });
 
-    const rotTo = window.gsap.quickTo(".x_bc-header_services_container", "rotation", {
-      duration: 0.6,
-      ease: "power3.out",
-    });
+    const rotTo = window.gsap.quickTo(
+      ".x_bc-header_services_container",
+      "rotation",
+      {
+        duration: 0.6,
+        ease: "power3.out",
+      }
+    );
 
-    const cardLinks = document.querySelectorAll(".x_bc-header_services_card_link");
+    const cardLinks = document.querySelectorAll(
+      ".x_bc-header_services_card_link"
+    );
 
     let rotation_velocity = 0;
     let y_velocity = 0;
@@ -4519,7 +4909,8 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     const handleScroll = (e) => {
       e.preventDefault();
-      const primaryDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const primaryDelta =
+        Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       const isTouchpad = primaryDelta % 1 !== 0;
       const multiplier = isTouchpad ? TOUCHPAD_SENSITIVITY : MOUSE_SENSITIVITY;
 
@@ -4530,7 +4921,9 @@ function __ensureInjectAfterThird(maxFrames = 240) {
       y_velocity -= Math.abs(delta) * VERTICAL_KICK;
     };
 
-    bindOnce(innerEl, "services_wheel", "wheel", handleScroll, { passive: false });
+    bindOnce(innerEl, "services_wheel", "wheel", handleScroll, {
+      passive: false,
+    });
 
     // Only add ticker once
     if (!window.__SERVICES_CAROUSEL_TICK) {
@@ -4550,181 +4943,202 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     }
   }
 
-        /* 2.5 the colour change one */
-        function __injectColorSync() {
+  /* 2.5 the colour change one */
+  function __injectColorSync__nested_do_not_use() {
+    try {
+      const VER = 1;
+      if ((window.__COLOR_SYNC_VER || 0) >= VER) return;
+      window.__COLOR_SYNC_VER = VER;
+
+      const DEBUG = false;
+      const log = (...a) => DEBUG && console.log("[color-sync]", ...a);
+
+      // If you re-init (route changes), clean old triggers
+      if (window.__COLOR_SYNC_CLEANUP) {
         try {
-          const VER = 1;
-          if ((window.__COLOR_SYNC_VER || 0) >= VER) return;
-          window.__COLOR_SYNC_VER = VER;
+          window.__COLOR_SYNC_CLEANUP();
+        } catch (e) {}
+      }
+      window.__COLOR_SYNC_CLEANUP = null;
 
-          const DEBUG = false;
-          const log = (...a) => DEBUG && console.log("[color-sync]", ...a);
+      const waitFor = (testFn, onOk, opts) => {
+        const tries = (opts && opts.tries) || 240;
+        const every = (opts && opts.every) || 50;
+        const label = (opts && opts.label) || "waitFor";
+        let n = 0;
 
-          // If you re-init (route changes), clean old triggers
-          if (window.__COLOR_SYNC_CLEANUP) {
-            try { window.__COLOR_SYNC_CLEANUP(); } catch (e) {}
+        const tick = () => {
+          n++;
+          let ok = false;
+          try {
+            ok = !!testFn();
+          } catch (e) {}
+          if (ok) return onOk();
+          if (n >= tries) return log("timeout", label);
+          setTimeout(tick, every);
+        };
+
+        tick();
+      };
+
+      const ORANGE_BG = "#b24a1d";
+      const OFFWHITE_TX = "#f9f9f9";
+      const OFFWHITE_BG = "#f0ede6";
+      const ORANGE_TX = "#b24a1d";
+
+      const SMOOTH_DUR = 0.8; // seconds
+
+      // Wait for GSAP + ScrollTrigger + elements
+      waitFor(
+        () =>
+          window.gsap &&
+          window.ScrollTrigger &&
+          document.querySelector(".fade-grey-to-black") &&
+          document.querySelector(".wrap-transition"),
+        () => {
+          const gsap = window.gsap;
+          const ScrollTrigger = window.ScrollTrigger;
+
+          // In case plugin isn't registered yet
+          try {
+            gsap.registerPlugin(ScrollTrigger);
+          } catch (e) {}
+
+          const fade = document.querySelector(".fade-grey-to-black");
+          const wrap = document.querySelector(".wrap-transition");
+          if (!fade || !wrap) {
+            log("Missing elements", { fade: !!fade, wrap: !!wrap });
+            return;
           }
-          window.__COLOR_SYNC_CLEANUP = null;
 
-          const waitFor = (testFn, onOk, opts) => {
-            const tries = (opts && opts.tries) || 240;
-            const every = (opts && opts.every) || 50;
-            const label = (opts && opts.label) || "waitFor";
-            let n = 0;
+          // Kill any prior triggers created by this module (if reinit)
+          const killMine = () => {
+            try {
+              ScrollTrigger.getAll().forEach((st) => {
+                if (
+                  st &&
+                  st.vars &&
+                  st.vars.id &&
+                  String(st.vars.id).startsWith("qk-color-sync")
+                ) {
+                  st.kill(true);
+                }
+              });
+            } catch (e) {}
+          };
+          killMine();
 
-            const tick = () => {
-              n++;
-              let ok = false;
-              try { ok = !!testFn(); } catch (e) {}
-              if (ok) return onOk();
-              if (n >= tries) return log("timeout", label);
-              setTimeout(tick, every);
-            };
-
-            tick();
+          const toOrangeState = () => {
+            gsap.to([fade, wrap], {
+              backgroundColor: ORANGE_BG,
+              color: OFFWHITE_TX,
+              duration: SMOOTH_DUR,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
           };
 
-          const ORANGE_BG   = "#b24a1d";
-          const OFFWHITE_TX = "#f9f9f9";
-          const OFFWHITE_BG = "#f0ede6";
-          const ORANGE_TX   = "#b24a1d";
+          const toOffwhiteState = () => {
+            gsap.to([fade, wrap], {
+              backgroundColor: OFFWHITE_BG,
+              color: ORANGE_TX,
+              duration: SMOOTH_DUR,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          };
 
-          const SMOOTH_DUR = 0.8; // seconds
+          // INITIAL STATE
+          gsap.set(wrap, { backgroundColor: ORANGE_BG, color: OFFWHITE_TX });
 
-          // Wait for GSAP + ScrollTrigger + elements
-          waitFor(
-            () =>
-              window.gsap &&
-              window.ScrollTrigger &&
-              document.querySelector(".fade-grey-to-black") &&
-              document.querySelector(".wrap-transition"),
-            () => {
-              const gsap = window.gsap;
-              const ScrollTrigger = window.ScrollTrigger;
-
-              // In case plugin isn't registered yet
-              try { gsap.registerPlugin(ScrollTrigger); } catch (e) {}
-
-              const fade = document.querySelector(".fade-grey-to-black");
-              const wrap = document.querySelector(".wrap-transition");
-              if (!fade || !wrap) {
-                log("Missing elements", { fade: !!fade, wrap: !!wrap });
-                return;
-              }
-
-              // Kill any prior triggers created by this module (if reinit)
-              const killMine = () => {
-                try {
-                  ScrollTrigger.getAll().forEach((st) => {
-                    if (st && st.vars && st.vars.id && String(st.vars.id).startsWith("qk-color-sync")) {
-                      st.kill(true);
-                    }
-                  });
-                } catch (e) {}
-              };
-              killMine();
-
-              const toOrangeState = () => {
-                gsap.to([fade, wrap], {
-                  backgroundColor: ORANGE_BG,
-                  color: OFFWHITE_TX,
-                  duration: SMOOTH_DUR,
-                  ease: "power2.out",
-                  overwrite: "auto",
-                });
-              };
-
-              const toOffwhiteState = () => {
-                gsap.to([fade, wrap], {
-                  backgroundColor: OFFWHITE_BG,
-                  color: ORANGE_TX,
-                  duration: SMOOTH_DUR,
-                  ease: "power2.out",
-                  overwrite: "auto",
-                });
-              };
-
-              // INITIAL STATE
-              gsap.set(wrap, { backgroundColor: ORANGE_BG, color: OFFWHITE_TX });
-
-              // PHASE 1 — ORIGINAL LOGIC
-              gsap.timeline({
-                scrollTrigger: {
-                  id: "qk-color-sync-phase1",
-                  trigger: fade,
-                  start: "center 80%",
-                  end: "center 50%",
-                  scrub: true,
-                  invalidateOnRefresh: true,
-                },
-              }).fromTo(
-                fade,
-                { backgroundColor: "#f9f9f9", color: "#000" },
-                { backgroundColor: ORANGE_BG, color: OFFWHITE_TX, overwrite: "auto", ease: "none" }
-              );
-
-              gsap.to(fade.querySelectorAll(".challenge-item"), {
-                "--bg-color": "#0000",
-                scrollTrigger: {
-                  id: "qk-color-sync-items",
-                  trigger: fade,
-                  start: "center 80%",
-                  end: "center 50%",
-                  scrub: true,
-                  invalidateOnRefresh: true,
-                },
-                overwrite: "auto",
-                ease: "none",
-              });
-
-              // PHASE 2 — HANDOFF (smooth instead of snap)
-              const handoffST = ScrollTrigger.create({
-                id: "qk-color-sync-handoff",
-                trigger: wrap,
-                start: "top 50%",
-                end: "top 20%",
+          // PHASE 1 — ORIGINAL LOGIC
+          gsap
+            .timeline({
+              scrollTrigger: {
+                id: "qk-color-sync-phase1",
+                trigger: fade,
+                start: "center 80%",
+                end: "center 50%",
                 scrub: true,
                 invalidateOnRefresh: true,
+              },
+            })
+            .fromTo(
+              fade,
+              { backgroundColor: "#f9f9f9", color: "#000" },
+              {
+                backgroundColor: ORANGE_BG,
+                color: OFFWHITE_TX,
+                overwrite: "auto",
+                ease: "none",
+              }
+            );
 
-                onLeaveBack: () => {
-                  toOrangeState();
-                  if (DEBUG) log("leaveBack -> tween BOTH to orange");
-                },
-
-                onLeave: () => {
-                  toOffwhiteState();
-                  if (DEBUG) log("leave -> tween BOTH to offwhite");
-                },
-              });
-
-              gsap.fromTo(
-                [fade, wrap],
-                { backgroundColor: ORANGE_BG, color: OFFWHITE_TX },
-                {
-                  backgroundColor: OFFWHITE_BG,
-                  color: ORANGE_TX,
-                  ease: "none",
-                  overwrite: "auto",
-                  immediateRender: false,
-                  scrollTrigger: handoffST,
-                }
-              );
-
-              // Cleanup for route changes / reinits
-              window.__COLOR_SYNC_CLEANUP = () => {
-                try { killMine(); } catch (e) {}
-              };
-
-              // If Lenis / layout changes, refresh triggers after things settle
-              try { setTimeout(() => ScrollTrigger.refresh(), 250); } catch (e) {}
-
-              log("init OK");
+          gsap.to(fade.querySelectorAll(".challenge-item"), {
+            "--bg-color": "#0000",
+            scrollTrigger: {
+              id: "qk-color-sync-items",
+              trigger: fade,
+              start: "center 80%",
+              end: "center 50%",
+              scrub: true,
+              invalidateOnRefresh: true,
             },
-            { tries: 400, every: 50, label: "__injectColorSync(gsap+elements)" }
-          );
-        } catch (e) {}
-      }     
+            overwrite: "auto",
+            ease: "none",
+          });
 
+          // PHASE 2 — HANDOFF (smooth instead of snap)
+          const handoffST = ScrollTrigger.create({
+            id: "qk-color-sync-handoff",
+            trigger: wrap,
+            start: "top 50%",
+            end: "top 20%",
+            scrub: true,
+            invalidateOnRefresh: true,
+
+            onLeaveBack: () => {
+              toOrangeState();
+              if (DEBUG) log("leaveBack -> tween BOTH to orange");
+            },
+
+            onLeave: () => {
+              toOffwhiteState();
+              if (DEBUG) log("leave -> tween BOTH to offwhite");
+            },
+          });
+
+          gsap.fromTo(
+            [fade, wrap],
+            { backgroundColor: ORANGE_BG, color: OFFWHITE_TX },
+            {
+              backgroundColor: OFFWHITE_BG,
+              color: ORANGE_TX,
+              ease: "none",
+              overwrite: "auto",
+              immediateRender: false,
+              scrollTrigger: handoffST,
+            }
+          );
+
+          // Cleanup for route changes / reinits
+          window.__COLOR_SYNC_CLEANUP = () => {
+            try {
+              killMine();
+            } catch (e) {}
+          };
+
+          // If Lenis / layout changes, refresh triggers after things settle
+          try {
+            setTimeout(() => ScrollTrigger.refresh(), 250);
+          } catch (e) {}
+
+          log("init OK");
+        },
+        { tries: 400, every: 50, label: "__injectColorSync(gsap+elements)" }
+      );
+    } catch (e) {}
+  }
 
   /* -----------------------------
      3) Lenis integration + scroll lock
@@ -4757,7 +5171,9 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     if (!window.__LENIS_RAF_RUNNING) {
       window.__LENIS_RAF_RUNNING = true;
       const raf = (time) => {
-        try { lenis.raf(time); } catch (e) {}
+        try {
+          lenis.raf(time);
+        } catch (e) {}
         requestAnimationFrame(raf);
       };
       requestAnimationFrame(raf);
@@ -4767,14 +5183,18 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     function lockScroll() {
       if (isScrollLocked) return;
-      try { lenis.stop(); } catch (e) {}
+      try {
+        lenis.stop();
+      } catch (e) {}
       document.documentElement.classList.add("lenis-stopped");
       isScrollLocked = true;
     }
 
     function unlockScroll() {
       if (!isScrollLocked) return;
-      try { lenis.start(); } catch (e) {}
+      try {
+        lenis.start();
+      } catch (e) {}
       document.documentElement.classList.remove("lenis-stopped");
       isScrollLocked = false;
     }
@@ -4790,8 +5210,16 @@ function __ensureInjectAfterThird(maxFrames = 240) {
       if (!el) return;
 
       // Stop propagation so Lenis doesn't steal it
-      bindOnce(el, "services_stop_wheel", "wheel", (e) => e.stopPropagation(), { passive: false });
-      bindOnce(el, "services_stop_touch", "touchmove", (e) => e.stopPropagation(), { passive: false });
+      bindOnce(el, "services_stop_wheel", "wheel", (e) => e.stopPropagation(), {
+        passive: false,
+      });
+      bindOnce(
+        el,
+        "services_stop_touch",
+        "touchmove",
+        (e) => e.stopPropagation(),
+        { passive: false }
+      );
     };
 
     allowInnerScroll();
@@ -4804,7 +5232,11 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     bindOnce(document, "lenis_click_2", "click", (e) => {
       if (e.target.closest(".x_nav_button_ico.is-open")) lockScroll();
-      if (e.target.closest(".x_nav_button_ico.is-close") || e.target.closest(".x_nav_bg")) unlockScroll();
+      if (
+        e.target.closest(".x_nav_button_ico.is-close") ||
+        e.target.closest(".x_nav_bg")
+      )
+        unlockScroll();
     });
   }
 
@@ -4817,11 +5249,19 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     const servicesWrap = document.querySelector(".x_bc-header_services_wrap");
     const navWrap = document.querySelector(".x_nav_wrap");
-    const closeWrap = document.querySelector(".x_bc-header_services_close_wrap");
-    const cursorWrap = document.querySelector(".x_g--cursors_services-menu_wrap");
+    const closeWrap = document.querySelector(
+      ".x_bc-header_services_close_wrap"
+    );
+    const cursorWrap = document.querySelector(
+      ".x_g--cursors_services-menu_wrap"
+    );
     const servicesInner = document.querySelector(".x_bc-header_services_inner");
-    const servicesBottom = document.querySelector(".x_bc-header_services_bottom");
-    const servicesText = document.querySelector(".x_bc-header_services_text.x_u-heading-4");
+    const servicesBottom = document.querySelector(
+      ".x_bc-header_services_bottom"
+    );
+    const servicesText = document.querySelector(
+      ".x_bc-header_services_text.x_u-heading-4"
+    );
     const servicesIcon = document.querySelector(".x_bc-header_services_ico");
 
     if (!servicesWrap) {
@@ -4837,7 +5277,9 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     const servicesAnchor = servicesTextDiv.closest("a.nav-link");
     if (!servicesAnchor) {
-      warn(".link-text.is-1 not inside a.nav-link – services menu init skipped.");
+      warn(
+        ".link-text.is-1 not inside a.nav-link – services menu init skipped."
+      );
       return;
     }
 
@@ -4895,10 +5337,18 @@ function __ensureInjectAfterThird(maxFrames = 240) {
 
     const setupTransitions = () => {
       servicesWrap.style.transition = "opacity 200ms ease";
-      if (cursorWrap) cursorWrap.style.transition = "opacity 100ms ease, transform 100ms ease";
-      if (closeWrap) closeWrap.style.transition = "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
-      if (servicesInner) servicesInner.style.transition = "opacity 400ms ease-out, transform 400ms ease-out";
-      if (servicesBottom) servicesBottom.style.transition = "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
+      if (cursorWrap)
+        cursorWrap.style.transition =
+          "opacity 100ms ease, transform 100ms ease";
+      if (closeWrap)
+        closeWrap.style.transition =
+          "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
+      if (servicesInner)
+        servicesInner.style.transition =
+          "opacity 400ms ease-out, transform 400ms ease-out";
+      if (servicesBottom)
+        servicesBottom.style.transition =
+          "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
       if (servicesIcon) servicesIcon.style.transition = "opacity 200ms ease";
       if (servicesText) servicesText.style.transition = "opacity 200ms ease";
     };
@@ -4990,18 +5440,24 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     };
 
     // Capture-phase click intercept for Services link
-    bindOnce(document, "services_capture", "click", (e) => {
-      const anchor = e.target.closest("a.nav-link");
-      if (!anchor) return;
-      if (anchor !== servicesAnchor) return;
+    bindOnce(
+      document,
+      "services_capture",
+      "click",
+      (e) => {
+        const anchor = e.target.closest("a.nav-link");
+        if (!anchor) return;
+        if (anchor !== servicesAnchor) return;
 
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation && e.stopImmediatePropagation();
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation && e.stopImmediatePropagation();
 
-      if (!isOpen) openServicesMenu();
-      else closeServicesMenu();
-    }, true);
+        if (!isOpen) openServicesMenu();
+        else closeServicesMenu();
+      },
+      true
+    );
 
     // close button
     if (closeWrap) {
@@ -5030,8 +5486,10 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     if (window.__SERVICES_MENU_PRIMARY_INITED) {
       // Provide a soft wrapper so you can still call it manually if needed
       window.__servicesMenuSecondary = window.__servicesMenuSecondary || {
-        open: () => warn("Secondary services menu not bound because primary is active."),
-        close: () => warn("Secondary services menu not bound because primary is active."),
+        open: () =>
+          warn("Secondary services menu not bound because primary is active."),
+        close: () =>
+          warn("Secondary services menu not bound because primary is active."),
       };
       return;
     }
@@ -5043,133 +5501,139 @@ function __ensureInjectAfterThird(maxFrames = 240) {
      6) Scroll show/hide: header.navigation vs .x_nav_wrap popup
      ----------------------------- */
   function __initScrollNavSwap() {
-  try {
-    // ====== CONFIG ======
-    const TOP_THRESHOLD = 40; // px
-    const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+    try {
+      // ====== CONFIG ======
+      const TOP_THRESHOLD = 40; // px
+      const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
 
-    // Prevent double-binding
-    if (window.__SCROLL_NAV_SWAP_INIT) return;
-    window.__SCROLL_NAV_SWAP_INIT = true;
+      // Prevent double-binding
+      if (window.__SCROLL_NAV_SWAP_INIT) return;
+      window.__SCROLL_NAV_SWAP_INIT = true;
 
-    const getScrollY = () => {
-      // Prefer Lenis if available
-      const lenis = window.lenis || window.__lenis;
-      if (lenis && typeof lenis.scroll === "number") return lenis.scroll;
+      const getScrollY = () => {
+        // Prefer Lenis if available
+        const lenis = window.lenis || window.__lenis;
+        if (lenis && typeof lenis.scroll === "number") return lenis.scroll;
 
-      // If your layout scrolls inside the pane
-      const pane = document.querySelector(".lenisscroll-pane");
-      if (pane && pane.scrollHeight > pane.clientHeight) return pane.scrollTop;
+        // If your layout scrolls inside the pane
+        const pane = document.querySelector(".lenisscroll-pane");
+        if (pane && pane.scrollHeight > pane.clientHeight)
+          return pane.scrollTop;
 
-      // Fallback
-      return window.scrollY || document.documentElement.scrollTop || 0;
-    };
-
-    const initOnce = () => {
-      const navShell = document.querySelector("header.navigation, .navigation");
-      if (!navShell) return false;
-
-      // Popup is OPTIONAL (don’t bail if it’s not injected yet)
-      const popupNav = document.querySelector(".x_nav_wrap");
-
-      // Smooth transitions
-      navShell.style.transition = `opacity 480ms ease, transform 650ms ${ease}`;
-      if (popupNav) {
-        popupNav.style.transition = `opacity 480ms ease, transform 650ms ${ease}`;
-      }
-
-      // Initial state: at top → header visible, popup hidden
-      navShell.style.transform = "translateY(0)";
-      navShell.style.opacity = "1";
-      navShell.style.pointerEvents = "auto";
-
-      if (popupNav) {
-        popupNav.style.opacity = "0";
-        popupNav.style.pointerEvents = "none";
-        popupNav.style.transform = "translateY(16px)";
-      }
-
-      let isAtTop = true;
-
-      const apply = (y) => {
-        const nowAtTop = y <= TOP_THRESHOLD;
-
-        if (nowAtTop) {
-          if (!isAtTop) {
-            // Show header
-            navShell.style.transform = "translateY(0)";
-            navShell.style.opacity = "1";
-            navShell.style.pointerEvents = "auto";
-
-            // Hide popup (if present)
-            if (popupNav) {
-              popupNav.style.opacity = "0";
-              popupNav.style.pointerEvents = "none";
-              popupNav.style.transform = "translateY(16px)";
-            }
-          }
-          isAtTop = true;
-          return;
-        }
-
-        // Away from top
-        if (isAtTop) {
-          isAtTop = false;
-
-          // Hide header
-          navShell.style.transform = "translateY(-72px)";
-          navShell.style.opacity = "0";
-          navShell.style.pointerEvents = "none";
-
-          // Show popup (if present)
-          if (popupNav) {
-            popupNav.style.opacity = "1";
-            popupNav.style.pointerEvents = "auto";
-            popupNav.style.transform = "translateY(0)";
-          }
-        }
+        // Fallback
+        return window.scrollY || document.documentElement.scrollTop || 0;
       };
 
-      // ---- Bind to the correct scroller ----
-      const lenis = window.lenis || window.__lenis;
-      if (lenis && typeof lenis.on === "function") {
-        lenis.on("scroll", ({ scroll }) => apply(scroll));
+      const initOnce = () => {
+        const navShell = document.querySelector(
+          "header.navigation, .navigation"
+        );
+        if (!navShell) return false;
+
+        // Popup is OPTIONAL (don’t bail if it’s not injected yet)
+        const popupNav = document.querySelector(".x_nav_wrap");
+
+        // Smooth transitions
+        navShell.style.transition = `opacity 480ms ease, transform 650ms ${ease}`;
+        if (popupNav) {
+          popupNav.style.transition = `opacity 480ms ease, transform 650ms ${ease}`;
+        }
+
+        // Initial state: at top → header visible, popup hidden
+        navShell.style.transform = "translateY(0)";
+        navShell.style.opacity = "1";
+        navShell.style.pointerEvents = "auto";
+
+        if (popupNav) {
+          popupNav.style.opacity = "0";
+          popupNav.style.pointerEvents = "none";
+          popupNav.style.transform = "translateY(16px)";
+        }
+
+        let isAtTop = true;
+
+        const apply = (y) => {
+          const nowAtTop = y <= TOP_THRESHOLD;
+
+          if (nowAtTop) {
+            if (!isAtTop) {
+              // Show header
+              navShell.style.transform = "translateY(0)";
+              navShell.style.opacity = "1";
+              navShell.style.pointerEvents = "auto";
+
+              // Hide popup (if present)
+              if (popupNav) {
+                popupNav.style.opacity = "0";
+                popupNav.style.pointerEvents = "none";
+                popupNav.style.transform = "translateY(16px)";
+              }
+            }
+            isAtTop = true;
+            return;
+          }
+
+          // Away from top
+          if (isAtTop) {
+            isAtTop = false;
+
+            // Hide header
+            navShell.style.transform = "translateY(-72px)";
+            navShell.style.opacity = "0";
+            navShell.style.pointerEvents = "none";
+
+            // Show popup (if present)
+            if (popupNav) {
+              popupNav.style.opacity = "1";
+              popupNav.style.pointerEvents = "auto";
+              popupNav.style.transform = "translateY(0)";
+            }
+          }
+        };
+
+        // ---- Bind to the correct scroller ----
+        const lenis = window.lenis || window.__lenis;
+        if (lenis && typeof lenis.on === "function") {
+          lenis.on("scroll", ({ scroll }) => apply(scroll));
+          apply(getScrollY());
+          console.log("[scroll-nav] bound to Lenis");
+          return true;
+        }
+
+        const pane = document.querySelector(".lenisscroll-pane");
+        if (pane && pane.scrollHeight > pane.clientHeight) {
+          pane.addEventListener("scroll", () => apply(getScrollY()), {
+            passive: true,
+          });
+          apply(getScrollY());
+          console.log("[scroll-nav] bound to .lenisscroll-pane");
+          return true;
+        }
+
+        window.addEventListener("scroll", () => apply(getScrollY()), {
+          passive: true,
+        });
         apply(getScrollY());
-        console.log("[scroll-nav] bound to Lenis");
+        console.log("[scroll-nav] bound to window");
         return true;
-      }
+      };
 
-      const pane = document.querySelector(".lenisscroll-pane");
-      if (pane && pane.scrollHeight > pane.clientHeight) {
-        pane.addEventListener("scroll", () => apply(getScrollY()), { passive: true });
-        apply(getScrollY());
-        console.log("[scroll-nav] bound to .lenisscroll-pane");
-        return true;
-      }
-
-      window.addEventListener("scroll", () => apply(getScrollY()), { passive: true });
-      apply(getScrollY());
-      console.log("[scroll-nav] bound to window");
-      return true;
-    };
-
-    // Try now, and retry briefly because you inject header/popup later
-    if (initOnce()) return;
-
-    let tries = 0;
-    const retry = () => {
-      tries++;
+      // Try now, and retry briefly because you inject header/popup later
       if (initOnce()) return;
-      if (tries > 180) return; // ~3 seconds at 60fps
-      requestAnimationFrame(retry);
-    };
-    requestAnimationFrame(retry);
-  } catch (e) {
-    console.warn("[scroll-nav] init error", e);
-  }
-}
-window.__initScrollNavSwap = __initScrollNavSwap;
 
+      let tries = 0;
+      const retry = () => {
+        tries++;
+        if (initOnce()) return;
+        if (tries > 180) return; // ~3 seconds at 60fps
+        requestAnimationFrame(retry);
+      };
+      requestAnimationFrame(retry);
+    } catch (e) {
+      console.warn("[scroll-nav] init error", e);
+    }
+  }
+  window.__initScrollNavSwap = __initScrollNavSwap;
 
   /* -----------------------------
      7) Scroll blocking while services-open AND gesture starts in header
@@ -5188,15 +5652,25 @@ window.__initScrollNavSwap = __initScrollNavSwap;
 
     function inHeader(target) {
       const header = document.querySelector(HEADER_SEL);
-      return !!(header && target && target.closest && target.closest(HEADER_SEL));
+      return !!(
+        header &&
+        target &&
+        target.closest &&
+        target.closest(HEADER_SEL)
+      );
     }
 
     let lastY = window.scrollY;
-    bindOnce(window, "scroll_block_debug", "scroll", () => {
-      const y = window.scrollY;
-      if (y !== lastY) slog("WINDOW SCROLLED:", lastY, "→", y, "menuOpen=", isMenuOpen());
-      lastY = y;
-    }, { passive: true });
+    bindOnce(
+      window,
+      "scroll_block_debug",
+      "scroll",
+      () => {
+        const y = window.scrollY;
+        lastY = y;
+      },
+      { passive: true }
+    );
 
     function blockIfNeeded(e) {
       const open = isMenuOpen();
@@ -5207,25 +5681,52 @@ window.__initScrollNavSwap = __initScrollNavSwap;
       e.stopPropagation();
       e.stopImmediatePropagation && e.stopImmediatePropagation();
 
-      slog("BLOCKED", e.type, "deltaY=", e.deltaY, "target=", e.target?.className || e.target?.tagName);
+      slog(
+        "BLOCKED",
+        e.type,
+        "deltaY=",
+        e.deltaY,
+        "target=",
+        e.target?.className || e.target?.tagName
+      );
     }
 
     // capture-phase document listeners
-    bindOnce(document, "scroll_block_wheel", "wheel", blockIfNeeded, { passive: false, capture: true });
-    bindOnce(document, "scroll_block_touch", "touchmove", blockIfNeeded, { passive: false, capture: true });
+    bindOnce(document, "scroll_block_wheel", "wheel", blockIfNeeded, {
+      passive: false,
+      capture: true,
+    });
+    bindOnce(document, "scroll_block_touch", "touchmove", blockIfNeeded, {
+      passive: false,
+      capture: true,
+    });
 
-    bindOnce(document, "scroll_block_key", "keydown", (e) => {
-      if (!isMenuOpen()) return;
-      if (!inHeader(document.activeElement)) return;
+    bindOnce(
+      document,
+      "scroll_block_key",
+      "keydown",
+      (e) => {
+        if (!isMenuOpen()) return;
+        if (!inHeader(document.activeElement)) return;
 
-      const keys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
-      if (!keys.includes(e.key)) return;
+        const keys = [
+          "ArrowUp",
+          "ArrowDown",
+          "PageUp",
+          "PageDown",
+          "Home",
+          "End",
+          " ",
+        ];
+        if (!keys.includes(e.key)) return;
 
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation && e.stopImmediatePropagation();
-      slog("BLOCKED key scroll:", e.key);
-    }, { capture: true });
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation && e.stopImmediatePropagation();
+        slog("BLOCKED key scroll:", e.key);
+      },
+      { capture: true }
+    );
   }
 
   /* -----------------------------
@@ -5238,10 +5739,10 @@ window.__initScrollNavSwap = __initScrollNavSwap;
       () => document.querySelector("header.navigation"),
       () => {
         if (typeof window.__initScrollNavSwap === "function") {
-            window.__initScrollNavSwap();
-          } else {
-            console.warn("[hdr-init] __initScrollNavSwap missing (skipping)");
-          }
+          window.__initScrollNavSwap();
+        } else {
+          console.warn("[hdr-init] __initScrollNavSwap missing (skipping)");
+        }
         __initScrollBlockWhileMenuOpen();
 
         // Services menu depends on those elements existing
@@ -5249,13 +5750,19 @@ window.__initScrollNavSwap = __initScrollNavSwap;
         __initServicesMenuSecondary();
 
         // GSAP bits
-        try { __initGSAPNavigation(); } catch (e) { console.error("[hdr-init] GSAP nav failed", e); }
-        try { __initServicesCarouselWheel(); } catch (e) { console.error("[hdr-init] GSAP wheel failed", e); }
+        try {
+          __initGSAPNavigation();
+        } catch (e) {
+          console.error("[hdr-init] GSAP nav failed", e);
+        }
+        try {
+          __initServicesCarouselWheel();
+        } catch (e) {
+          console.error("[hdr-init] GSAP wheel failed", e);
+        }
 
         // Lenis lock wiring
         __initLenisLocking();
-
-       
 
         log("All header/scripts init attempted.");
       },
