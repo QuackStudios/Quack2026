@@ -53667,7 +53667,7 @@ function __injectAfterMain() {
 "Your website is costing you clarity and dominance." Blah blah blah.
 
 
-Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
+Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and the same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
 
 
 
