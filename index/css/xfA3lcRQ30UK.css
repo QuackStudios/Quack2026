@@ -3464,6 +3464,15 @@ figcaption {
   position: absolute;
   inset: 0%;
 }
+.big-quote {
+  white-space: pre-line;   /* or pre-wrap */
+}
+
+.≈er{
+  display:block;
+  width:100%;
+  height:1.2em;   /* increase for bigger gap */
+}
 
 .card-bg {
   z-index: 0;

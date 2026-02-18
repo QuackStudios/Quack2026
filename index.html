@@ -29,7 +29,147 @@
     <link rel="mask-icon" href="./apple-touch-icon.png" color="#000000" />
 
      <script src="index/js/vMpAccJ2sqik.js" ></script>
+<style>
+              /* EDIT MODE  */
+              .x_nav_component.is-edit .x_nav_wrap {width: 58.5rem; height: 42.625rem;transform:translateX(0);}
+              .x_nav_component.is-edit .x_nav_left {width:17.5rem;}
+              .x_nav_component.is-edit .x_nav_left_inner {display:flex}
+              .x_nav_component.is-edit .x_nav_bg {display:block; opacity:60%;}
+              .x_nav_component.is-edit .x_nav_button_ico.is-open {display:none}
+              .x_nav_component.is-edit .x_nav_button_ico.is-close {display:block}
+              .x_nav_component.is-edit .x_nav_button_bg {opacity:100%;}
+              .x_nav_component.is-edit .x_nav_content_wrap {display:block; opacity:100%}
+              .x_nav_component.is-edit .x_nav_list {display:flex;}
+              /* EDIT MODE -- TABLET */
+              @media (max-width:991px) {
+              .x_nav_component.is-edit .x_nav_wrap {width: 42.5rem; height: 37.375rem;}
+              .x_nav_component.is-edit .x_nav_left {width:13.25rem}
+              }
+              /* EDIT MODE -- MOBILE */
+              @media (max-width:767px) {
+              .x_nav_component.is-edit .x_nav_wrap {width: 22.5625rem; height: 25.625rem;}
+              .x_nav_component.is-edit .x_nav_content_wrap {display:none;}
+              .x_nav_component.is-edit .x_nav_left {width:100%}
+              /* EDIT MODE -- SUBMENU */
+              .x_nav_component.is-sub-menu .x_nav_right {height:26rem}
+              .x_nav_component.is-sub-menu .x_nav_content_wrap {opacity:1}
+              .x_nav_component.is-sub-menu .x_nav_content_wrap {display:block}
+              .x_nav_component.is-sub-menu .x_nav_list {opacity:0}
+              .x_nav_component.is-sub-menu .x_nav_wrap {height: 30rem}
+              }
+              /* ======================= */
 
+              /* NAV BTN */
+              .x_nav_button_bg.is-active {background-color: transparent; backdrop-filter: none;}
+              /* NAV BTN -- DESKTOP */
+              @media (min-width:991px) {
+              .x_nav_button_wrap:hover .x_nav_button_bg{background-color:var(--x_colors--base-900)}
+              }
+
+              /* LEFT MAIN MENU */
+              .x_nav_link_wrap.is-active .x_nav_link_arrow,
+              .x_nav_link_wrap.is-active .x_nav_link_text {opacity:100%}
+              .x_nav_link_wrap.w--current .x_nav_link_dot {display:block}
+              /* LEFT MAIN MENU -- DESKTOP */
+              @media (min-width:991px){
+              .x_nav_link_wrap:hover .x_nav_link_arrow,
+              .x_nav_link_wrap:hover .x_nav_link_text {opacity:100%}
+              }
+
+              /* SERVICES */
+              .x_nav_content_inner.is-active {display:flex}
+              /* SERVICES -- DESKTOP */
+              @media (min-width:991px){
+              .x_nav_services_link:hover .x_nav_services_bg {opacity:100%}
+              .x_nav_services_link:hover .x_nav_services_subtitle {color:var(--x_colors--base-100);}
+              .x_nav_services_link:hover .x_nav_services_ico {opacity:100%}
+              .x_nav_services_row {flex: 1;transition: flex 0.4s ease;}
+              .x_nav_services_row:hover {flex: 1.5;}
+              .x_nav_content_inner.is-services .x_nav_services_row:not(:hover) {flex: 0.75;}
+              /* SERVICES -- MOBILE */
+              @media (max-width:767px) {
+              .x_nav_services_link .x_nav_services_ico {opacity:30%}
+              }
+
+              /* PROJECTS */
+              .x_nav_projects_slide:first-child {opacity:100%}
+
+              /* INSIGHTS -- DESKTOP */
+              @media (min-width:991px){
+              .x_nav_insights_link:hover .x_nav_insights_img {transform: scale(1.02)}
+              }
+
+              .x_nav_insights_link:hover {
+                background-color: rgba(0, 0, 0, 0.2);
+              }
+
+              .x_nav_insights_link:hover .x_nav_insights_title {
+                text-decoration: underline white;
+              }
+
+              /* INSIGHTS -- MOBILE */
+              @media (max-width:767px) {
+              .x_nav_insights_item:nth-child(1n+3) {border-bottom: 1px solid transparent}
+              }
+
+              /* Open and Close Psuedo Element */
+              /* SERVICES label + icon layout */
+/* Make the "Services" label hold text + icon side-by-side */
+.link-text.is-1 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;          /* space between text and icon */
+}
+
+/* Icon container */
+.link-text.is-1 .services-toggle-icon {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 360ms cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+/* Rotate the whole icon when open (adds a bit of life) */
+.link-text.is-1 .services-toggle-icon.is-open {
+  transform: rotate(180deg);
+}
+
+/* Horizontal + vertical bars */
+.link-text.is-1 .services-toggle-icon::before,
+.link-text.is-1 .services-toggle-icon::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  top: 50%;
+  left: 0;
+  transform-origin: center;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  transition:
+    transform 360ms cubic-bezier(0.55, 0, 0.1, 1),
+    opacity 200ms ease-out;
+}
+
+/* Vertical bar (for the +) */
+.link-text.is-1 .services-toggle-icon::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* OPEN STATE:
+   - vertical bar shrinks & fades (leaving a minus)
+*/
+.link-text.is-1 .services-toggle-icon.is-open::after {
+  transform: translateY(-50%) rotate(90deg) scaleX(0);
+  opacity: 0;
+}
+
+
+
+
+            </style>
    
     <script src="./test/js/UIv48y3MkN15.js" defer=""></script>
     <script type="module">
@@ -7985,7 +8125,7 @@
     // Debug: show first line’s current wrapper texts
     const first = lines[0];
     const w = first ? Array.from(first.querySelectorAll('div[aria-hidden="true"]')).map(n => n.textContent) : [];
-    console.log(TAG, reason, "applied to one .HomeHero-title. line0 words:", w);
+    
 
     return true;
   }
@@ -7993,7 +8133,7 @@
   function applyAll(reason = "applyAll") {
     const titles = Array.from(document.querySelectorAll(".HomeHero-title"));
     if (!titles.length) {
-      console.log(TAG, reason, "no .HomeHero-title found");
+     
       return false;
     }
 
@@ -8012,11 +8152,11 @@
   const boot = setInterval(() => {
     tries++;
     if (ready()) {
-      console.log(TAG, "ready: aria-hidden word nodes exist. applying...");
+      
       applyAll("boot");
       clearInterval(boot);
     } else if (tries % 20 === 0) {
-      console.log(TAG, "waiting for split nodes...", tries);
+      
     }
     if (tries > 400) clearInterval(boot);
   }, 50);
@@ -8025,17 +8165,17 @@
   window.addEventListener("load", () => {
     const heroRoots = Array.from(document.querySelectorAll(".HomeHero-title"));
     if (!heroRoots.length) {
-      console.log(TAG, "load: no .HomeHero-title roots");
+      
       return;
     }
 
-    console.log(TAG, "load: observing", heroRoots.length, ".HomeHero-title roots");
+   
 
     heroRoots.forEach((root, idx) => {
       const obs = new MutationObserver(() => {
         // If wrappers exist but are empty, the reveal plugin just cleared/rebuilt. Refill.
         if (isEmptyWrapperState(root)) {
-          console.log(TAG, `observer: detected EMPTY wrapper state on title#${idx}. refilling...`);
+          
           applyToOneTitle(root, `observer refill title#${idx}`);
         }
       });
@@ -8110,17 +8250,17 @@
   function applyOnce(reason = "applyOnce") {
     const title = getTitle1Root();
     if (!title) {
-      console.log(TAG, reason, "No title root found yet");
+      
       return false;
     }
 
     const groups = Array.from(title.querySelectorAll('div[role="group"]'));
     if (!groups.length) {
-      console.log(TAG, reason, "No role=group lines found yet");
+      
       return false;
     }
 
-    console.log(TAG, reason, "Found groups:", groups.length);
+   
 
 
     // Apply NEW_LINES onto existing groups; extra groups get blank
@@ -8148,7 +8288,7 @@
     const ok = applyOnce(`interval ${Date.now() - start}ms`);
     if ((Date.now() - start) > FORCE_FOR_MS || tries > 200) {
       clearInterval(timer);
-      console.log(TAG, "Stopped forcing");
+      
     }
   }, 120);
 
@@ -8158,11 +8298,11 @@
 
     const wrap = document.querySelectorAll(".HomeSwirlTitles-title-wrap")[0];
     if (!wrap) {
-      console.log(TAG, "load: wrap not found");
+     
       return;
     }
 
-    console.log(TAG, "load: attaching MutationObserver");
+   
 
     const obs = new MutationObserver(() => {
       // If any group aria-label contains the old copy, re-apply
@@ -8180,7 +8320,7 @@
         ariaText.includes("future");
 
       if (reverted) {
-        console.log(TAG, "observer: detected revert, reapplying...");
+        
         applyOnce("observer");
       }
     });
@@ -8188,6 +8328,170 @@
     obs.observe(wrap, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label"] });
   });
 })();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const navContainer = document.body;
+
+  const getNavLinks = () => document.querySelectorAll(".x_nav_link_wrap");
+  const getNavContents = () => document.querySelectorAll(".x_nav_content_inner");
+  const getFirstNavLink = () => getNavLinks()[0];
+
+  const disableClasses = ["is-services", "is-insights"];
+
+  const clearAll = () => {
+    const navLinksLive = getNavLinks();
+    const navContentsLive = getNavContents();
+    const firstNavLinkLive = navLinksLive[0];
+
+    navLinksLive.forEach((link) => {
+      if (window.innerWidth <= 767 && link === firstNavLinkLive) return;
+
+      link.classList.remove("is-active");
+      link.dataset.clicked = "false";
+
+      if (window.innerWidth > 767 && window.innerWidth <= 991 && link.dataset.href) {
+        link.removeAttribute("href");
+      }
+
+      if (link._hrefTimer) {
+        clearTimeout(link._hrefTimer);
+        link._hrefTimer = null;
+      }
+    });
+
+    navContentsLive.forEach((content) => content.classList.remove("is-active"));
+  };
+
+  const manageDisabledLinks = () => {
+    const isMobile = window.innerWidth <= 767;
+    const navLinksLive = getNavLinks();
+
+    navLinksLive.forEach((link) => {
+      const shouldDisable = disableClasses.some((cls) => link.classList.contains(cls));
+
+      if (isMobile && shouldDisable) {
+        link.dataset.disabled = "true";
+      } else {
+        link.removeAttribute("data-disabled");
+      }
+    });
+  };
+
+  const restoreHrefIfNeeded = () => {
+    const screenWidth = window.innerWidth;
+    const navLinksLive = getNavLinks();
+
+    navLinksLive.forEach((link) => {
+      if (link.hasAttribute("href")) {
+        link.dataset.href = link.getAttribute("href");
+      }
+
+      if (screenWidth > 767 && screenWidth <= 991) {
+        if (link.hasAttribute("href")) link.removeAttribute("href");
+      } else {
+        if (!link.hasAttribute("href") && link.dataset.href) {
+          link.setAttribute("href", link.dataset.href);
+        }
+      }
+    });
+  };
+
+  const handleHover = (e) => {
+    const link = e.target.closest(".x_nav_link_wrap");
+    const firstNavLink = getFirstNavLink();
+
+    if (
+      !link ||
+      window.innerWidth <= 991 ||
+      (window.innerWidth <= 767 && link === firstNavLink)
+    ) return;
+
+    const navValue = link.getAttribute("nav-link");
+    const matchingContent = document.querySelector(
+      `.x_nav_content_inner[nav-content="${navValue}"]`
+    );
+
+    clearAll();
+    link.classList.add("is-active");
+    if (matchingContent) matchingContent.classList.add("is-active");
+  };
+
+  const handleClick = (e) => {
+    const link = e.target.closest(".x_nav_link_wrap");
+    const firstNavLink = getFirstNavLink();
+
+    if (!link || (window.innerWidth <= 767 && link === firstNavLink)) return;
+
+    const screenWidth = window.innerWidth;
+    const isMobile = screenWidth <= 767;
+    const isTablet = screenWidth > 767 && screenWidth <= 991;
+
+    const isDisabled = link.dataset.disabled === "true";
+    const clicked = link.dataset.clicked === "true";
+
+    const navValue = link.getAttribute("nav-link");
+    const matchingContent = document.querySelector(
+      `.x_nav_content_inner[nav-content="${navValue}"]`
+    );
+
+    if (isMobile && isDisabled) {
+      e.preventDefault();
+      return;
+    }
+
+    if (isTablet) {
+      if (!clicked) {
+        e.preventDefault();
+        clearAll();
+
+        link.classList.add("is-active");
+        link.dataset.clicked = "true";
+        if (matchingContent) matchingContent.classList.add("is-active");
+
+        link._hrefTimer = setTimeout(() => {
+          if (link.dataset.href && !link.hasAttribute("href")) {
+            link.setAttribute("href", link.dataset.href);
+          }
+          link._hrefTimer = null;
+        }, 500);
+
+        return;
+      }
+
+      return; // second click navigates (href restored)
+    }
+
+    if (isMobile) {
+      // clear only panels on mobile
+      getNavContents().forEach((content) => content.classList.remove("is-active"));
+    } else {
+      clearAll();
+    }
+
+    link.classList.add("is-active");
+    link.dataset.clicked = "true";
+    if (matchingContent) matchingContent.classList.add("is-active");
+  };
+
+  navContainer.addEventListener("mouseover", handleHover);
+  navContainer.addEventListener("click", handleClick);
+
+  window.addEventListener("resize", () => {
+    clearAll();
+    manageDisabledLinks();
+    restoreHrefIfNeeded();
+  });
+
+  // Init (works even if menu injects later; safe no-op if none exist yet)
+  getNavLinks().forEach((link) => {
+    link.dataset.clicked = "false";
+  });
+
+  manageDisabledLinks();
+  restoreHrefIfNeeded();
+});
 </script>
 
 

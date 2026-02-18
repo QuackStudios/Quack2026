@@ -42494,11 +42494,8 @@ const xE = { render: M4 },
     desktop: {
       content: {
         title1: `
-      Breakthrough Energy is a global
-      platform focused on accelerating
-      clean energy innovation and building
-      the industries of the future`.trim(),
-        title2: "Our approach isn't traditional. It's better",
+      If someone judged your business by your website alone, would you cringe?`.trim(),
+        title2: "Yeah... we fix that",
         images: [
           { id: 0, src: tD },
           { id: 1, src: nD },
@@ -53643,6 +53640,8 @@ function __injectPreloader() {
   }
 }
 
+
+
 function __injectAfterMain() {
   try {
     const pane = document.querySelector(".lenisscroll-pane");
@@ -53664,11 +53663,11 @@ function __injectAfterMain() {
                     <div class="quote-component">
                       <div scrub-each-word="" split-text="" class="big-quote">
                         You've seen the ads.
-"Your website is costing you clarity and dominance." Blah blah blah.
+"Your website is costing you clarity and dominance." Blah blah blah. &#10;&#10;
 
-
+<span class="quote-break">
 Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and the same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
-
+<span class="quote-break">
 
 
 If that sounds refreshingly boring... you're our kind of person.
@@ -53840,6 +53839,7 @@ If that sounds refreshingly boring... you're our kind of person.
             </section>
           </div>
     `;
+    
 
     const template = document.createElement("template");
     template.innerHTML = raw.trim();

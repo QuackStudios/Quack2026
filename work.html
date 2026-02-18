@@ -5251,5 +5251,169 @@ body.services-open .qs-main-logo img {
 </script>
 
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const navContainer = document.body;
+
+  const getNavLinks = () => document.querySelectorAll(".x_nav_link_wrap");
+  const getNavContents = () => document.querySelectorAll(".x_nav_content_inner");
+  const getFirstNavLink = () => getNavLinks()[0];
+
+  const disableClasses = ["is-services", "is-insights"];
+
+  const clearAll = () => {
+    const navLinksLive = getNavLinks();
+    const navContentsLive = getNavContents();
+    const firstNavLinkLive = navLinksLive[0];
+
+    navLinksLive.forEach((link) => {
+      if (window.innerWidth <= 767 && link === firstNavLinkLive) return;
+
+      link.classList.remove("is-active");
+      link.dataset.clicked = "false";
+
+      if (window.innerWidth > 767 && window.innerWidth <= 991 && link.dataset.href) {
+        link.removeAttribute("href");
+      }
+
+      if (link._hrefTimer) {
+        clearTimeout(link._hrefTimer);
+        link._hrefTimer = null;
+      }
+    });
+
+    navContentsLive.forEach((content) => content.classList.remove("is-active"));
+  };
+
+  const manageDisabledLinks = () => {
+    const isMobile = window.innerWidth <= 767;
+    const navLinksLive = getNavLinks();
+
+    navLinksLive.forEach((link) => {
+      const shouldDisable = disableClasses.some((cls) => link.classList.contains(cls));
+
+      if (isMobile && shouldDisable) {
+        link.dataset.disabled = "true";
+      } else {
+        link.removeAttribute("data-disabled");
+      }
+    });
+  };
+
+  const restoreHrefIfNeeded = () => {
+    const screenWidth = window.innerWidth;
+    const navLinksLive = getNavLinks();
+
+    navLinksLive.forEach((link) => {
+      if (link.hasAttribute("href")) {
+        link.dataset.href = link.getAttribute("href");
+      }
+
+      if (screenWidth > 767 && screenWidth <= 991) {
+        if (link.hasAttribute("href")) link.removeAttribute("href");
+      } else {
+        if (!link.hasAttribute("href") && link.dataset.href) {
+          link.setAttribute("href", link.dataset.href);
+        }
+      }
+    });
+  };
+
+  const handleHover = (e) => {
+    const link = e.target.closest(".x_nav_link_wrap");
+    const firstNavLink = getFirstNavLink();
+
+    if (
+      !link ||
+      window.innerWidth <= 991 ||
+      (window.innerWidth <= 767 && link === firstNavLink)
+    ) return;
+
+    const navValue = link.getAttribute("nav-link");
+    const matchingContent = document.querySelector(
+      `.x_nav_content_inner[nav-content="${navValue}"]`
+    );
+
+    clearAll();
+    link.classList.add("is-active");
+    if (matchingContent) matchingContent.classList.add("is-active");
+  };
+
+  const handleClick = (e) => {
+    const link = e.target.closest(".x_nav_link_wrap");
+    const firstNavLink = getFirstNavLink();
+
+    if (!link || (window.innerWidth <= 767 && link === firstNavLink)) return;
+
+    const screenWidth = window.innerWidth;
+    const isMobile = screenWidth <= 767;
+    const isTablet = screenWidth > 767 && screenWidth <= 991;
+
+    const isDisabled = link.dataset.disabled === "true";
+    const clicked = link.dataset.clicked === "true";
+
+    const navValue = link.getAttribute("nav-link");
+    const matchingContent = document.querySelector(
+      `.x_nav_content_inner[nav-content="${navValue}"]`
+    );
+
+    if (isMobile && isDisabled) {
+      e.preventDefault();
+      return;
+    }
+
+    if (isTablet) {
+      if (!clicked) {
+        e.preventDefault();
+        clearAll();
+
+        link.classList.add("is-active");
+        link.dataset.clicked = "true";
+        if (matchingContent) matchingContent.classList.add("is-active");
+
+        link._hrefTimer = setTimeout(() => {
+          if (link.dataset.href && !link.hasAttribute("href")) {
+            link.setAttribute("href", link.dataset.href);
+          }
+          link._hrefTimer = null;
+        }, 500);
+
+        return;
+      }
+
+      return; // second click navigates (href restored)
+    }
+
+    if (isMobile) {
+      // clear only panels on mobile
+      getNavContents().forEach((content) => content.classList.remove("is-active"));
+    } else {
+      clearAll();
+    }
+
+    link.classList.add("is-active");
+    link.dataset.clicked = "true";
+    if (matchingContent) matchingContent.classList.add("is-active");
+  };
+
+  navContainer.addEventListener("mouseover", handleHover);
+  navContainer.addEventListener("click", handleClick);
+
+  window.addEventListener("resize", () => {
+    clearAll();
+    manageDisabledLinks();
+    restoreHrefIfNeeded();
+  });
+
+  // Init (works even if menu injects later; safe no-op if none exist yet)
+  getNavLinks().forEach((link) => {
+    link.dataset.clicked = "false";
+  });
+
+  manageDisabledLinks();
+  restoreHrefIfNeeded();
+});
+</script>
+
   </body>
 </html>
