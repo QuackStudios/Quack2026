@@ -875,19 +875,19 @@ __WEBFLOW_FOOTER_HTML = `
                         <div class="footer-heading">Discover</div>
                         <a
                           data-prevent-transition=""
-                          href=""
+                          href="https://au.linkedin.com/company/quackstudiosaustralia"
                           target="_blank"
                           class="footer-nav-link w-inline-block"
                           ><div>LinkedIn</div></a
                         ><a
                           data-prevent-transition=""
-                          href=""
+                          href="https://www.instagram.com/neongoosestudios/"
                           target="_blank"
                           class="footer-nav-link w-inline-block"
                           ><div>Instagram</div></a
                         ><a
                           data-prevent-transition=""
-                          href=""
+                          href="https://www.facebook.com/people/QuackStudios/61569291452180/"
                           target="_blank"
                           class="footer-nav-link w-inline-block"
                           ><div>Facebook</div></a

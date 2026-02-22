@@ -47139,25 +47139,22 @@ const a$ = { class: "HomeAnimation" },
       imageSrc: h1,
       videoSrc: d1,
       title1: `
-Empowering innovators
-to build the future
+
 `.trim(),
       title2: `
-of energy.
+
 `.trim(),
     },
     mobile: {
       imageSrc: h1,
       videoSrc: d1,
       title1: `
-Empowering
-innovators
+
 `.trim(),
       title2: `
-to build`,
+`,
       title3: `
-the future
-of energy
+
 `.trim(),
     },
   },
@@ -51339,17 +51336,17 @@ function __injectScrollMenu() {
                   </div>
                   <div class="x_nav_socials_list">
                     <a
-                      href="https://www.linkedin.com/company/fourmeta/mycompany/"
+                      href="https://au.linkedin.com/company/quackstudiosaustralia"
                       target="_blank"
                       class="x_nav_socials_link x_u-s-body"
                       >Linkedin</a
                     ><a
-                      href="https://www.instagram.com/fourmeta.agency/"
+                      href="https://www.instagram.com/neongoosestudios/"
                       target="_blank"
                       class="x_nav_socials_link x_u-s-body"
                       >Instagram</a
                     ><a
-                      href="https://www.facebook.com/fourmeta.agency"
+                      href="https://www.facebook.com/people/QuackStudios/61569291452180/"
                       target="_blank"
                       class="x_nav_socials_link x_u-s-body"
                       >Facebook</a
@@ -52560,13 +52557,13 @@ function __injectScrollMenu() {
                           <img
                             sizes="(max-width: 1090px) 100vw, 1090px"
                             srcset="
-                              index/images/headshot-filler.jpg 500w,
-                              index/images/headshot-filler.jpg 800w,
-                              index/images/headshot-filler.jpg 1080w,
-                              index/images/headshot-filler.jpg 1090w
+                              emilia-maren.png 500w,
+                              emilia-maren.png 800w,
+                              emilia-maren.png 1080w,
+                              emilia-maren.png 1090w
                             "
                             alt="Ruben Roubish"
-                            src="index/images/headshot-filler.jpg"
+                            src="emilia-maren.png"
                             loading="lazy"
                             class="x_nav_contact_img"
                           />
@@ -52656,17 +52653,17 @@ function __injectScrollMenu() {
                       </address>
                       <div class="menu_contact_socials_wrap">
                         <a
-                          href="https://www.instagram.com/fourmeta.agency/"
+                          href="https://www.instagram.com/neongoosestudios/"
                           target="_blank"
                           class="menu_contact_socials_link x_u-s-body"
                           >Instagram</a
                         ><a
-                          href="https://www.linkedin.com/company/fourmeta/mycompany/"
+                          href="https://au.linkedin.com/company/quackstudiosaustralia"
                           target="_blank"
                           class="menu_contact_socials_link x_u-s-body"
                           >LinkedIn</a
                         ><a
-                          href="https://www.facebook.com/fourmeta.agency"
+                          href="https://www.facebook.com/people/QuackStudios/61569291452180/"
                           target="_blank"
                           class="menu_contact_socials_link x_u-s-body"
                           >Facebook</a
@@ -52790,12 +52787,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
                       <img
-                        src="index/images/MEbEHlhyRgz7.avif"
+                        src="brand-strategy-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/Ex50kTTBQE8f.avif 500w,
-                          index/images/MEbEHlhyRgz7.avif 880w
+                          brand-strategy-photo.avif 500w,
+                          brand-strategy-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -52829,7 +52826,7 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
                       <img
-                        src="index/images/1od3LmQmI811.avif"
+                        src="website-design-photo.avif"
                         loading="eager"
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -52863,12 +52860,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
                       <img
-                        src="index/images/4y5S09TQNmTa.avif"
+                        src="digital-development-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/cgiRSxsdDCNa.avif 500w,
-                          index/images/4y5S09TQNmTa.avif 880w
+                          digital-development-photo.avif 500w,
+                          digital-development-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -52902,12 +52899,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
                       <img
-                        src="index/images/XkUPGA4V2iz0.avif"
+                        src="copywriting-image.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/HiM8KO8LhrgL.avif 500w,
-                          index/images/XkUPGA4V2iz0.avif 880w
+                          copywriting-image.avif 500w,
+                          copywriting-image.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -52944,12 +52941,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
                       <img
-                        src="index/images/MEbEHlhyRgz7.avif"
+                        src="brand-strategy-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/Ex50kTTBQE8f.avif 500w,
-                          index/images/MEbEHlhyRgz7.avif 880w
+                          brand-strategy-photo.avif 500w,
+                          brand-strategy-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -52983,7 +52980,7 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
                       <img
-                        src="index/images/1od3LmQmI811.avif"
+                        src="website-design-photo.avif"
                         loading="eager"
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53017,12 +53014,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
                       <img
-                        src="index/images/4y5S09TQNmTa.avif"
+                        src="digital-development-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/cgiRSxsdDCNa.avif 500w,
-                          index/images/4y5S09TQNmTa.avif 880w
+                          digital-development-photo.avif 500w,
+                          digital-development-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53056,12 +53053,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
                       <img
-                        src="index/images/XkUPGA4V2iz0.avif"
+                        src="copywriting-image.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/HiM8KO8LhrgL.avif 500w,
-                          index/images/XkUPGA4V2iz0.avif 880w
+                          copywriting-image.avif 500w,
+                          copywriting-image.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53098,12 +53095,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
                       <img
-                        src="index/images/MEbEHlhyRgz7.avif"
+                        src="brand-strategy-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/Ex50kTTBQE8f.avif 500w,
-                          index/images/MEbEHlhyRgz7.avif 880w
+                          brand-strategy-photo.avif 500w,
+                          brand-strategy-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53137,7 +53134,7 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
                       <img
-                        src="index/images/1od3LmQmI811.avif"
+                        src="website-design-photo.avif"
                         loading="eager"
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53171,12 +53168,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
                       <img
-                        src="index/images/4y5S09TQNmTa.avif"
+                        src="digital-development-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/cgiRSxsdDCNa.avif 500w,
-                          index/images/4y5S09TQNmTa.avif 880w
+                          digital-development-photo.avif 500w,
+                          digital-development-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53210,12 +53207,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
                       <img
-                        src="index/images/XkUPGA4V2iz0.avif"
+                        src="copywriting-image.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/HiM8KO8LhrgL.avif 500w,
-                          index/images/XkUPGA4V2iz0.avif 880w
+                          copywriting-image.avif 500w,
+                          copywriting-image.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53252,12 +53249,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
                       <img
-                        src="index/images/MEbEHlhyRgz7.avif"
+                        src="brand-strategy-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/Ex50kTTBQE8f.avif 500w,
-                          index/images/MEbEHlhyRgz7.avif 880w
+                          brand-strategy-photo.avif 500w,
+                          brand-strategy-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53291,7 +53288,7 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
                       <img
-                        src="index/images/1od3LmQmI811.avif"
+                        src="website-design-photo.avif"
                         loading="eager"
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53325,12 +53322,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
                       <img
-                        src="index/images/4y5S09TQNmTa.avif"
+                        src="digital-development-photo.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/cgiRSxsdDCNa.avif 500w,
-                          index/images/4y5S09TQNmTa.avif 880w
+                          digital-development-photo.avif 500w,
+                          digital-development-photo.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
@@ -53364,12 +53361,12 @@ function __injectNewSection() {
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
                       <img
-                        src="index/images/XkUPGA4V2iz0.avif"
+                        src="copywriting-image.avif"
                         loading="eager"
                         sizes="(max-width: 880px) 100vw, 880px"
                         srcset="
-                          index/images/HiM8KO8LhrgL.avif 500w,
-                          index/images/XkUPGA4V2iz0.avif 880w
+                          copywriting-image.avif 500w,
+                          copywriting-image.avif 880w
                         "
                         alt=""
                         class="x_bc-header_services_card_img"
