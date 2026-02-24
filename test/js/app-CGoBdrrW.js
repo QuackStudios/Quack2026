@@ -53831,7 +53831,7 @@ function __injectAfterThirdAnchor() {
                     <a
                       data-prevent-transition=""
                       data-w-id="21ca679e-a158-6eb5-a63f-ddd0dbd67d8f"
-                      href="https://bravepeople.typeform.com/getstarted"
+                      href="https://quackstudios.typeform.com/getstarted"
                       target="_blank"
                       class="enquiry-card__wrap number-one is--black w-inline-block"
                       ><div class="card-header anim">
