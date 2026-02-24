@@ -51272,26 +51272,7 @@ function __injectScrollMenu() {
                         ></path></svg
                     ></a>
                     <div class="x_nav_list_line"></div>
-                    <a
-                      nav-link="works"
-                      href="./projects.html"
-                      class="x_nav_link_wrap is-works w-inline-block"
-                      ><div class="x_nav_link_text x_u-l-body">Works</div>
-                      <div class="x_nav_link_dot"></div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="100%"
-                        viewBox="0 0 32 32"
-                        fill="none"
-                        class="x_nav_link_arrow"
-                      >
-                        <path
-                          d="M7.17 6.67H25.33M24.3 6.67V24.83M24.3 6.67L6.67 25.33"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        ></path></svg
-                    ></a>
-                    <div class="x_nav_list_line"></div>
+                  
                     <a
                       nav-mobile=""
                       nav-link="insights"
@@ -51435,7 +51416,7 @@ function __injectScrollMenu() {
                         </div>
                         <div class="x_nav_services_bottom">
                           <div class="x_nav_services_title x_u-l-body">
-                            User experience design
+                            Website design
                           </div>
                           <div
                             class="x_nav_services_ico"
@@ -51454,22 +51435,22 @@ function __injectScrollMenu() {
                         <img
                           sizes="(max-width: 479px) 33vw, (max-width: 991px) 32vw, (max-width: 1439px) 26vw, 28vw"
                           srcset="
-                            index/images/Ex50kTTBQE8f.avif 500w,
-                            index/images/MEbEHlhyRgz7.avif 880w
+                            website-design-photo.avif 500w,
+                            website-design-photo.avif 880w
                           "
                           alt=""
-                          src="index/images/MEbEHlhyRgz7.avif"
+                          src="website-design-photo.avif"
                           loading="lazy"
                           class="x_nav_services_bg" /></a
                       ><a
                         href="./digital-product-development"
                         class="x_nav_services_link w-inline-block"
                         ><div class="x_nav_services_subtitle x_u-s-body">
-                          10 services<br />
+                          3 services<br />
                         </div>
                         <div class="x_nav_services_bottom">
                           <div class="x_nav_services_title x_u-l-body">
-                            Digital product development
+                            Digital development
                           </div>
                           <div
                             class="x_nav_services_ico"
@@ -51488,11 +51469,11 @@ function __injectScrollMenu() {
                         <img
                           sizes="(max-width: 479px) 33vw, (max-width: 991px) 32vw, (max-width: 1439px) 26vw, 28vw"
                           srcset="
-                            index/images/cgiRSxsdDCNa.avif 500w,
-                            index/images/4y5S09TQNmTa.avif 880w
+                            digital-development-photo.avif 500w,
+                            digital-development-photo.avif 880w
                           "
                           alt=""
-                          src="index/images/4y5S09TQNmTa.avif"
+                          src="digital-development-photo.avif"
                           loading="lazy"
                           class="x_nav_services_bg"
                       /></a>
@@ -51506,7 +51487,7 @@ function __injectScrollMenu() {
                         </div>
                         <div class="x_nav_services_bottom">
                           <div class="x_nav_services_title x_u-l-body">
-                            Branding services
+                            Brand strategy
                           </div>
                           <div
                             class="x_nav_services_ico"
@@ -51525,11 +51506,11 @@ function __injectScrollMenu() {
                         <img
                           sizes="(max-width: 479px) 31vw, (max-width: 991px) 32vw, (max-width: 1439px) 26vw, 28vw"
                           srcset="
-                            index/images/HiM8KO8LhrgL.avif 500w,
-                            index/images/XkUPGA4V2iz0.avif 880w
+                            brand-strategy-photo.avif 500w,
+                            brand-strategy-photo.avif 880w
                           "
                           alt=""
-                          src="index/images/XkUPGA4V2iz0.avif"
+                          src="brand-strategy-photo.avif"
                           loading="lazy"
                           class="x_nav_services_bg" /></a
                       ><a
@@ -51540,7 +51521,7 @@ function __injectScrollMenu() {
                         </div>
                         <div class="x_nav_services_bottom">
                           <div class="x_nav_services_title x_u-l-body">
-                            Marketing design & animation
+                            Copywriting
                           </div>
                           <div
                             class="x_nav_services_ico"
@@ -51559,73 +51540,12 @@ function __injectScrollMenu() {
                         <img
                           sizes="(max-width: 479px) 31vw, (max-width: 991px) 32vw, (max-width: 1439px) 26vw, 28vw"
                           srcset="
-                            index/images/9gzGuiswPtDM.avif 500w,
-                            index/images/lA5cZQcoXN7q.avif 880w
+                            copywriting-image.avif 500w,
+                            copywriting-image.avif 880w
                           "
                           alt=""
-                          src="index/images/lA5cZQcoXN7q.avif"
+                          src="copywriting-image.avif"
                           loading="lazy"
-                          class="x_nav_services_bg"
-                      /></a>
-                    </div>
-                    <div class="x_nav_services_row">
-                      <a
-                        href="./digital-marketing"
-                        class="x_nav_services_link w-inline-block"
-                        ><div class="x_nav_services_subtitle x_u-s-body">
-                          6 services
-                        </div>
-                        <div class="x_nav_services_bottom">
-                          <div class="x_nav_services_title x_u-l-body">
-                            Digital marketing
-                          </div>
-                          <div
-                            class="x_nav_services_ico"
-                            data-w-id="0bd49cce-db8a-e955-2140-f1490e1edee3"
-                            data-animation-type="lottie"
-                            data-src="https://cdn.prod.website-files.com/63f5d378a903c2a12583ce2f/679794efd581f88d7816894a_Social%20Media.json"
-                            data-loop="1"
-                            data-direction="1"
-                            data-autoplay="1"
-                            data-is-ix2-target="0"
-                            data-renderer="svg"
-                            data-default-duration="0"
-                            data-duration="0"
-                          ></div>
-                        </div>
-                        <img
-                          loading="lazy"
-                          src="index/images/6813429b07113242088e834c_image%20%2816%29.avif"
-                          alt=""
-                          class="x_nav_services_bg" /></a
-                      ><a
-                        href="./shopify-ecommerce"
-                        class="x_nav_services_link is-last w-inline-block"
-                        ><div class="x_nav_services_subtitle x_u-s-body">
-                          8 services
-                        </div>
-                        <div class="x_nav_services_bottom">
-                          <div class="x_nav_services_title x_u-l-body">
-                            Shopify eCommerce
-                          </div>
-                          <div
-                            class="x_nav_services_ico"
-                            data-w-id="3bab695c-d5e3-c1f7-9c7b-7c7c44140333"
-                            data-animation-type="lottie"
-                            data-src="https://cdn.prod.website-files.com/63f5d378a903c2a12583ce2f/679794ed890900b4a3a7a885_Payments.json"
-                            data-loop="1"
-                            data-direction="1"
-                            data-autoplay="1"
-                            data-is-ix2-target="0"
-                            data-renderer="svg"
-                            data-default-duration="0"
-                            data-duration="0"
-                          ></div>
-                        </div>
-                        <img
-                          loading="lazy"
-                          src="index/images/1od3LmQmI811.avif"
-                          alt=""
                           class="x_nav_services_bg"
                       /></a>
                     </div>
@@ -51714,13 +51634,13 @@ function __injectScrollMenu() {
                         </div>
                       </div>
                       <div class="x_nav_about_num_wrap">
-                        <div class="x_nav_about_num">300+</div>
+                        <div class="x_nav_about_num">100+</div>
                         <div class="x_nav_about_num_text">
                           Finished <br />projects
                         </div>
                       </div>
                       <div class="x_nav_about_num_wrap">
-                        <div class="x_nav_about_num">7</div>
+                        <div class="x_nav_about_num">4</div>
                         <div class="x_nav_about_num_text">
                           Main <br />Services
                         </div>
@@ -52419,19 +52339,19 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="./blog/time-to-redesign-website"
+                            href="why-most-experts-never-have-to-live-with-the-result.html"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
-                                src="index/images/67ffbb76fd4a3d25801489c9_website%20redesign.jpg"
+                                src="insights/images/uks3bnbjAUsw.webp"
                                 loading="lazy"
                                 alt=""
                                 sizes="100vw"
                                 srcset="
-                                  index/images/67ffbb76fd4a3d25801489c9_website%20redesign-p-500.jpg   500w,
-                                  index/images/67ffbb76fd4a3d25801489c9_website%20redesign-p-800.jpg   800w,
-                                  index/images/67ffbb76fd4a3d25801489c9_website%20redesign-p-1080.jpg 1080w,
-                                  index/images/67ffbb76fd4a3d25801489c9_website%20redesign.jpg        1598w
+                                  insights/images/uks3bnbjAUsw.webp   500w,
+                                  insights/images/uks3bnbjAUsw.webp   800w,
+                                  insights/images/uks3bnbjAUsw.webp   1080w,
+                                  insights/images/uks3bnbjAUsw.webp   1598w
                                 "
                                 class="x_nav_insights_img"
                               />
@@ -52441,8 +52361,7 @@ function __injectScrollMenu() {
                                 UX/UI
                               </div>
                               <div class="x_nav_insights_title x_u-s-body">
-                                Website Redesign: Is It Time to Change the
-                                Design of Your Website?
+                          Why Most “Experts” Never Have to Live With the Result
                               </div>
                             </div></a
                           >
@@ -52452,17 +52371,17 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="./blog/effective-landing-page-design-for-startups"
+                            href="Flexible Scope Issues.html"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
-                                src="index/images/VUXfjsyNYguJ.jpg"
+                                src="insights/images/4RwXcr8j9F21.webp"
                                 loading="lazy"
                                 alt=""
                                 sizes="100vw"
                                 srcset="
-                                  index/images/uK3c23re5xB6.jpg 500w,
-                                  index/images/VUXfjsyNYguJ.jpg 799w
+                                  insights/images/4RwXcr8j9F21.webp 500w,
+                                  insights/images/4RwXcr8j9F21.webp 799w
                                 "
                                 class="x_nav_insights_img"
                               />
@@ -52472,8 +52391,7 @@ function __injectScrollMenu() {
                                 UX/UI
                               </div>
                               <div class="x_nav_insights_title x_u-s-body">
-                                How to Create an Effective Landing Page for Your
-                                Startup
+                                Why “Flexible Scope” Is a Red Flag
                               </div>
                             </div></a
                           >
@@ -52483,19 +52401,19 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="./blog/11-key-ux-and-ui-components-driving-website-engagement"
+                            href="Website vs Business. What's Confusing.html"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
-                                src="index/images/mNvEfsaclxtl.jpg"
+                                src="insights/images/UZLywOz1Yi9Q.webp"
                                 loading="lazy"
                                 alt=""
                                 sizes="100vw"
                                 srcset="
-                                  index/images/100PLMJozlY4.jpg  500w,
-                                  index/images/BwW5AjbaSeV4.jpg  800w,
-                                  index/images/K3QwfUJHDtxd.jpg 1080w,
-                                  index/images/mNvEfsaclxtl.jpg 1598w
+                                  insights/images/UZLywOz1Yi9Q.webp  500w,
+                                  insights/images/UZLywOz1Yi9Q.webp  800w,
+                                  insights/images/UZLywOz1Yi9Q.webp 1080w,
+                                  insights/images/UZLywOz1Yi9Q.webp 1598w
                                 "
                                 class="x_nav_insights_img"
                               />
@@ -52504,9 +52422,8 @@ function __injectScrollMenu() {
                               <div class="x_nav_insights_service x_u-s-body">
                                 UX/UI
                               </div>
-                              <div class="x_nav_insights_title x_u-s-body">
-                                11 Key UX and UI Components Driving Website
-                                Engagement
+                              <div class="x_nav_insights_title x_u-s-body">       
+                          The Website Isn’t Confusing. The Business Is.
                               </div>
                             </div></a
                           >
@@ -52516,19 +52433,19 @@ function __injectScrollMenu() {
                           class="x_nav_insights_item w-dyn-item"
                         >
                           <a
-                            href="./blog/what-is-a-design-brief"
+                            href="full-service-agency-vs-bespoke-solution.html"
                             class="x_nav_insights_link w-inline-block"
                             ><div class="x_nav_insights_img_wrap">
                               <img
-                                src="index/images/pJJ14WyPVz5l.jpg"
+                                src="insights/images/ISQn8QE3qgD3.webp"
                                 loading="lazy"
                                 alt=""
                                 sizes="100vw"
                                 srcset="
-                                  index/images/h1X8KvweF5mI.jpg  500w,
-                                  index/images/a44Jh20UqG4S.jpg  800w,
-                                  index/images/T0FbowkYJCc5.jpg 1080w,
-                                  index/images/pJJ14WyPVz5l.jpg 1598w
+                                  insights/images/ISQn8QE3qgD3.webp  500w,
+                                  insights/images/ISQn8QE3qgD3.webp  800w,
+                                  insights/images/ISQn8QE3qgD3.webp 1080w,
+                                  insights/images/ISQn8QE3qgD3.webp 1598w
                                 "
                                 class="x_nav_insights_img"
                               />
@@ -52538,8 +52455,7 @@ function __injectScrollMenu() {
                                 UX/UI
                               </div>
                               <div class="x_nav_insights_title x_u-s-body">
-                                What Is a Design Brief for Your Project And How
-                                to Create It?
+                         Why Full-Service Agencies Make Websites Worse
                               </div>
                             </div></a
                           >
@@ -52567,42 +52483,6 @@ function __injectScrollMenu() {
                             loading="lazy"
                             class="x_nav_contact_img"
                           />
-                          <div class="x_nav_contact_name_wrap">
-                            <div class="x_nav_contact_name_ico w-embed">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="100%"
-                                height="100%"
-                                viewBox="0 0 25 24"
-                                fill="none"
-                              >
-                                <circle
-                                  cx="12.4844"
-                                  cy="12"
-                                  r="12"
-                                  fill="white"
-                                ></circle>
-                                <circle
-                                  cx="3.51432"
-                                  cy="3.51432"
-                                  r="3.51432"
-                                  transform="matrix(-1 0 0 1 16 8.48535)"
-                                  fill="#8A9F83"
-                                ></circle>
-                                <circle
-                                  opacity="0.6"
-                                  cx="12.4902"
-                                  cy="12"
-                                  r="4.97862"
-                                  stroke="#83838E"
-                                  stroke-width="0.58572"
-                                ></circle>
-                              </svg>
-                            </div>
-                            <div class="x_nav_contact_name_text">
-                              Garry Kasparov
-                            </div>
-                          </div>
                         </div>
                         <div class="menu_contact_rail_wrap">
                           <div class="menu_contact_rail_inner">
@@ -52677,7 +52557,7 @@ function __injectScrollMenu() {
                   class="x_nav_contact-btn_link is-consult w-inline-block open-koalender"
                   data-cal-open
                   ><div class="x_nav_contact-btn_text">
-                    Let's talk →
+                    Get free consultation
                   </div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -54008,7 +53888,7 @@ function __injectAfterThirdAnchor() {
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
                           <div class="enquiry-card-heading">
-                            Keep it running
+                            Brand it
                           </div>
                         </div>
                         <div class="card-tag no--caps">
