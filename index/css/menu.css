@@ -484,6 +484,78 @@
   position: absolute;
   inset: auto 0 0;
 }
+
+@media (min-width: 1000px) {
+  .desktop-hide {
+  display: none !important;
+}
+}
+
+
+@media (max-width: 999px) {
+  main {
+  position: relative;
+  z-index: 999;
+}
+.wrap-transition {
+  position: relative;
+  z-index: 999;
+}
+.section.background-color-tint {
+  position: relative;
+  z-index: 999;
+}
+footer {
+  position: relative;
+  z-index: 99 !important;
+}
+.section_footer.background-color-black {
+  padding-bottom: 0px !important;
+}
+.TheFooter-wrapper {
+  padding-bottom: 0px !important;
+}
+.next-page.is--default.w-inline-block {
+  display: none !important;
+  opacity: 0 !important;
+}
+.max-width-medium.footer-mailing-list {
+  display: none !important;
+}
+.enquiry-card__overlay.number-one {
+  background-color: black !important;
+  opacity: 0.5 !important;
+} 
+.enquiry-card__overlay.number-two {
+  background-color: black !important;
+  opacity: 0.5 !important;
+}
+.enquiry-card-p {
+  color: white !important;
+}
+.enquiry-card-heading {
+  color: white !important;
+}
+.card-tag.no--caps {
+  color: white !important;
+}
+.mobile-hide{
+  display: none !important;
+}
+.qs-main-logo.desktop-hide {
+  width: 80% !important;
+}
+#w-node-a5e9ce1a-dc41-a502-5ab4-74a54e60872b-644deb4a {
+  display: none !important;
+}
+#w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608732-644deb4a {
+  display: none !important;
+}
+
+}
+
+
+
 .w-slider-nav.w-round > div {
   border-radius: 100%;
 }

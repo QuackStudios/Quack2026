@@ -40916,179 +40916,8 @@ const a4 = { class: "KeyAreas-title-wrap" },
         i.value = P > 0 && o === P;
       }
       return (P, Y) => {
-        const ee = s4,
-          X = kE,
-          C = Nl;
-        return (
-          ae(),
-          me(
-            "div",
-            {
-              ref_key: "rootRef",
-              ref: A,
-              class: st(["KeyAreas", { visible: ge(k) }]),
-            },
-            [
-              Ve(ee, { block: t.block }, null, 8, ["block"]),
-              Ve(X, { "label-index": ge(oe), areas: ge(W) }, null, 8, [
-                "label-index",
-                "areas",
-              ]),
-              J("div", a4, [
-                J(
-                  "div",
-                  l4,
-                  [
-                    (ae(!0),
-                    me(
-                      Ye,
-                      null,
-                      ut(
-                        ge(ne),
-                        (G, I) => (
-                          ae(),
-                          me(
-                            "div",
-                            {
-                              ref_for: !0,
-                              ref: (D) => (h[I] = D),
-                              key: `line-${I}`,
-                              innerHTML: G,
-                            },
-                            null,
-                            8,
-                            u4
-                          )
-                        )
-                      ),
-                      128
-                    )),
-                  ],
-                  512
-                ),
-              ]),
-              ge(H)
-                ? (ae(),
-                  me("div", c4, [
-                    (ae(!0),
-                    me(
-                      Ye,
-                      null,
-                      ut(
-                        ge(H),
-                        (G, I) => (
-                          ae(),
-                          me(
-                            "div",
-                            {
-                              ref_for: !0,
-                              ref: (D) => (l[I] = D),
-                              key: `area-${I}`,
-                              class: "KeyAreas-area",
-                            },
-                            [
-                              J("div", f4, [
-                                Ve(
-                                  C,
-                                  {
-                                    "image-url": G.imageSrc,
-                                    "video-url": G.src,
-                                    "fallback-to-static": ge(R),
-                                    onImgload: j,
-                                  },
-                                  null,
-                                  8,
-                                  [
-                                    "image-url",
-                                    "video-url",
-                                    "fallback-to-static",
-                                  ]
-                                ),
-                                J(
-                                  "div",
-                                  {
-                                    ref_for: !0,
-                                    ref: (D) => (d[I] = D),
-                                    class: "KeyAreas-video-gradient",
-                                  },
-                                  null,
-                                  512
-                                ),
-                              ]),
-                            ]
-                          )
-                        )
-                      ),
-                      128
-                    )),
-                  ]))
-                : bt("", !0),
-              J("div", d4, [
-                J("div", h4, [
-                  J(
-                    "h2",
-                    {
-                      ref_key: "unmaskedTitleRef",
-                      ref: _,
-                      class: "KeyAreas-content-title",
-                    },
-                    We(ge($)),
-                    513
-                  ),
-                ]),
-                J(
-                  "div",
-                  {
-                    ref_key: "maskedRef",
-                    ref: f,
-                    class: "KeyAreas-content masked",
-                  },
-                  [
-                    J(
-                      "div",
-                      {
-                        ref_key: "maskedTitleRef",
-                        ref: g,
-                        class: "KeyAreas-content-title",
-                      },
-                      We(ge($)),
-                      513
-                    ),
-                  ],
-                  512
-                ),
-                J("div", p4, [
-                  J(
-                    "div",
-                    {
-                      ref_key: "maskedBodyWrapRef",
-                      ref: y,
-                      class: "KeyAreas-content-body-wrap",
-                    },
-                    [
-                      J("div", m4, [
-                        J("div", g4, We(ge(z)), 1),
-                        J(
-                          "div",
-                          {
-                            ref_key: "maskedBodyRef",
-                            ref: b,
-                            class: "KeyAreas-content-body",
-                          },
-                          We(ge(M)),
-                          513
-                        ),
-                      ]),
-                    ],
-                    512
-                  ),
-                ]),
-              ]),
-            ],
-            2
-          )
-        );
-      };
+  return bt("", !0);
+};
     },
   },
   v4 = _t(_4, [["__scopeId", "data-v-c690cc61"]]),
@@ -44872,198 +44701,8 @@ const IE = { render: MD },
         i.value = P > 0 && o === P;
       }
       return (P, Y) => {
-        if (DISABLE_KEYAREAS) return bt("", !0);
-        var I;
-        const ee = t6,
-          X = kE,
-          C = OE,
-          G = Nl;
-        return (
-          ae(),
-          me(
-            "div",
-            {
-              ref_key: "rootRef",
-              ref: k,
-              class: st(["KeyAreas", { visible: ge(R) }]),
-            },
-            [
-              Ve(ee, { block: t.block }, null, 8, ["block"]),
-              Ve(X, { "label-index": ge(q), areas: ge(se) }, null, 8, [
-                "label-index",
-                "areas",
-              ]),
-              J("div", n6, [
-                J(
-                  "div",
-                  r6,
-                  [
-                    (ae(!0),
-                    me(
-                      Ye,
-                      null,
-                      ut(
-                        ge($),
-                        (D, Z) => (
-                          ae(),
-                          me(
-                            "div",
-                            {
-                              ref_for: !0,
-                              ref: (fe) => (h[Z] = fe),
-                              key: `line-${Z}`,
-                              innerHTML: D,
-                            },
-                            null,
-                            8,
-                            i6
-                          )
-                        )
-                      ),
-                      128
-                    )),
-                  ],
-                  512
-                ),
-              ]),
-              ge(V)
-                ? (ae(),
-                  me("div", o6, [
-                    J(
-                      "div",
-                      { ref_key: "dotsRef", ref: w, class: "KeyAreas-dots" },
-                      [
-                        Ve(
-                          C,
-                          {
-                            total:
-                              ((I = ge(V)) == null ? void 0 : I.length) || 5,
-                            "current-index": ge(A),
-                          },
-                          null,
-                          8,
-                          ["total", "current-index"]
-                        ),
-                      ],
-                      512
-                    ),
-                    (ae(!0),
-                    me(
-                      Ye,
-                      null,
-                      ut(
-                        ge(V),
-                        (D, Z) => (
-                          ae(),
-                          me(
-                            "div",
-                            {
-                              ref_for: !0,
-                              ref: (fe) => (l[Z] = fe),
-                              key: `area-${Z}`,
-                              class: "KeyAreas-area",
-                            },
-                            [
-                              J("div", s6, [
-                                Ve(
-                                  G,
-                                  {
-                                    "image-url": D.imageSrc,
-                                    "video-url": D.src,
-                                    "fallback-to-static": ge(x),
-                                    onImgload: j,
-                                  },
-                                  null,
-                                  8,
-                                  [
-                                    "image-url",
-                                    "video-url",
-                                    "fallback-to-static",
-                                  ]
-                                ),
-                                J(
-                                  "div",
-                                  {
-                                    ref_for: !0,
-                                    ref: (fe) => (d[Z] = fe),
-                                    class: "KeyAreas-video-gradient",
-                                  },
-                                  null,
-                                  512
-                                ),
-                              ]),
-                            ]
-                          )
-                        )
-                      ),
-                      128
-                    )),
-                  ]))
-                : bt("", !0),
-              J("div", a6, [
-                J("div", l6, [
-                  J(
-                    "h2",
-                    {
-                      ref_key: "unmaskedTitleRef",
-                      ref: _,
-                      class: "KeyAreas-content-title",
-                    },
-                    We(ge(M)),
-                    513
-                  ),
-                ]),
-                J(
-                  "div",
-                  {
-                    ref_key: "maskedRef",
-                    ref: f,
-                    class: "KeyAreas-content masked",
-                  },
-                  [
-                    J(
-                      "div",
-                      {
-                        ref_key: "maskedTitleRef",
-                        ref: g,
-                        class: "KeyAreas-content-title",
-                      },
-                      We(ge(M)),
-                      513
-                    ),
-                    J(
-                      "div",
-                      {
-                        ref_key: "maskedBodyWrapRef",
-                        ref: y,
-                        class: "KeyAreas-content-body-wrap",
-                      },
-                      [
-                        J("div", u6, [
-                          J("div", c6, We(ge(K)), 1),
-                          J(
-                            "div",
-                            {
-                              ref_key: "maskedBodyRef",
-                              ref: b,
-                              class: "KeyAreas-content-body",
-                            },
-                            We(ge(z)),
-                            513
-                          ),
-                        ]),
-                      ],
-                      512
-                    ),
-                  ],
-                  512
-                ),
-              ]),
-            ],
-            2
-          )
-        );
-      };
+  return bt("", !0);
+};
     },
   },
   h6 = _t(d6, [["__scopeId", "data-v-4c555c38"]]),
@@ -50208,12 +49847,10 @@ function __injectPreStickyIntro() {
       const main = pane && pane.querySelector(":scope > main");
       if (!pane || !main) return null;
 
-      const hasHomeAnim =
-        !!main.querySelector(".HomeAnimation") &&
-        !!main.querySelector(".HomeAnimation-landscape") &&
-        !!main.querySelector(".HomeAnimation-landscape-sticky-wrap");
-
+      const hasHomeAnim = !!main.querySelector(".HomeAnimation");
       if (!hasHomeAnim) return null;
+
+
       return { pane, main };
     };
 
@@ -50641,7 +50278,7 @@ function __injectPreStickyIntro() {
             </div>
           </div>
 
-          <a class="home-project-card w-inline-block">
+          <a class="home-project-card w-inline-block mobile-hide">
             <img
               src="hero-3.png"
               loading="lazy"
@@ -50907,7 +50544,7 @@ function __injectHeaderNavigation() {
           </style>
         </div>
 
-        <div class="qs-main-logo" style="width: 19%;">
+        <div class="qs-main-logo mobile-hide" style="width: 19%;">
           <a href="./">
             <img src="QuackStudios-3.svg" alt="QuackStudios logo">
           </a>
@@ -50932,32 +50569,31 @@ function __injectHeaderNavigation() {
               id="w-node-_64d6b572-7c43-936d-785b-b92d636aa663-644deb4a"
               href="./"
               aria-current="page"
-              class="logo w-inline-block w--current"
+              class="logo w-inline-block w--current mobile-hide"
             >
               <div class="logo-mono w-embed">
-                <svg width="100%" height="auto" viewBox="0 0 41 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M25.2786 10.2454C25.2786 12.342 23.8427 14.3199 19.8828 14.3199H0V0H19.8035C23.3625 0 24.9174 1.57352 24.9174 3.63052C24.9174 5.08097 24.0277 6.39516 22.0896 6.79513C24.2743 7.11599 25.283 8.36865 25.283 10.2454H25.2786ZM4.08316 5.78861H18.6715C20.3497 5.78861 20.6933 4.94032 20.6933 4.13598C20.6933 3.42833 20.2881 2.66355 18.6715 2.66355H4.08316V5.78861ZM21.0589 9.92459C21.0589 8.93565 20.3938 8.24998 18.8742 8.24998H4.08316V11.6563H18.8565C20.4114 11.6563 21.0589 10.9091 21.0589 9.92019V9.92459Z"></path>
-                  <path d="M25.7631 22.4447C25.7631 25.5082 23.3802 27.4641 19.6802 27.4641H4.08316V32.0001H0V17.6802H19.7771C23.5167 17.6802 25.7587 19.4735 25.7587 22.4403L25.7631 22.4447ZM21.4773 22.5458C21.4773 21.1744 20.5083 20.4097 18.7905 20.4097H4.08316V24.7434H18.7684C20.4863 24.7434 21.4773 23.9347 21.4773 22.5458Z"></path>
-                  <path d="M35.7 10.06C33.04 10.06 30.94 8 30.94 5.22C30.94 2.44 33.04 0.38 35.7 0.38C38.36 0.38 40.46 2.44 40.46 5.22C40.46 8 38.36 10.06 35.7 10.06ZM35.7 9.24C37.9 9.24 39.52 7.56 39.52 5.22C39.52 2.88 37.9 1.2 35.7 1.2C33.5 1.2 31.88 2.88 31.88 5.22C31.88 7.56 33.5 9.24 35.7 9.24ZM35.02 7.86H33.7V2.54H35.92C37.16 2.54 37.82 3.1 37.82 4.1C37.82 4.84 37.38 5.28 36.7 5.44V5.46C38.06 5.68 37.62 7.7 37.94 7.8V7.86H36.58C36.32 7.62 36.76 5.98 35.52 5.98H35.02V7.86ZM35.02 4.92H35.56C36.1 4.92 36.56 4.8 36.56 4.22C36.56 3.64 36.1 3.54 35.56 3.54H35.02V4.92Z"></path>
-                </svg>
-              </div>
+                <img src="quack-icon.png"></div>
             </a>
+            <div class="qs-main-logo desktop-hide" style="width: 19%;">
+          <a href="./">
+            <img src="QuackStudios-3.svg" alt="QuackStudios logo">
+          </a>
+        </div>
             <div id="w-node-_64d6b572-7c43-936d-785b-b92d636aa665-644deb4a" class="menu-toggle">
               <div class="toggle-text-wrapper">
                 <div class="toggle-text">Menu<br />close</div>
               </div>
               <div class="menu-icon">
-                <div class="menu-icon-text">✺</div>
+              
                 <div class="menu-icon-close w-embed">
-                  <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_1446_9029)">
-                      <path d="M10.2611 9.29107L18.5969 1.82204L17.2335 0.411144L9.31854 8.61494L1.82217 0.145895L0.411274 1.50925L8.63646 9.38392L0.146024 16.9206L1.50938 18.3315L9.34351 10.0951L16.9207 18.5967L18.3316 17.2334L10.2611 9.29107Z" fill="white"></path>
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_1446_9029">
-                        <rect width="18.3" height="18.3" fill="white" transform="translate(0.448242) rotate(1.40314)"></rect>
-                      </clipPath>
-                    </defs>
+                  <svg fill="white" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                    width="50%" height="800px" viewBox="0 0 24.75 24.75" xml:space="preserve"
+                    >
+                  <g>
+                    <path d="M0,3.875c0-1.104,0.896-2,2-2h20.75c1.104,0,2,0.896,2,2s-0.896,2-2,2H2C0.896,5.875,0,4.979,0,3.875z M22.75,10.375H2
+                      c-1.104,0-2,0.896-2,2c0,1.104,0.896,2,2,2h20.75c1.104,0,2-0.896,2-2C24.75,11.271,23.855,10.375,22.75,10.375z M22.75,18.875H2
+                      c-1.104,0-2,0.896-2,2s0.896,2,2,2h20.75c1.104,0,2-0.896,2-2S23.855,18.875,22.75,18.875z"/>
+                  </g>
                   </svg>
                 </div>
               </div>

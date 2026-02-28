@@ -8622,5 +8622,327 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 </script>
 
+<script>
+(() => {
+  /******************************************************************
+   * Webflow Menu Toggle Recreation (a-31 / a-40)
+   * Targets:
+   *  - .menu-toggle (click target)
+   *  - children: .menu-icon-close, .menu-icon-text, .toggle-text
+   *  - global: .nav-menu, .menu-bg, .button.is-nav, .link-text.is-1..is-5
+   ******************************************************************/
+
+  // --- Breakpoint guard (approx Webflow medium/small/tiny) ---
+  // Change this if your "tablet" breakpoint differs.
+  const MOBILE_MAX_PX = 991;
+
+  // --- Easing approximations (Webflow named easings -> cubic-bezier) ---
+  // These are good practical matches.
+  const EASE = {
+    outExpo: "cubic-bezier(0.16, 1, 0.3, 1)",
+    inExpo: "cubic-bezier(0.7, 0, 0.84, 0)",
+    inOutExpo: "cubic-bezier(0.87, 0, 0.13, 1)",
+    inOutQuart: "cubic-bezier(0.76, 0, 0.24, 1)",
+    inQuart: "cubic-bezier(0.5, 0, 0.75, 0)",
+    outQuart: "cubic-bezier(0.25, 1, 0.5, 1)",
+  };
+
+  // --- Utility helpers ---
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  const isMobileish = () => window.matchMedia(`(max-width:${MOBILE_MAX_PX}px)`).matches;
+
+  function setDisplay(el, value) {
+    if (!el) return;
+    el.style.display = value;
+  }
+
+  function setOpacity(el, value) {
+    if (!el) return;
+    el.style.opacity = String(value);
+  }
+
+  function setTransform(el, value) {
+    if (!el) return;
+    el.style.transform = value;
+    el.style.transformStyle = "preserve-3d";
+    el.style.backfaceVisibility = "hidden";
+    el.style.willChange = "transform";
+  }
+
+  function setHeightPercent(el, pct) {
+    if (!el) return;
+    el.style.height = pct + "%";
+  }
+
+  function animate(el, keyframes, opts) {
+    if (!el) return { finished: Promise.resolve() };
+    try {
+      return el.animate(keyframes, opts);
+    } catch {
+      // Fallback: apply end styles
+      const last = keyframes[keyframes.length - 1];
+      for (const k in last) el.style[k] = last[k];
+      return { finished: Promise.resolve() };
+    }
+  }
+
+  // --- Gather elements (some are inside the toggle, others global) ---
+  function getEls(menuToggle) {
+    const closeIcon = $(".menu-icon-close", menuToggle) || $(".menu-icon-close");
+    const menuIconText = $(".menu-icon-text", menuToggle) || $(".menu-icon-text");
+    const toggleText = $(".toggle-text", menuToggle) || $(".toggle-text");
+
+    const navMenu = $(".nav-menu");
+    const menuBg = $(".menu-bg");
+    const navButton = $(".button.is-nav");
+
+    const links = [
+      $(".link-text.is-1"),
+      $(".link-text.is-2"),
+      $(".link-text.is-3"),
+      $(".link-text.is-4"),
+      $(".link-text.is-5"),
+    ].filter(Boolean);
+
+    return { closeIcon, menuIconText, toggleText, navMenu, menuBg, navButton, links };
+  }
+
+  // --- Initial state like useFirstGroupAsInitialState: true in a-31 ---
+  // This mimics group 1 of a-31 (closed-ready state).
+  function applyInitialClosedState(menuToggle) {
+    const { closeIcon, navMenu, menuBg, navButton, links } = getEls(menuToggle);
+
+    // a-31 group 1:
+    // .menu-icon-close display none
+    setDisplay(closeIcon, "none");
+
+    // .nav-menu display none
+    setDisplay(navMenu, "none");
+
+    // .menu-bg height 0% (width already 100% in CSS likely)
+    setHeightPercent(menuBg, 0);
+
+    // links pushed down (y=100%)
+    links.forEach(el => setTransform(el, "translateY(100%)"));
+
+    // nav button scale 0.8 + opacity 0
+    if (navButton) {
+      setTransform(navButton, "scale(0.8)");
+      setOpacity(navButton, 0);
+    }
+
+    // close icon rotated away (y=90deg) to match a-31 group 1
+    if (closeIcon) setTransform(closeIcon, "rotateY(90deg)");
+  }
+
+  // --- OPEN animation (recreates a-31) ---
+  async function openMenu(menuToggle) {
+    const { closeIcon, menuIconText, toggleText, navMenu, menuBg, navButton, links } = getEls(menuToggle);
+
+    // If navMenu/bg not present, bail.
+    if (!menuBg || !navMenu) return;
+
+    // a-31 group 2 (instant): show close icon + nav-menu
+    setDisplay(closeIcon, "flex");
+    setDisplay(navMenu, "flex");
+
+    // a-31 group 3 animations:
+
+    // menu-bg height 0 -> 100 over 1000 outExpo
+    const bgAnim = animate(
+      menuBg,
+      [{ height: "0%" }, { height: "100%" }],
+      { duration: 1000, easing: EASE.outExpo, fill: "forwards" }
+    );
+
+    // toggle-text move y to -0.875rem over 800 inOutQuart
+    const toggleTextAnim = animate(
+      toggleText,
+      [{ transform: "translateY(0rem)" }, { transform: "translateY(-0.875rem)" }],
+      { duration: 800, easing: EASE.inOutQuart, fill: "forwards" }
+    );
+
+    // menu-icon-text rotateY to 90deg over 450 inQuart
+    const menuIconTextAnim = animate(
+      menuIconText,
+      [{ transform: "rotateY(0deg)" }, { transform: "rotateY(90deg)" }],
+      { duration: 450, easing: EASE.inQuart, fill: "forwards" }
+    );
+
+    // link stagger in: is-1..5 move y 100% -> 0, duration 800 outExpo, delays 200..600
+    const delays = [200, 300, 400, 500, 600];
+    const linkAnims = links.map((el, i) =>
+      animate(
+        el,
+        [{ transform: "translateY(100%)" }, { transform: "translateY(0%)" }],
+        { duration: 800, easing: EASE.outExpo, delay: delays[i] ?? 200, fill: "forwards" }
+      )
+    );
+
+    // close icon rotateY 90 -> 0, duration 450 outQuart, delay 450
+    const closeIconAnim = animate(
+      closeIcon,
+      [{ transform: "rotateY(90deg)" }, { transform: "rotateY(0deg)" }],
+      { duration: 450, easing: EASE.outQuart, delay: 450, fill: "forwards" }
+    );
+
+    // nav button scale 0.8 -> 1, duration 450 inOutQuart, delay 500
+    const navBtnScaleAnim = animate(
+      navButton,
+      [{ transform: "scale(0.8)" }, { transform: "scale(1)" }],
+      { duration: 450, easing: EASE.inOutQuart, delay: 500, fill: "forwards" }
+    );
+
+    // nav button opacity 0 -> 1, duration 450 inOutQuart, delay 500
+    const navBtnOpacityAnim = animate(
+      navButton,
+      [{ opacity: 0 }, { opacity: 1 }],
+      { duration: 450, easing: EASE.inOutQuart, delay: 500, fill: "forwards" }
+    );
+
+    // mark state
+    menuToggle.setAttribute("data-menu-open", "true");
+
+    // wait for the long ones (not strictly required, but keeps things tidy)
+    await Promise.allSettled([
+      bgAnim.finished,
+      toggleTextAnim.finished,
+      menuIconTextAnim.finished,
+      ...linkAnims.map(a => a.finished),
+      closeIconAnim.finished,
+      navBtnScaleAnim.finished,
+      navBtnOpacityAnim.finished,
+    ]);
+  }
+
+  // --- CLOSE animation (recreates a-40) ---
+  async function closeMenu(menuToggle) {
+    const { closeIcon, menuIconText, toggleText, navMenu, menuBg, navButton, links } = getEls(menuToggle);
+
+    if (!menuBg || !navMenu) return;
+
+    // a-40 group 1 animations
+
+    // nav button scale to 0.95 over 500 inOutQuart
+    const navBtnScaleAnim = animate(
+      navButton,
+      [{ transform: getComputedStyle(navButton || {}).transform || "scale(1)" }, { transform: "scale(0.95)" }],
+      { duration: 500, easing: EASE.inOutQuart, fill: "forwards" }
+    );
+
+    // links move down to y=100% over 500 inExpo
+    const linkOutAnims = links.map(el =>
+      animate(
+        el,
+        [{ transform: "translateY(0%)" }, { transform: "translateY(100%)" }],
+        { duration: 500, easing: EASE.inExpo, fill: "forwards" }
+      )
+    );
+
+    // nav button opacity to 0 over 500 inOutQuart
+    const navBtnOpacityAnim = animate(
+      navButton,
+      [{ opacity: 1 }, { opacity: 0 }],
+      { duration: 500, easing: EASE.inOutQuart, fill: "forwards" }
+    );
+
+    // toggle-text back to y=0 over 500 inOutQuart
+    const toggleTextAnim = animate(
+      toggleText,
+      [{ transform: "translateY(-0.875rem)" }, { transform: "translateY(0rem)" }],
+      { duration: 500, easing: EASE.inOutQuart, fill: "forwards" }
+    );
+
+    // close icon rotateY to -90 over 300 inQuart
+    const closeIconAnim = animate(
+      closeIcon,
+      [{ transform: "rotateY(0deg)" }, { transform: "rotateY(-90deg)" }],
+      { duration: 300, easing: EASE.inQuart, fill: "forwards" }
+    );
+
+    // menu-icon-text rotate back to 0, duration 300 outQuart, delay 500
+    const menuIconTextAnim = animate(
+      menuIconText,
+      [{ transform: "rotateY(90deg)" }, { transform: "rotateY(0deg)" }],
+      { duration: 300, easing: EASE.outQuart, delay: 500, fill: "forwards" }
+    );
+
+    // menu-bg height 100 -> 0, duration 600 inOutExpo, delay 500
+    const bgAnim = animate(
+      menuBg,
+      [{ height: "100%" }, { height: "0%" }],
+      { duration: 600, easing: EASE.inOutExpo, delay: 500, fill: "forwards" }
+    );
+
+    menuToggle.setAttribute("data-menu-open", "false");
+
+    await Promise.allSettled([
+      navBtnScaleAnim.finished,
+      navBtnOpacityAnim.finished,
+      toggleTextAnim.finished,
+      closeIconAnim.finished,
+      menuIconTextAnim.finished,
+      bgAnim.finished,
+      ...linkOutAnims.map(a => a.finished),
+    ]);
+
+    // a-40 group 2 (instant cleanup): hide nav-menu and close icon
+    setDisplay(navMenu, "none");
+    setDisplay(closeIcon, "none");
+  }
+
+  // --- Click handler (mimics MOUSE_CLICK vs MOUSE_SECOND_CLICK toggle) ---
+  function attach(menuToggle) {
+    if (!menuToggle || menuToggle.__wfMenuAttached) return;
+    menuToggle.__wfMenuAttached = true;
+
+    applyInitialClosedState(menuToggle);
+
+    menuToggle.addEventListener("click", async (e) => {
+      if (!isMobileish()) return;
+
+      const isOpen = menuToggle.getAttribute("data-menu-open") === "true";
+      // prevent double-spam
+      if (menuToggle.__wfMenuBusy) return;
+      menuToggle.__wfMenuBusy = true;
+
+      try {
+        if (!isOpen) await openMenu(menuToggle);
+        else await closeMenu(menuToggle);
+      } finally {
+        menuToggle.__wfMenuBusy = false;
+      }
+    }, { passive: true });
+
+    // If breakpoint changes (rotate device), reset to closed
+    window.addEventListener("resize", () => {
+      if (!isMobileish()) return;
+      applyInitialClosedState(menuToggle);
+      menuToggle.setAttribute("data-menu-open", "false");
+    });
+  }
+
+  // --- Bootstrap: wait for elements (Vue/Webflow can mount late) ---
+  function boot() {
+    if (!isMobileish()) {
+      // still attach, but it won't run unless mobile breakpoint
+      // (helps if you resize the browser)
+    }
+    const toggles = $$(".menu-toggle");
+    toggles.forEach(attach);
+  }
+
+  // Run immediately, then observe for late mounts
+  boot();
+
+  const obs = new MutationObserver(() => boot());
+  obs.observe(document.documentElement, { childList: true, subtree: true });
+
+  window.addEventListener("load", boot);
+})();
+</script>
+
   </body>
 </html>

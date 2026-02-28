@@ -56,7 +56,8 @@ function XH(t, e, n, r) {
       c.mount(a, true);
 
       // 1) inject everything first
-      __injectPreloader();
+      window.__QK_PRELOADER_DONE = true;
+window.dispatchEvent(new Event("qk-preloader:done"));
       __injectHeaderNavigation();
       __injectPreStickyIntro();
       __injectScrollMenu();
@@ -1012,9 +1013,7 @@ function __injectPreStickyIntro() {
             class="home-text-card"
           >
             <div>
-              From brand strategy, UX/UI design,
-              and full-stack development, our expertise empowers
-              brands to grow and bring bold concepts to life.
+              We design, build and manage websites for businesses that lack the time for the runaround.
             </div>
           </div>
 
@@ -1053,7 +1052,7 @@ function __injectPreStickyIntro() {
           >
             <div class="max-width-small">
               <div>
-                Startups, digital products, finance, health, retail, logistics, media, education, entertainment, enterprise, <strong>yes</strong>
+                Startups, digital products, finance, health, retail, logistics, media, education, entertainment, not-for-profit? <strong>Yes.</strong>
               </div>
             </div>
           </div>
@@ -1352,12 +1351,7 @@ function __injectHeaderNavigation() {
               class="logo w-inline-block w--current"
             >
               <div class="logo-mono w-embed">
-                <svg width="100%" height="auto" viewBox="0 0 41 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M25.2786 10.2454C25.2786 12.342 23.8427 14.3199 19.8828 14.3199H0V0H19.8035C23.3625 0 24.9174 1.57352 24.9174 3.63052C24.9174 5.08097 24.0277 6.39516 22.0896 6.79513C24.2743 7.11599 25.283 8.36865 25.283 10.2454H25.2786ZM4.08316 5.78861H18.6715C20.3497 5.78861 20.6933 4.94032 20.6933 4.13598C20.6933 3.42833 20.2881 2.66355 18.6715 2.66355H4.08316V5.78861ZM21.0589 9.92459C21.0589 8.93565 20.3938 8.24998 18.8742 8.24998H4.08316V11.6563H18.8565C20.4114 11.6563 21.0589 10.9091 21.0589 9.92019V9.92459Z"></path>
-                  <path d="M25.7631 22.4447C25.7631 25.5082 23.3802 27.4641 19.6802 27.4641H4.08316V32.0001H0V17.6802H19.7771C23.5167 17.6802 25.7587 19.4735 25.7587 22.4403L25.7631 22.4447ZM21.4773 22.5458C21.4773 21.1744 20.5083 20.4097 18.7905 20.4097H4.08316V24.7434H18.7684C20.4863 24.7434 21.4773 23.9347 21.4773 22.5458Z"></path>
-                  <path d="M35.7 10.06C33.04 10.06 30.94 8 30.94 5.22C30.94 2.44 33.04 0.38 35.7 0.38C38.36 0.38 40.46 2.44 40.46 5.22C40.46 8 38.36 10.06 35.7 10.06ZM35.7 9.24C37.9 9.24 39.52 7.56 39.52 5.22C39.52 2.88 37.9 1.2 35.7 1.2C33.5 1.2 31.88 2.88 31.88 5.22C31.88 7.56 33.5 9.24 35.7 9.24ZM35.02 7.86H33.7V2.54H35.92C37.16 2.54 37.82 3.1 37.82 4.1C37.82 4.84 37.38 5.28 36.7 5.44V5.46C38.06 5.68 37.62 7.7 37.94 7.8V7.86H36.58C36.32 7.62 36.76 5.98 35.52 5.98H35.02V7.86ZM35.02 4.92H35.56C36.1 4.92 36.56 4.8 36.56 4.22C36.56 3.64 36.1 3.54 35.56 3.54H35.02V4.92Z"></path>
-                </svg>
-              </div>
+                <img src="quack-icon.png"></div>
             </a>
             <div id="w-node-_64d6b572-7c43-936d-785b-b92d636aa665-644deb4a" class="menu-toggle">
               <div class="toggle-text-wrapper">
@@ -3920,6 +3914,8 @@ function __injectPreloader() {
   }
 }
 
+
+
 function __injectAfterMain() {
   try {
     const pane = document.querySelector(".lenisscroll-pane");
@@ -3941,11 +3937,11 @@ function __injectAfterMain() {
                     <div class="quote-component">
                       <div scrub-each-word="" split-text="" class="big-quote">
                         You've seen the ads.
-"Your website is costing you clarity and dominance." Blah blah blah.
+"Your website is costing you clarity and dominance." Blah blah blah. &#10;&#10;
 
-
-Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
-
+<span class="quote-break">
+Here's what we've noticed: the louder an agency talks, the less impressive the work tends to be. Big words, bigger invoices and the same five f*cking templates. We just build websites. Damn good ones your customers can actually use.
+<span class="quote-break">
 
 
 If that sounds refreshingly boring... you're our kind of person.
@@ -4117,6 +4113,7 @@ If that sounds refreshingly boring... you're our kind of person.
             </section>
           </div>
     `;
+    
 
     const template = document.createElement("template");
     template.innerHTML = raw.trim();
@@ -4227,7 +4224,7 @@ function __injectAfterThirdAnchor() {
                           split-text=""
                           class="heading-large"
                         >
-                          Choose Your Engagement Model
+                          Two ways to work with us.
                         </h2>
                       </div>
                       <div class="max-width-medium">
@@ -4250,21 +4247,17 @@ function __injectAfterThirdAnchor() {
                       class="enquiry-card__wrap number-one is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
-                          <div class="enquiry-card-heading">Launch your</div>
-                          <div class="div-block">
-                            <div class="enquiry-card-heading anim">Website</div>
-                            <div class="enquiry-card-heading anim">Brand</div>
-                          </div>
+                          <div class="enquiry-card-heading">Build it</div>
+                          
                         </div>
                         <div class="card-tag no--caps">Fixed Scope</div>
                       </div>
                       <div class="card-text anim">
                         <div class="enquiry-card-p">
-                          A focused, end-to-end website build to establish a strong digital presence. 
-                          From content and design through to development and deployment, we deliver a high-performance site with a clear scope, timeline, and outcome.
+                        You need a website. We design it, build it, launch it. Clear timeline, clear price, no surprises.
                         </div>
                         <div class="button is-icon is-card">
-                          <div class="button-text">Start Your Build</div>
+                          <div class="button-text"> Let's scope it </div>
                           <div class="button-arrow w-embed">
                             <svg
                               width="26"
@@ -4306,20 +4299,19 @@ function __injectAfterThirdAnchor() {
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
                           <div class="enquiry-card-heading">
-                            Evolve Your Brand
+                            Brand it
                           </div>
                         </div>
                         <div class="card-tag no--caps">
-                          Ongoing Partnership
+                          Ongoing support
                         </div>
                       </div>
                       <div class="card-text anim">
                         <div class="enquiry-card-p">
-                          An ongoing strategic and technical partnership for growing businesses. 
-                          Brand strategy, custom development, performance optimisation, and long-term support through a flexible, scalable engagement.
+                          We stick around to update, optimise and grow your site as your business grows. No lock-in contracts.
                           </div>
                         <div class="button is-icon is-card">
-                          <div class="button-text">Explore Partnership</div>
+                          <div class="button-text">Learn more</div>
                           <div class="button-arrow w-embed">
                             <svg
                               width="26"

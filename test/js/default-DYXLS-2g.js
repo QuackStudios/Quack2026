@@ -820,7 +820,7 @@ __WEBFLOW_FOOTER_HTML = `
                       </div
                   ></a>
                   <div class="footer-flex">
-                    <div class="max-width-medium">
+                    <div class="max-width-medium footer-mailing-list">
                       <div class="heading-small">
                         Get brand, product, and digital strategy insights straight to your inbox.
                       </div>

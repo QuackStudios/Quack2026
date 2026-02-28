@@ -8,6 +8,42 @@ body {
   margin: 0;
 }
 
+
+@media (max-width: 991px) {
+  /* Keep your header positioning exactly as-is */
+  header#navigation.navigation {
+    /* no changes */
+  }
+
+  /* Force the menu overlay to ignore header offset */
+  header#navigation .nav-menu {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    margin: 0 !important;        /* ignore header margin effects */
+    transform: none !important;  /* if header/parents transform, this helps */
+  }
+
+  /* Background fills the viewport (Webflow animates HEIGHT inline) */
+  header#navigation .nav-menu .menu-bg {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    /* DO NOT set height here — Webflow animates it (0% -> 100%) */
+  }
+
+  /* Ensure content sits above background */
+  header#navigation .nav-menu > *:not(.menu-bg) {
+    position: relative;
+    z-index: 2;
+  }
+  header#navigation .nav-menu .menu-bg { z-index: 1; }
+}
+
 article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
   display: block;
 }
@@ -10164,6 +10200,7 @@ header.navigation {
     position: absolute;
     inset: 0% 0% auto;
   }
+  
 
   .enquiry-card-header {
     flex-direction: row;
