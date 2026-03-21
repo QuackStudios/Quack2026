@@ -4549,7 +4549,7 @@ figcaption {
   margin-left: auto;
   margin-right: auto;
   padding: .25rem;
-  display: flex !important;
+  display: flex;
   box-shadow: 0 0 50px #0000001a;
 }
 
