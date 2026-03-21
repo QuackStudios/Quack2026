@@ -17758,7 +17758,7 @@
                         selector: ".nav-menu",
                         selectorGuids: ["df3837b4-70a5-5825-3413-98bd31049847"],
                       },
-                      value: "none",
+                      value: "block",
                     },
                   },
                   {
@@ -18284,7 +18284,7 @@
                         selector: ".nav-menu",
                         selectorGuids: ["df3837b4-70a5-5825-3413-98bd31049847"],
                       },
-                      value: "none",
+                      value: "block",
                     },
                   },
                   {
@@ -19955,7 +19955,7 @@
                         selector: ".nav-menu",
                         selectorGuids: ["df3837b4-70a5-5825-3413-98bd31049847"],
                       },
-                      value: "none",
+                      value: "block",
                     },
                   },
                   {
@@ -20753,7 +20753,7 @@
                         selector: ".nav-menu",
                         selectorGuids: ["df3837b4-70a5-5825-3413-98bd31049847"],
                       },
-                      value: "none",
+                      value: "block",
                     },
                   },
                   {

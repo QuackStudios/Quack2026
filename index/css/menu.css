@@ -551,9 +551,21 @@ footer {
 #w-node-a5e9ce1a-dc41-a502-5ab4-74a54e608732-644deb4a {
   display: none !important;
 }
-
+.button-text-wrap {
+  font-size: 3vw !important;
+}
+.shift-right {
+  left: -50% !important;
+}
 }
 
+/* Title 2 only */
+.HomeSwirlTitles-title-wrap:nth-of-type(2)
+  .HomeSwirlTitles-title
+  [role="group"]
+  div[aria-hidden="true"]:nth-child(n+2) {
+  font-weight: 700;
+}
 
 
 .w-slider-nav.w-round > div {

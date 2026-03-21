@@ -5138,7 +5138,7 @@
   left: 0;
 }
 .HomeHero.isInitialText .HomeHero-title-line[data-v-f92dfd40]:last-child {
-  text-align: right;
+  text-align: left;
   width: 100%;
 }
 @font-face {

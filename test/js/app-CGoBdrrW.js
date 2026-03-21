@@ -42795,30 +42795,14 @@ const PE = { render: bD },
         h = [],
         l = [],
         d = xe(() => e.block),
-        f = xe(() => {
-          var $, M, z;
-          return (
-            ((z =
-              (M = ($ = d.value) == null ? void 0 : $.content) == null
-                ? void 0
-                : M.title1) == null
-              ? void 0
-              : z.split(`
-`)) || ""
-          );
-        }),
-        _ = xe(() => {
-          var $, M, z;
-          return (
-            ((z =
-              (M = ($ = d.value) == null ? void 0 : $.content) == null
-                ? void 0
-                : M.title2) == null
-              ? void 0
-              : z.split(`
-`)) || ""
-          );
-        });
+        f = xe(() => [
+          "If someone judged your business",
+          "by your website alone,",
+          "would you cringe?",
+        ]),
+        _ = xe(() => [
+           "Yeah... we fix that.",
+        ]);
       xe(() => {
         var $, M, z;
         return (
@@ -43139,15 +43123,11 @@ const PE = { render: bD },
         A = xe(() => w.value.videoSrc),
         k = xe(() => w.value.imageSrc),
         R = xe(() => w.value.title1),
-        x = xe(() => {
-          var P;
-          const j =
-            ((P = R.value) == null
-              ? void 0
-              : P.split(`
-`)) || [];
-          return w.value.title2 && j.push(w.value.title2), j;
-        }),
+        x = xe(() => [
+          "Kicking Digital",
+          "mediocrity in",
+          "the pixels",
+        ]),
         L = xe(() => {
           var P;
           return (
@@ -43542,7 +43522,7 @@ const PE = { render: bD },
                                 class: "HomeHero-title-line-base",
                                 role: "group",
                               },
-                              We(ee),
+                              "",
                               1
                             )
                           )
@@ -45771,30 +45751,14 @@ const IE = { render: MD },
         h = [],
         l = [],
         d = xe(() => e.block),
-        f = xe(() => {
-          var $, M, z;
-          return (
-            ((z =
-              (M = ($ = d.value) == null ? void 0 : $.content) == null
-                ? void 0
-                : M.title1) == null
-              ? void 0
-              : z.split(`
-`)) || ""
-          );
-        }),
-        _ = xe(() => {
-          var $, M, z;
-          return (
-            ((z =
-              (M = ($ = d.value) == null ? void 0 : $.content) == null
-                ? void 0
-                : M.title2) == null
-              ? void 0
-              : z.split(`
-`)) || ""
-          );
-        });
+        f = xe(() => [
+          "If someone judged your business",
+          "by your website alone,",
+          "would you cringe?",
+        ]),
+        _ = xe(() => [
+           "Yeah... we fix that.",
+        ]);
       xe(() => {
         var $, M, z;
         return (
@@ -46105,15 +46069,11 @@ const IE = { render: MD },
         y = xe(() => b.value.videoSrc),
         w = xe(() => b.value.imageSrc),
         A = xe(() => b.value.title1),
-        k = xe(() => {
-          var he;
-          const le =
-            ((he = A.value) == null
-              ? void 0
-              : he.split(`
-`)) || [];
-          return b.value.title2 && le.push(b.value.title2), le;
-        }),
+        k = xe(() => [
+          "Kicking Digital",
+          "mediocrity in",
+          "the pixels",
+        ]),
         R = xe(() => {
           const le = k.value,
             he = ["Kicking Digital", "mediocrity in", "the pixels"];
@@ -46774,29 +46734,24 @@ const a$ = { class: "HomeAnimation" },
   d1 = "/assets/Hero-Reel-compressed-COlxHHPV.mp4",
   h1 = "/assets/hero_f0-C9PFU_wA.webp",
   p$ = {
-    desktop: {
-      imageSrc: h1,
-      videoSrc: d1,
-      title1: `
-
-`.trim(),
-      title2: `
-
-`.trim(),
-    },
-    mobile: {
-      imageSrc: h1,
-      videoSrc: d1,
-      title1: `
-
-`.trim(),
-      title2: `
-`,
-      title3: `
-
-`.trim(),
-    },
+  desktop: {
+    imageSrc: h1,
+    videoSrc: d1,
+    title1: `If someone judged your business
+by your website alone,
+would you cringe?`.trim(),
+    title2: `Yeah... we fix that.`.trim(),
   },
+  mobile: {
+    imageSrc: h1,
+    videoSrc: d1,
+    title1: `If someone judged your business
+by your website alone,
+would you cringe?`.trim(),
+    title2: `Yeah... we fix that.`.trim(),
+    title3: ``.trim(),
+  },
+},
   m$ = "/assets/affordable-1@2x-BiGOHVqX.webp",
   g$ = "/assets/reliable-2@2x-CETxX1DK.webp",
   _$ = "/assets/zero-carbon-3@2x-CaxkkjRK.webp",
@@ -47540,16 +47495,11 @@ const L$ = ["data-open", "data-fixed"],
       I$({ elRef: c, activeMargin: 0.1, onUpdate: () => M() });
       let k = null;
       const R = xe(() => !!s.value),
-        x = xe(() => {
-          if (!Array.isArray(n.taxonomies)) return n.taxonomies;
-          const _e = {};
-          return (
-            n.taxonomies.forEach((ye) => {
-              ye.name && ye.terms && (_e[ye.name] = ye.terms);
-            }),
-            _e
-          );
-        }),
+        x = xe(() => [
+          "Kicking Digital",
+          "mediocrity in",
+          "the pixels",
+        ]),
         L = xe(() => Object.keys(x.value));
       function F() {
         i.setModalState(di.FILTER);
@@ -50584,19 +50534,30 @@ function __injectHeaderNavigation() {
                 <div class="toggle-text">Menu<br />close</div>
               </div>
               <div class="menu-icon">
-              
-                <div class="menu-icon-close w-embed">
-                  <svg fill="white" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-                    width="50%" height="800px" viewBox="0 0 24.75 24.75" xml:space="preserve"
-                    >
-                  <g>
-                    <path d="M0,3.875c0-1.104,0.896-2,2-2h20.75c1.104,0,2,0.896,2,2s-0.896,2-2,2H2C0.896,5.875,0,4.979,0,3.875z M22.75,10.375H2
-                      c-1.104,0-2,0.896-2,2c0,1.104,0.896,2,2,2h20.75c1.104,0,2-0.896,2-2C24.75,11.271,23.855,10.375,22.75,10.375z M22.75,18.875H2
-                      c-1.104,0-2,0.896-2,2s0.896,2,2,2h20.75c1.104,0,2-0.896,2-2S23.855,18.875,22.75,18.875z"/>
-                  </g>
-                  </svg>
-                </div>
-              </div>
+
+  <!-- HAMBURGER (shown when menu is closed) -->
+  <div class="menu-icon-text w-embed">
+    <svg fill="white" version="1.1" xmlns="http://www.w3.org/2000/svg"
+      width="50%" height="800px" viewBox="0 0 24.75 24.75" xml:space="preserve">
+      <g>
+        <path d="M0,3.875c0-1.104,0.896-2,2-2h20.75c1.104,0,2,0.896,2,2s-0.896,2-2,2H2C0.896,5.875,0,4.979,0,3.875z M22.75,10.375H2
+          c-1.104,0-2,0.896-2,2c0,1.104,0.896,2,2,2h20.75c1.104,0,2-0.896,2-2C24.75,11.271,23.855,10.375,22.75,10.375z M22.75,18.875H2
+          c-1.104,0-2,0.896-2,2s0.896,2,2,2h20.75c1.104,0,2-0.896,2-2S23.855,18.875,22.75,18.875z"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- CROSS (shown when menu is open) -->
+  <div class="menu-icon-close w-embed">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+      width="50%" height="800px" fill="none" stroke="white" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </div>
+
+</div>
             </div>
           </div>
           <div fs-scrolldisable-media="(max-width: 991px)" fs-scrolldisable-element="when-visible" class="nav-menu">

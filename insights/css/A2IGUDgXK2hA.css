@@ -4499,8 +4499,8 @@ figcaption {
   grid-row-gap: .25rem;
   background-color: var(--white);
   border-radius: 3.5rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
   padding: .25rem;
   display: flex;
   box-shadow: 0 0 50px #0000001a;
@@ -9626,7 +9626,7 @@ figcaption {
 
   .nav-link {
     z-index: 2;
-    color: var(--white);
+    color: black;
     border-radius: 0;
     padding: 0;
     font-size: 3rem;
@@ -10133,7 +10133,7 @@ figcaption {
 
   .menu-bg {
     z-index: 1;
-    background-color: var(--black);
+    background-color: #f9f9f9;
     width: 100%;
     height: 100%;
     display: block;
@@ -11733,7 +11733,7 @@ figcaption {
   }
 
   .content-wrapper {
-    padding-bottom: 7.5rem;
+    padding-bottom: 0rem;
   }
 
   .multi-step {
@@ -12156,7 +12156,7 @@ figcaption {
   }
 
   .nav-menu {
-    width: 100%;
+    width: 90%;
   }
 
   .hero-heading {
@@ -12592,7 +12592,6 @@ figcaption {
   }
 
   .link-text.is-1 {
-    border: 1px solid var(--black);
     text-align: left;
     padding-left: 10px;
     font-size: 10vw;
@@ -12614,7 +12613,6 @@ figcaption {
 
   .link-text.is-5 {
     text-align: left;
-    border: 0 solid #000;
     border-bottom-width: .25px;
     padding-left: 10px;
     font-size: 10vw;
