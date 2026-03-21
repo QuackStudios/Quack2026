@@ -3073,7 +3073,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -3112,7 +3112,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="982f1869-3131-d98f-1f62-07a02bc39e4a"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
@@ -3146,7 +3146,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -3185,7 +3185,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -3227,7 +3227,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -3266,7 +3266,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="982f1869-3131-d98f-1f62-07a02bc39e4a"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
@@ -3300,7 +3300,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -3339,7 +3339,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -3381,7 +3381,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -3420,7 +3420,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="982f1869-3131-d98f-1f62-07a02bc39e4a"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
@@ -3454,7 +3454,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -3493,7 +3493,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
@@ -3535,7 +3535,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="8618ad9d-ba0c-ee25-b3dd-e2b1130d5526"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-01">
@@ -3574,7 +3574,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="982f1869-3131-d98f-1f62-07a02bc39e4a"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-02">
@@ -3608,7 +3608,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="fc23a484-e790-05f8-0193-1a6935f2c613"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-03">
@@ -3647,7 +3647,7 @@ function __injectNewSection() {
               <div class="x_bc-header_services_card_wrap">
                 <a
                   data-w-id="b1cf9564-92f9-e06e-962c-5fa6d9b60bef"
-                  href="services.html"
+                  href="services"
                   class="x_bc-header_services_card_link w-inline-block"
                   ><div class="x_bc-header_services_card_inner-02">
                     <div class="x_bc-header_services_card_inner is-04">
