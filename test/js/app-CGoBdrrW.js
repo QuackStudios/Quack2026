@@ -57007,8 +57007,9 @@ const __BASE__ =
   location.hostname === "127.0.0.1" ||
   location.hostname.endsWith(".local")
     ? "/"
-    : "/Quack2026/";
-
+    : location.hostname.endsWith("github.io")
+    ? "/Quack2026/"
+    : "/";
 XH(r8, { routes: BE(), base: __BASE__ }, async (t) => {
   const { app: e, router: n } = t;
   Object.values([Bx, Yx]).forEach((o) => {
