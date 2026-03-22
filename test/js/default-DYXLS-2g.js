@@ -864,7 +864,7 @@ __WEBFLOW_FOOTER_HTML = `
                         ><a href="./work" class="footer-nav-link w-inline-block"
                           ><div>Work</div></a
                         ><a
-                          href="./work-with-us"
+                          href="work"
                           class="footer-nav-link w-inline-block"
                           ><div>Contact</div></a
                         >
