@@ -491,6 +491,10 @@
 }
 }
 
+ main {
+  position: relative;
+  z-index: 999;
+}
 
 @media (max-width: 999px) {
   main {
