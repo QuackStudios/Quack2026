@@ -9298,7 +9298,7 @@ figcaption {
     background-color: var(--white);
     color: var(--black);
     flex-flow: row;
-    width: 100%;
+    width: 90%;
     height: 4rem;
     margin-top: 1rem;
     font-size: 1rem;
@@ -9626,7 +9626,7 @@ figcaption {
 
   .nav-link {
     z-index: 2;
-    color: var(--white);
+    color: black;
     border-radius: 0;
     padding: 0;
     font-size: 3rem;
@@ -10133,7 +10133,7 @@ figcaption {
 
   .menu-bg {
     z-index: 1;
-    background-color: var(--black);
+    background-color: var(--grey-2);
     width: 100%;
     height: 100%;
     display: block;
@@ -12592,7 +12592,6 @@ figcaption {
   }
 
   .link-text.is-1 {
-    border: 1px solid var(--black);
     text-align: left;
     padding-left: 10px;
     font-size: 10vw;
@@ -12614,7 +12613,6 @@ figcaption {
 
   .link-text.is-5 {
     text-align: left;
-    border: 0 solid #000;
     border-bottom-width: .25px;
     padding-left: 10px;
     font-size: 10vw;
