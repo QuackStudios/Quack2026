@@ -54198,7 +54198,10 @@ function __ensureInjectAfterThird(maxFrames = 240) {
     // If no instance but Lenis constructor exists globally, create one
     if (!lenis && typeof window.Lenis === "function") {
       try {
-        lenis = new window.Lenis();
+        lenis = new window.Lenis({
+  smoothWheel: true,
+  syncTouch: true,
+});
         window.lenis = lenis;
         window.__lenis = lenis;
       } catch (e) {
