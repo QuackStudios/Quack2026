@@ -50564,7 +50564,7 @@ function __injectHeaderNavigation() {
             <a href="./" data-w-id="64d6b572-7c43-936d-785b-b92d636aa670" class="nav-logo-home w-inline-block" style="min-width: 3.75rem !important">
               <div class="logo-mono w-embed"><img src="quack-icon.png"></div>
             </a>
-            <a class="nav-link w-inline-block">
+            <a href="./services" class="nav-link w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa673" class="link-text is-1">Services</div>
               <div class="nav-pill"></div>
             </a>
@@ -54291,234 +54291,249 @@ function __ensureInjectAfterThird(maxFrames = 240) {
      4) Services Menu script (YOUR “capture phase interceptor” version)
      ----------------------------- */
   function __initServicesMenuPrimary() {
-    if (window.__SERVICES_MENU_PRIMARY_INITED) return;
-    window.__SERVICES_MENU_PRIMARY_INITED = true;
+  if (window.__SERVICES_MENU_PRIMARY_INITED) return;
+  window.__SERVICES_MENU_PRIMARY_INITED = true;
 
-    const servicesWrap = document.querySelector(".x_bc-header_services_wrap");
-    const navWrap = document.querySelector(".x_nav_wrap");
-    const closeWrap = document.querySelector(
-      ".x_bc-header_services_close_wrap"
-    );
-    const cursorWrap = document.querySelector(
-      ".x_g--cursors_services-menu_wrap"
-    );
-    const servicesInner = document.querySelector(".x_bc-header_services_inner");
-    const servicesBottom = document.querySelector(
-      ".x_bc-header_services_bottom"
-    );
-    const servicesText = document.querySelector(
-      ".x_bc-header_services_text.x_u-heading-4"
-    );
-    const servicesIcon = document.querySelector(".x_bc-header_services_ico");
+  const servicesWrap = document.querySelector(".x_bc-header_services_wrap");
+  const navWrap = document.querySelector(".x_nav_wrap");
+  const closeWrap = document.querySelector(
+    ".x_bc-header_services_close_wrap"
+  );
+  const cursorWrap = document.querySelector(
+    ".x_g--cursors_services-menu_wrap"
+  );
+  const servicesInner = document.querySelector(".x_bc-header_services_inner");
+  const servicesBottom = document.querySelector(
+    ".x_bc-header_services_bottom"
+  );
+  const servicesText = document.querySelector(
+    ".x_bc-header_services_text.x_u-heading-4"
+  );
+  const servicesIcon = document.querySelector(".x_bc-header_services_ico");
 
-    if (!servicesWrap) {
-      warn("No .x_bc-header_services_wrap found – services menu init skipped.");
-      return;
-    }
-
-    const servicesTextDiv = document.querySelector(".link-text.is-1");
-    if (!servicesTextDiv) {
-      warn("No .link-text.is-1 found – services menu init skipped.");
-      return;
-    }
-
-    const servicesAnchor = servicesTextDiv.closest("a.nav-link");
-    if (!servicesAnchor) {
-      warn(
-        ".link-text.is-1 not inside a.nav-link – services menu init skipped."
-      );
-      return;
-    }
-
-    // Icon
-    let toggleIcon = servicesTextDiv.querySelector(".services-toggle-icon");
-    if (!toggleIcon) {
-      toggleIcon = document.createElement("span");
-      toggleIcon.className = "services-toggle-icon";
-      toggleIcon.setAttribute("aria-hidden", "true");
-      servicesTextDiv.appendChild(toggleIcon);
-    }
-
-    servicesAnchor.setAttribute("href", "#");
-
-    let isOpen = false;
-    let textIconTimeout = null;
-
-    const setTransform = (el, { translateYRem = 0, scale = 1 } = {}) => {
-      if (!el) return;
-      el.style.transform = `translateY(${translateYRem}rem) scale(${scale})`;
-    };
-
-    const setClosedImmediate = () => {
-      servicesWrap.style.display = "none";
-      servicesWrap.style.opacity = "0";
-
-      if (cursorWrap) {
-        cursorWrap.style.opacity = "1";
-        cursorWrap.style.transform = "scale(0)";
-      }
-      if (closeWrap) {
-        closeWrap.style.opacity = "0";
-        setTransform(closeWrap, { translateYRem: 5, scale: 1 });
-      }
-      if (servicesInner) {
-        servicesInner.style.opacity = "0";
-        setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
-      }
-      if (servicesBottom) {
-        servicesBottom.style.opacity = "0";
-        setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
-      }
-
-      if (servicesIcon) servicesIcon.style.opacity = "1";
-      if (servicesText) servicesText.style.opacity = "0";
-
-      if (navWrap) navWrap.style.display = "";
-
-      servicesTextDiv.classList.remove("is-active");
-      toggleIcon && toggleIcon.classList.remove("is-open");
-
-      document.body.classList.remove("services-open");
-      isOpen = false;
-    };
-
-    const setupTransitions = () => {
-      servicesWrap.style.transition = "opacity 200ms ease";
-      if (cursorWrap)
-        cursorWrap.style.transition =
-          "opacity 100ms ease, transform 100ms ease";
-      if (closeWrap)
-        closeWrap.style.transition =
-          "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
-      if (servicesInner)
-        servicesInner.style.transition =
-          "opacity 400ms ease-out, transform 400ms ease-out";
-      if (servicesBottom)
-        servicesBottom.style.transition =
-          "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
-      if (servicesIcon) servicesIcon.style.transition = "opacity 200ms ease";
-      if (servicesText) servicesText.style.transition = "opacity 200ms ease";
-    };
-
-    const openServicesMenu = () => {
-      if (isOpen) return;
-      isOpen = true;
-      clearTimeout(textIconTimeout);
-
-      servicesTextDiv.classList.add("is-active");
-      toggleIcon && toggleIcon.classList.add("is-open");
-      document.body.classList.add("services-open");
-
-      if (navWrap) navWrap.style.display = "none";
-
-      servicesWrap.style.display = "flex";
-      void servicesWrap.offsetWidth;
-      servicesWrap.style.opacity = "1";
-
-      if (closeWrap) {
-        closeWrap.style.opacity = "1";
-        setTransform(closeWrap, { translateYRem: 0, scale: 1 });
-      }
-
-      if (cursorWrap) {
-        cursorWrap.style.opacity = "1";
-        cursorWrap.style.transform = "scale(1)";
-      }
-
-      if (servicesInner) {
-        setTimeout(() => {
-          servicesInner.style.opacity = "1";
-          setTransform(servicesInner, { translateYRem: 0, scale: 1 });
-        }, 100);
-      }
-
-      if (servicesBottom) {
-        setTimeout(() => {
-          servicesBottom.style.opacity = "1";
-          setTransform(servicesBottom, { translateYRem: 0, scale: 1 });
-        }, 200);
-      }
-
-      if (servicesIcon || servicesText) {
-        textIconTimeout = setTimeout(() => {
-          if (servicesIcon) servicesIcon.style.opacity = "0";
-          if (servicesText) servicesText.style.opacity = "1";
-        }, 3000); // (your pasted script says 3000 despite comment)
-      }
-    };
-
-    const closeServicesMenu = () => {
-      if (!isOpen) return;
-      isOpen = false;
-      clearTimeout(textIconTimeout);
-
-      servicesTextDiv.classList.remove("is-active");
-      toggleIcon && toggleIcon.classList.remove("is-open");
-      document.body.classList.remove("services-open");
-
-      if (navWrap) navWrap.style.display = "";
-
-      if (servicesBottom) {
-        servicesBottom.style.opacity = "0";
-        setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
-      }
-
-      if (cursorWrap) cursorWrap.style.transform = "scale(0)";
-
-      if (servicesInner) {
-        servicesInner.style.opacity = "0";
-        setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
-      }
-
-      servicesWrap.style.opacity = "0";
-      setTimeout(() => {
-        if (!isOpen) servicesWrap.style.display = "none";
-      }, 200);
-
-      if (servicesIcon) servicesIcon.style.opacity = "1";
-      if (servicesText) servicesText.style.opacity = "0";
-    };
-
-    // Expose
-    window.__servicesMenu = {
-      open: openServicesMenu,
-      close: closeServicesMenu,
-      state: () => ({ isOpen }),
-    };
-
-    // Capture-phase click intercept for Services link
-    bindOnce(
-      document,
-      "services_capture",
-      "click",
-      (e) => {
-        const anchor = e.target.closest("a.nav-link");
-        if (!anchor) return;
-        if (anchor !== servicesAnchor) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation && e.stopImmediatePropagation();
-
-        if (!isOpen) openServicesMenu();
-        else closeServicesMenu();
-      },
-      true
-    );
-
-    // close button
-    if (closeWrap) {
-      bindOnce(closeWrap, "services_close", "click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation && e.stopImmediatePropagation();
-        closeServicesMenu();
-      });
-    }
-
-    setupTransitions();
-    setClosedImmediate();
+  if (!servicesWrap) {
+    warn("No .x_bc-header_services_wrap found – services menu init skipped.");
+    return;
   }
+
+  const servicesTextDiv = document.querySelector(".link-text.is-1");
+  if (!servicesTextDiv) {
+    warn("No .link-text.is-1 found – services menu init skipped.");
+    return;
+  }
+
+  const servicesAnchor = servicesTextDiv.closest("a.nav-link");
+  if (!servicesAnchor) {
+    warn(
+      ".link-text.is-1 not inside a.nav-link – services menu init skipped."
+    );
+    return;
+  }
+
+  // Icon
+  let toggleIcon = servicesTextDiv.querySelector(".services-toggle-icon");
+  if (!toggleIcon) {
+    toggleIcon = document.createElement("span");
+    toggleIcon.className = "services-toggle-icon";
+    toggleIcon.setAttribute("aria-hidden", "true");
+    servicesTextDiv.appendChild(toggleIcon);
+  }
+
+  // ✅ FIX 1: responsive href
+  const updateServicesHref = () => {
+    if (window.innerWidth < 999) {
+      servicesAnchor.setAttribute("href", "./services");
+    } else {
+      servicesAnchor.setAttribute("href", "#");
+    }
+  };
+
+  updateServicesHref();
+  window.addEventListener("resize", updateServicesHref);
+
+  let isOpen = false;
+  let textIconTimeout = null;
+
+  const setTransform = (el, { translateYRem = 0, scale = 1 } = {}) => {
+    if (!el) return;
+    el.style.transform = `translateY(${translateYRem}rem) scale(${scale})`;
+  };
+
+  const setClosedImmediate = () => {
+    servicesWrap.style.display = "none";
+    servicesWrap.style.opacity = "0";
+
+    if (cursorWrap) {
+      cursorWrap.style.opacity = "1";
+      cursorWrap.style.transform = "scale(0)";
+    }
+    if (closeWrap) {
+      closeWrap.style.opacity = "0";
+      setTransform(closeWrap, { translateYRem: 5, scale: 1 });
+    }
+    if (servicesInner) {
+      servicesInner.style.opacity = "0";
+      setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
+    }
+    if (servicesBottom) {
+      servicesBottom.style.opacity = "0";
+      setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
+    }
+
+    if (servicesIcon) servicesIcon.style.opacity = "1";
+    if (servicesText) servicesText.style.opacity = "0";
+
+    if (navWrap) navWrap.style.display = "";
+
+    servicesTextDiv.classList.remove("is-active");
+    toggleIcon && toggleIcon.classList.remove("is-open");
+
+    document.body.classList.remove("services-open");
+    isOpen = false;
+  };
+
+  const setupTransitions = () => {
+    servicesWrap.style.transition = "opacity 200ms ease";
+    if (cursorWrap)
+      cursorWrap.style.transition =
+        "opacity 100ms ease, transform 100ms ease";
+    if (closeWrap)
+      closeWrap.style.transition =
+        "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
+    if (servicesInner)
+      servicesInner.style.transition =
+        "opacity 400ms ease-out, transform 400ms ease-out";
+    if (servicesBottom)
+      servicesBottom.style.transition =
+        "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
+    if (servicesIcon) servicesIcon.style.transition = "opacity 200ms ease";
+    if (servicesText) servicesText.style.transition = "opacity 200ms ease";
+  };
+
+  const openServicesMenu = () => {
+    if (isOpen) return;
+    isOpen = true;
+    clearTimeout(textIconTimeout);
+
+    servicesTextDiv.classList.add("is-active");
+    toggleIcon && toggleIcon.classList.add("is-open");
+    document.body.classList.add("services-open");
+
+    if (navWrap) navWrap.style.display = "none";
+
+    servicesWrap.style.display = "flex";
+    void servicesWrap.offsetWidth;
+    servicesWrap.style.opacity = "1";
+
+    if (closeWrap) {
+      closeWrap.style.opacity = "1";
+      setTransform(closeWrap, { translateYRem: 0, scale: 1 });
+    }
+
+    if (cursorWrap) {
+      cursorWrap.style.opacity = "1";
+      cursorWrap.style.transform = "scale(1)";
+    }
+
+    if (servicesInner) {
+      setTimeout(() => {
+        servicesInner.style.opacity = "1";
+        setTransform(servicesInner, { translateYRem: 0, scale: 1 });
+      }, 100);
+    }
+
+    if (servicesBottom) {
+      setTimeout(() => {
+        servicesBottom.style.opacity = "1";
+        setTransform(servicesBottom, { translateYRem: 0, scale: 1 });
+      }, 200);
+    }
+
+    if (servicesIcon || servicesText) {
+      textIconTimeout = setTimeout(() => {
+        if (servicesIcon) servicesIcon.style.opacity = "0";
+        if (servicesText) servicesText.style.opacity = "1";
+      }, 3000);
+    }
+  };
+
+  const closeServicesMenu = () => {
+    if (!isOpen) return;
+    isOpen = false;
+    clearTimeout(textIconTimeout);
+
+    servicesTextDiv.classList.remove("is-active");
+    toggleIcon && toggleIcon.classList.remove("is-open");
+    document.body.classList.remove("services-open");
+
+    if (navWrap) navWrap.style.display = "";
+
+    if (servicesBottom) {
+      servicesBottom.style.opacity = "0";
+      setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
+    }
+
+    if (cursorWrap) cursorWrap.style.transform = "scale(0)";
+
+    if (servicesInner) {
+      servicesInner.style.opacity = "0";
+      setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
+    }
+
+    servicesWrap.style.opacity = "0";
+    setTimeout(() => {
+      if (!isOpen) servicesWrap.style.display = "none";
+    }, 200);
+
+    if (servicesIcon) servicesIcon.style.opacity = "1";
+    if (servicesText) servicesText.style.opacity = "0";
+  };
+
+  // Expose
+  window.__servicesMenu = {
+    open: openServicesMenu,
+    close: closeServicesMenu,
+    state: () => ({ isOpen }),
+  };
+
+  // Capture-phase click intercept for Services link
+  bindOnce(
+    document,
+    "services_capture",
+    "click",
+    (e) => {
+      const anchor = e.target.closest("a.nav-link");
+      if (!anchor) return;
+      if (anchor !== servicesAnchor) return;
+
+      // ✅ FIX 2: allow navigation on mobile
+      if (window.innerWidth < 999) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation && e.stopImmediatePropagation();
+
+      if (!isOpen) openServicesMenu();
+      else closeServicesMenu();
+    },
+    true
+  );
+
+  // close button
+  if (closeWrap) {
+    bindOnce(closeWrap, "services_close", "click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation && e.stopImmediatePropagation();
+      closeServicesMenu();
+    });
+  }
+
+  setupTransitions();
+  setClosedImmediate();
+}
 
   /* -----------------------------
      5) Services Menu script (your SECOND version)

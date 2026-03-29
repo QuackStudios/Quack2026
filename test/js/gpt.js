@@ -1378,7 +1378,7 @@ function __injectHeaderNavigation() {
             <a href="./" data-w-id="64d6b572-7c43-936d-785b-b92d636aa670" class="nav-logo-home w-inline-block" style="min-width: 3.75rem !important">
               <div class="logo-mono w-embed"><img src="quack-icon.png"></div>
             </a>
-            <a class="nav-link w-inline-block">
+            <a href="./services" class="nav-link w-inline-block">
               <div data-w-id="64d6b572-7c43-936d-785b-b92d636aa673" class="link-text is-1">Services</div>
               <div class="nav-pill"></div>
             </a>
