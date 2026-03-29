@@ -4437,316 +4437,292 @@
       });
     </script>
 
-    <script>
-      (() => {
-        const debugLog = (...args) => console.log("[services-menu]", ...args);
-        const debugWarn = (...args) => console.warn("[services-menu]", ...args);
+   <script>
+(() => {
+  const debugLog = (...args) => console.log("[services-menu]", ...args);
+  const debugWarn = (...args) => console.warn("[services-menu]", ...args);
 
-        document.addEventListener("DOMContentLoaded", () => {
-          debugLog("DOMContentLoaded fired");
+  document.addEventListener("DOMContentLoaded", () => {
+    debugLog("DOMContentLoaded fired");
 
-          // Core elements
-          const servicesWrap = document.querySelector(
-            ".x_bc-header_services_wrap"
-          );
-          const navWrap = document.querySelector(".x_nav_wrap");
-          const closeWrap = document.querySelector(
-            ".x_bc-header_services_close_wrap"
-          );
-          const cursorWrap = document.querySelector(
-            ".x_g--cursors_services-menu_wrap"
-          );
-          const servicesInner = document.querySelector(
-            ".x_bc-header_services_inner"
-          );
-          const servicesBottom = document.querySelector(
-            ".x_bc-header_services_bottom"
-          );
-          const servicesText = document.querySelector(
-            ".x_bc-header_services_text.x_u-heading-4"
-          );
-          const servicesIcon = document.querySelector(
-            ".x_bc-header_services_ico"
-          );
+    // Core elements
+    const servicesWrap   = document.querySelector(".x_bc-header_services_wrap");
+    const navWrap        = document.querySelector(".x_nav_wrap");
+    const closeWrap      = document.querySelector(".x_bc-header_services_close_wrap");
+    const cursorWrap     = document.querySelector(".x_g--cursors_services-menu_wrap");
+    const servicesInner  = document.querySelector(".x_bc-header_services_inner");
+    const servicesBottom = document.querySelector(".x_bc-header_services_bottom");
+    const servicesText   = document.querySelector(".x_bc-header_services_text.x_u-heading-4");
+    const servicesIcon   = document.querySelector(".x_bc-header_services_ico");
 
-          if (!servicesWrap) {
-            debugWarn("No .x_bc-header_services_wrap found – aborting init.");
-            return;
-          }
+    if (!servicesWrap) {
+      debugWarn("No .x_bc-header_services_wrap found – aborting init.");
+      return;
+    }
 
-          // Find the SERVICES nav link: the <a> that contains .link-text.is-1
-          const servicesTextDiv = document.querySelector(".link-text.is-1");
-          if (!servicesTextDiv) {
-            debugWarn(
-              "No .link-text.is-1 found – cannot bind Services button."
-            );
-            return;
-          }
+    // Find the SERVICES nav link: the <a> that contains .link-text.is-1
+    const servicesTextDiv = document.querySelector(".link-text.is-1");
+    if (!servicesTextDiv) {
+      debugWarn("No .link-text.is-1 found – cannot bind Services button.");
+      return;
+    }
 
-          const servicesAnchor = servicesTextDiv.closest("a.nav-link");
-          if (!servicesAnchor) {
-            debugWarn(
-              ".link-text.is-1 is not inside an <a.nav-link> – cannot bind."
-            );
-            return;
-          }
+    const servicesAnchor = servicesTextDiv.closest("a.nav-link");
+    if (!servicesAnchor) {
+      debugWarn(".link-text.is-1 is not inside an <a.nav-link> – cannot bind.");
+      return;
+    }
 
-          debugLog("Services anchor found:", servicesAnchor);
+    debugLog("Services anchor found:", servicesAnchor);
 
-          // Create / grab the plus-minus icon element (right side of "Services")
-          let toggleIcon = servicesTextDiv.querySelector(
-            ".services-toggle-icon"
-          );
-          if (!toggleIcon) {
-            toggleIcon = document.createElement("span");
-            toggleIcon.className = "services-toggle-icon";
-            toggleIcon.setAttribute("aria-hidden", "true");
-            servicesTextDiv.appendChild(toggleIcon);
-            debugLog("Created .services-toggle-icon");
-          }
+    // Create / grab the plus-minus icon element (right side of "Services")
+    let toggleIcon = servicesTextDiv.querySelector(".services-toggle-icon");
+    if (!toggleIcon) {
+      toggleIcon = document.createElement("span");
+      toggleIcon.className = "services-toggle-icon";
+      toggleIcon.setAttribute("aria-hidden", "true");
+      servicesTextDiv.appendChild(toggleIcon);
+      debugLog("Created .services-toggle-icon");
+    }
 
-          // Force-safe href so it never becomes /undefined
-          servicesAnchor.setAttribute("href", "#");
+    const updateServicesHref = () => {
+      if (window.innerWidth < 999) {
+        servicesAnchor.setAttribute("href", "./services");
+      } else {
+        servicesAnchor.setAttribute("href", "#");
+      }
+    };
 
-          let isOpen = false;
-          let textIconTimeout = null;
+    updateServicesHref();
+    window.addEventListener("resize", updateServicesHref);
 
-          // Helper: set transform
-          const setTransform = (el, { translateYRem = 0, scale = 1 } = {}) => {
-            if (!el) return;
-            el.style.transform = `translateY(${translateYRem}rem) scale(${scale})`;
-          };
+    let isOpen = false;
+    let textIconTimeout = null;
 
-          // Initial CLOSED state
-          const setClosedImmediate = () => {
-            debugLog("Setting initial closed state");
-            servicesWrap.style.display = "none";
-            servicesWrap.style.opacity = "0";
+    // Helper: set transform
+    const setTransform = (el, { translateYRem = 0, scale = 1 } = {}) => {
+      if (!el) return;
+      el.style.transform = `translateY(${translateYRem}rem) scale(${scale})`;
+    };
 
-            if (cursorWrap) {
-              cursorWrap.style.opacity = "1";
-              cursorWrap.style.transform = "scale(0)";
-            }
+    // Initial CLOSED state
+    const setClosedImmediate = () => {
+      debugLog("Setting initial closed state");
+      servicesWrap.style.display = "none";
+      servicesWrap.style.opacity = "0";
 
-            if (closeWrap) {
-              closeWrap.style.opacity = "0";
-              setTransform(closeWrap, { translateYRem: 5, scale: 1 });
-            }
+      if (cursorWrap) {
+        cursorWrap.style.opacity = "1";
+        cursorWrap.style.transform = "scale(0)";
+      }
 
-            if (servicesInner) {
-              servicesInner.style.opacity = "0";
-              setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
-            }
+      if (closeWrap) {
+        closeWrap.style.opacity = "0";
+        setTransform(closeWrap, { translateYRem: 5, scale: 1 });
+      }
 
-            if (servicesBottom) {
-              servicesBottom.style.opacity = "0";
-              setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
-            }
+      if (servicesInner) {
+        servicesInner.style.opacity = "0";
+        setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
+      }
 
-            if (servicesIcon) servicesIcon.style.opacity = "1";
-            if (servicesText) servicesText.style.opacity = "0";
+      if (servicesBottom) {
+        servicesBottom.style.opacity = "0";
+        setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
+      }
 
-            if (navWrap) navWrap.style.display = ""; // restore nav
+      if (servicesIcon) servicesIcon.style.opacity = "1";
+      if (servicesText) servicesText.style.opacity = "0";
 
-            // Icon & state reset
-            servicesTextDiv.classList.remove("is-active");
-            if (toggleIcon) toggleIcon.classList.remove("is-open");
+      if (navWrap) navWrap.style.display = ""; // restore nav
 
-            // NEW: ensure body logo-state is reset too
-            document.body.classList.remove("services-open");
-          };
+      // Icon & state reset
+      servicesTextDiv.classList.remove("is-active");
+      if (toggleIcon) toggleIcon.classList.remove("is-open");
 
-          // Transitions
-          const setupTransitions = () => {
-            debugLog("Setting up transitions");
-            servicesWrap.style.transition = "opacity 200ms ease";
-            if (cursorWrap)
-              cursorWrap.style.transition =
-                "opacity 100ms ease, transform 100ms ease";
-            if (closeWrap)
-              closeWrap.style.transition =
-                "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
-            if (servicesInner)
-              servicesInner.style.transition =
-                "opacity 400ms ease-out, transform 400ms ease-out";
-            if (servicesBottom)
-              servicesBottom.style.transition =
-                "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
-            if (servicesIcon)
-              servicesIcon.style.transition = "opacity 200ms ease";
-            if (servicesText)
-              servicesText.style.transition = "opacity 200ms ease";
-          };
+      // NEW: ensure body logo-state is reset too
+      document.body.classList.remove("services-open");
+    };
 
-          // OPEN
-          const openServicesMenu = () => {
-            servicesTextDiv.classList.add("is-active");
-            if (toggleIcon) toggleIcon.classList.add("is-open");
+    // Transitions
+    const setupTransitions = () => {
+      debugLog("Setting up transitions");
+      servicesWrap.style.transition = "opacity 200ms ease";
+      if (cursorWrap)     cursorWrap.style.transition     = "opacity 100ms ease, transform 100ms ease";
+      if (closeWrap)      closeWrap.style.transition      = "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
+      if (servicesInner)  servicesInner.style.transition  = "opacity 400ms ease-out, transform 400ms ease-out";
+      if (servicesBottom) servicesBottom.style.transition = "opacity 400ms ease-out, transform 400ms cubic-bezier(0.175,0.885,0.32,1.275)";
+      if (servicesIcon)   servicesIcon.style.transition   = "opacity 200ms ease";
+      if (servicesText)   servicesText.style.transition   = "opacity 200ms ease";
+    };
 
-            // NEW: body class for logo colour swap
-            document.body.classList.add("services-open");
+    // OPEN
+    const openServicesMenu = () => {
+      servicesTextDiv.classList.add("is-active");
+      if (toggleIcon) toggleIcon.classList.add("is-open");
 
-            if (isOpen) {
-              debugLog("openServicesMenu called but already open");
-              return;
-            }
-            debugLog("Opening services menu");
-            isOpen = true;
-            clearTimeout(textIconTimeout);
+      // NEW: body class for logo colour swap
+      document.body.classList.add("services-open");
 
-            // Hide nav bar
-            if (navWrap) {
-              navWrap.style.display = "none";
-              debugLog("Hid .x_nav_wrap");
-            }
+      if (isOpen) {
+        debugLog("openServicesMenu called but already open");
+        return;
+      }
+      debugLog("Opening services menu");
+      isOpen = true;
+      clearTimeout(textIconTimeout);
 
-            servicesWrap.style.display = "flex";
-            // Force reflow so transition applies
-            void servicesWrap.offsetWidth;
-            servicesWrap.style.opacity = "1";
+      // Hide nav bar
+      if (navWrap) {
+        navWrap.style.display = "none";
+        debugLog("Hid .x_nav_wrap");
+      }
 
-            if (closeWrap) {
-              closeWrap.style.opacity = "1";
-              setTransform(closeWrap, { translateYRem: 0, scale: 1 });
-            }
+      servicesWrap.style.display = "flex";
+      // Force reflow so transition applies
+      void servicesWrap.offsetWidth;
+      servicesWrap.style.opacity = "1";
 
-            if (cursorWrap) {
-              cursorWrap.style.opacity = "1";
-              cursorWrap.style.transform = "scale(1)";
-            }
+      if (closeWrap) {
+        closeWrap.style.opacity = "1";
+        setTransform(closeWrap, { translateYRem: 0, scale: 1 });
+      }
 
-            if (servicesInner) {
-              setTimeout(() => {
-                debugLog("Animating servicesInner in");
-                servicesInner.style.opacity = "1";
-                setTransform(servicesInner, { translateYRem: 0, scale: 1 });
-              }, 100);
-            }
+      if (cursorWrap) {
+        cursorWrap.style.opacity = "1";
+        cursorWrap.style.transform = "scale(1)";
+      }
 
-            if (servicesBottom) {
-              setTimeout(() => {
-                debugLog("Animating servicesBottom in");
-                servicesBottom.style.opacity = "1";
-                setTransform(servicesBottom, { translateYRem: 0, scale: 1 });
-              }, 200);
-            }
+      if (servicesInner) {
+        setTimeout(() => {
+          debugLog("Animating servicesInner in");
+          servicesInner.style.opacity = "1";
+          setTransform(servicesInner, { translateYRem: 0, scale: 1 });
+        }, 100);
+      }
 
-            // After 8s: swap icon → text (like original)
-            if (servicesIcon || servicesText) {
-              textIconTimeout = setTimeout(() => {
-                debugLog("Swapping icon -> text after 8s");
-                if (servicesIcon) servicesIcon.style.opacity = "0";
-                if (servicesText) servicesText.style.opacity = "1";
-              }, 3000);
-            }
-          };
+      if (servicesBottom) {
+        setTimeout(() => {
+          debugLog("Animating servicesBottom in");
+          servicesBottom.style.opacity = "1";
+          setTransform(servicesBottom, { translateYRem: 0, scale: 1 });
+        }, 200);
+      }
 
-          // CLOSE
-          const closeServicesMenu = () => {
-            servicesTextDiv.classList.remove("is-active");
-            if (toggleIcon) toggleIcon.classList.remove("is-open");
+      // After 8s: swap icon → text (like original)
+      if (servicesIcon || servicesText) {
+        textIconTimeout = setTimeout(() => {
+          debugLog("Swapping icon -> text after 8s");
+          if (servicesIcon) servicesIcon.style.opacity = "0";
+          if (servicesText) servicesText.style.opacity = "1";
+        }, 3000);
+      }
+    };
 
-            // NEW: remove body class when closing
-            document.body.classList.remove("services-open");
+    // CLOSE
+    const closeServicesMenu = () => {
+      servicesTextDiv.classList.remove("is-active");
+      if (toggleIcon) toggleIcon.classList.remove("is-open");
 
-            if (!isOpen) {
-              debugLog("closeServicesMenu called but already closed");
-              return;
-            }
-            debugLog("Closing services menu");
-            isOpen = false;
-            clearTimeout(textIconTimeout);
+      // NEW: remove body class when closing
+      document.body.classList.remove("services-open");
 
-            // Show nav bar again
-            if (navWrap) {
-              navWrap.style.display = "";
-              debugLog("Restored .x_nav_wrap");
-            }
+      if (!isOpen) {
+        debugLog("closeServicesMenu called but already closed");
+        return;
+      }
+      debugLog("Closing services menu");
+      isOpen = false;
+      clearTimeout(textIconTimeout);
 
-            if (servicesBottom) {
-              servicesBottom.style.opacity = "0";
-              setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
-            }
+      // Show nav bar again
+      if (navWrap) {
+        navWrap.style.display = "";
+        debugLog("Restored .x_nav_wrap");
+      }
 
-            if (cursorWrap) {
-              cursorWrap.style.transform = "scale(0)";
-            }
+      if (servicesBottom) {
+        servicesBottom.style.opacity = "0";
+        setTransform(servicesBottom, { translateYRem: 5, scale: 1 });
+      }
 
-            if (servicesInner) {
-              servicesInner.style.opacity = "0";
-              setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
-            }
+      if (cursorWrap) {
+        cursorWrap.style.transform = "scale(0)";
+      }
 
-            servicesWrap.style.opacity = "0";
-            setTimeout(() => {
-              if (!isOpen) {
-                servicesWrap.style.display = "none";
-                debugLog("Services menu fully closed and display:none applied");
-              }
-            }, 200);
+      if (servicesInner) {
+        servicesInner.style.opacity = "0";
+        setTransform(servicesInner, { translateYRem: 10, scale: 0.5 });
+      }
 
-            if (servicesIcon) servicesIcon.style.opacity = "1";
-            if (servicesText) servicesText.style.opacity = "0";
-          };
+      servicesWrap.style.opacity = "0";
+      setTimeout(() => {
+        if (!isOpen) {
+          servicesWrap.style.display = "none";
+          debugLog("Services menu fully closed and display:none applied");
+        }
+      }, 200);
 
-          // Expose for debugging in console if needed
-          window.__servicesMenu = {
-            open: openServicesMenu,
-            close: closeServicesMenu,
-            state: () => ({ isOpen }),
-          };
+      if (servicesIcon) servicesIcon.style.opacity = "1";
+      if (servicesText) servicesText.style.opacity = "0";
+    };
 
-          // GLOBAL CLICK INTERCEPTOR (capture phase)
-          document.addEventListener(
-            "click",
-            (e) => {
-              const anchor = e.target.closest("a.nav-link");
-              if (!anchor) return;
+    // Expose for debugging in console if needed
+    window.__servicesMenu = {
+      open: openServicesMenu,
+      close: closeServicesMenu,
+      state: () => ({ isOpen })
+    };
 
-              // Only intercept if THIS anchor is the Services one
-              if (anchor !== servicesAnchor) return;
+    // GLOBAL CLICK INTERCEPTOR (capture phase)
+    document.addEventListener("click", (e) => {
+      const anchor = e.target.closest("a.nav-link");
+      if (!anchor) return;
 
-              debugLog("Click on Services anchor intercepted", {
-                target: e.target,
-                anchor,
-              });
+      // Only intercept if THIS anchor is the Services one
+      if (anchor !== servicesAnchor) return;
 
-              // Kill all default behavior and bubbling
-              e.preventDefault();
-              e.stopPropagation();
-              e.stopImmediatePropagation();
+      if (window.innerWidth < 999) {
+        return;
+      }
 
-              // Toggle menu
-              if (!isOpen) {
-                openServicesMenu();
-              } else {
-                closeServicesMenu();
-              }
-            },
-            true
-          ); // capture = true
+      debugLog("Click on Services anchor intercepted", {
+        target: e.target,
+        anchor
+      });
 
-          // Optional: clicking closeWrap closes menu
-          if (closeWrap) {
-            closeWrap.addEventListener("click", (e) => {
-              debugLog("Click on closeWrap");
-              e.preventDefault();
-              e.stopPropagation();
-              e.stopImmediatePropagation();
-              closeServicesMenu();
-            });
-          } else {
-            debugWarn(
-              "No .x_bc-header_services_close_wrap found – close must be via Services button only."
-            );
-          }
+      // Kill all default behavior and bubbling
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
 
-          setupTransitions();
-          setClosedImmediate();
-          debugLog("Init complete");
-        });
-      })();
-    </script>
+      // Toggle menu
+      if (!isOpen) {
+        openServicesMenu();
+      } else {
+        closeServicesMenu();
+      }
+    }, true); // capture = true
+
+    // Optional: clicking closeWrap closes menu
+    if (closeWrap) {
+      closeWrap.addEventListener("click", (e) => {
+        debugLog("Click on closeWrap");
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        closeServicesMenu();
+      });
+    } else {
+      debugWarn("No .x_bc-header_services_close_wrap found – close must be via Services button only.");
+    }
+
+    setupTransitions();
+    setClosedImmediate();
+    debugLog("Init complete");
+  });
+})();
+</script>
 
     <script>
       (() => {

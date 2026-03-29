@@ -6736,8 +6736,16 @@ body.services-open .qs-main-logo img {
       debugLog("Created .services-toggle-icon");
     }
 
-    // Force-safe href so it never becomes /undefined
-    servicesAnchor.setAttribute("href", "#");
+    const updateServicesHref = () => {
+      if (window.innerWidth < 999) {
+        servicesAnchor.setAttribute("href", "./services");
+      } else {
+        servicesAnchor.setAttribute("href", "#");
+      }
+    };
+
+    updateServicesHref();
+    window.addEventListener("resize", updateServicesHref);
 
     let isOpen = false;
     let textIconTimeout = null;
@@ -6924,6 +6932,10 @@ body.services-open .qs-main-logo img {
 
       // Only intercept if THIS anchor is the Services one
       if (anchor !== servicesAnchor) return;
+
+      if (window.innerWidth < 999) {
+        return;
+      }
 
       debugLog("Click on Services anchor intercepted", {
         target: e.target,
