@@ -5,6 +5,15 @@
   lang="en"
   class="w-mod-js" style="background-color: white" data-beasties-container="">
   <head>
+    <script>
+(function () {
+  if (location.pathname === "/index.html") {
+    location.replace(location.origin + "/" + location.search + location.hash);
+  }
+})();
+</script>
+
+<link rel="canonical" href="https://quackstudios.com.au/">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <!-- Favicon -->
