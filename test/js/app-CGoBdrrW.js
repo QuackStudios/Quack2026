@@ -57046,11 +57046,16 @@ function u8(t, e) {
     r = "default",
     i = n.internalRouting(t, e.system),
     o = (h = a8()) == null ? void 0 : h.find((f) => f.path === i);
+
   let s = o == null ? void 0 : o.component;
-  const a = i === "/" ? "/index" : `${i}/index`,
-    u = i8.includes(t) ? `${i}/index` : `${i}`;
+
+  const a = i === "/" ? "/" : i;
+  const u = i === "/" ? "/" : i;
+
   if (s) return { componentTemplate: s, path: u, layout: r, pathAlias: a };
+
   const c = { page: Fm, home: ME, portfolio: Dd };
+
   return (
     (s = c[(l = e == null ? void 0 : e.system) == null ? void 0 : l.type]
       ? c[(d = e == null ? void 0 : e.system) == null ? void 0 : d.type]
