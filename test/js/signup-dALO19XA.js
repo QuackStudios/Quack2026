@@ -5,11 +5,11 @@ const n = { class: "signup-page" },
     setup(r) {
       return (
         t({
-          title: "Sign Up - Breakthrough Energy",
+          title: "Sign Up - Quackstudios",
           meta: [
             {
               name: "description",
-              content: "Sign up for updates from Breakthrough Energy",
+              content: "Sign up for updates from Quackstudios",
             },
           ],
         }),

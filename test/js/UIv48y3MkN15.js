@@ -11404,9 +11404,9 @@
       dynamicCdnEnabled: !1,
     },
     property: {
-      name: "Breakthrough Energy NEW",
+      name: "Quack Studios",
       settings: {
-        domains: ["breakthroughenergy.org"],
+        domains: ["quackstudios.com.au"],
         undefinedVarsReturnEmpty: !1,
         ruleComponentSequencingEnabled: !0,
       },
