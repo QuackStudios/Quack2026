@@ -4242,7 +4242,7 @@ function __injectAfterThirdAnchor() {
                     <a
                       data-prevent-transition=""
                       data-w-id="21ca679e-a158-6eb5-a63f-ddd0dbd67d8f"
-                      href="https://quackstudios.typeform.com/getstarted"
+                      href="contact"
                       target="_blank"
                       class="enquiry-card__wrap number-one is--black w-inline-block"
                       ><div class="card-header anim">
@@ -4294,7 +4294,7 @@ function __injectAfterThirdAnchor() {
                         class="card-bg" />
                       <div class="enquiry-card__overlay number-one"></div></a
                     ><a
-                      href="./build-a-digital-product"
+                      href="contact"
                       class="enquiry-card__wrap number-two is--black w-inline-block"
                       ><div class="card-header anim">
                         <div class="w-layout-hflex enquiry-card-text">
@@ -4347,7 +4347,7 @@ function __injectAfterThirdAnchor() {
                         alt=""
                         class="card-bg" />
                       <div class="enquiry-card__overlay number-two"></div></a
-                    ><link rel="prefetch" href="./build-a-digital-product" />
+                    ><link rel="prefetch" href="contact" />
                   </div>
                 </div>
               </div>

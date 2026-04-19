@@ -2914,7 +2914,7 @@ body.services-open .qs-main-logo img {
                           <a
                             data-prevent-transition=""
                             data-w-id="cb6201a7-ef8a-b4d8-1858-987925710765"
-                            href="https://quackstudios.typeform.com/getstarted"
+                            href="https://mail.google.com/mail/?view=cm&fs=1&to=andrew@quackstudios.com.au&su=Website%20Inquiry"
                             target="_blank"
                             class="enquiry-card__wrap w-inline-block"
                             ><div class="card-header anim">
@@ -2940,7 +2940,7 @@ body.services-open .qs-main-logo img {
                               </div>
                               <div class="button is-icon is-card">
                                 <div class="button-text">
-                                  Book A Discovery Call
+                                  Contact Us Now
                                 </div>
                                 <div class="button-arrow w-embed">
                                   <svg
@@ -2977,63 +2977,230 @@ body.services-open .qs-main-logo img {
                               alt=""
                               class="card-bg" />
                             <div class="enquiry-card__overlay"></div></a
-                          ><a
-                            href="./build-a-digital-product"
-                            class="enquiry-card__wrap w-inline-block"
-                            ><div class="card-header anim">
-                              <div class="w-layout-hflex enquiry-card-text">
-                                <div class="enquiry-card-heading">
-                                  Build a Digital Product
-                                </div>
-                              </div>
-                              <div class="card-tag no--caps">
-                                Flexible Subscription
-                              </div>
-                            </div>
-                            <div class="card-text anim">
-                              <div>
-                                Change-driven, flexible roadmaps,
-                                people-centric. Add seasoned creatives to your
-                                team to launch or iterate on a digital product.
-                              </div>
-                              <div class="button is-icon is-card">
-                                <div class="button-text">Learn How We Work</div>
-                                <div class="button-arrow w-embed">
-                                  <svg
-                                    width="26"
-                                    height="38"
-                                    viewBox="0 0 26 38"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M11.7773 32.8115L22.6833 21.9055C24.3401 20.2488 24.3401 17.5627 22.6833 15.906L11.7774 4.99999"
-                                      stroke-width="2"
-                                    ></path>
-                                    <line
-                                      y1="-1"
-                                      x2="24.5643"
-                                      y2="-1"
-                                      transform="matrix(-1 -1.68587e-07 -2.52881e-07 1 24.625 20.0938)"
-                                      stroke-width="2"
-                                    ></line>
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
-                            <img
-                              src="contact/images/680fa5eb3443e4c285b5db08_sarah-dorweiler-Rv2kTIuya_I-unsplash%201%20%281%29.png"
-                              loading="lazy"
-                              sizes="(max-width: 714px) 100vw, 714px"
-                              srcset="
-                                contact/images/680fa5eb3443e4c285b5db08_sarah-dorweiler-Rv2kTIuya_I-unsplash%201%20%281%29-p-500.png 500w,
-                                contact/images/680fa5eb3443e4c285b5db08_sarah-dorweiler-Rv2kTIuya_I-unsplash%201%20%281%29.png       714w
-                              "
-                              alt=""
-                              class="card-bg" />
-                            <div class="enquiry-card__overlay"></div
-                          ></a>
+                          >
+                          <div class="form-container">
+  <form id="contactForm">
+    <div class="input-row">
+      <div class="input-group">
+        <input type="text" id="name" name="name" placeholder="FULL NAME" required>
+      </div>
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="ENTER YOUR EMAIL" required>
+      </div>
+    </div>
+    
+    <div class="input-row">
+      <div class="input-group">
+        <input type="tel" id="phone" name="phone" placeholder="ENTER YOUR PHONE">
+      </div>
+      <div class="input-group">
+        <input type="text" id="company" name="company" placeholder="COMPANY">
+      </div>
+    </div>
+
+    <div class="input-group full-width">
+      <textarea id="message" name="message" rows="1" placeholder="TYPE YOUR MESSAGE HERE..." required></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">SEND MESSAGE</button>
+  </form>
+
+  <div id="toast" class="toast">Thanks! Your message has been sent.</div>
+</div>
+
+<style>
+ :root {
+  --primary-orange: #ffb347;
+  --text-main: #1a1a1a;
+  --line-color: #dbdbdb;
+}
+
+.form-container {
+    flex: 1;
+    padding: 40px 0 40px 60px;
+    font-family: 'Inter', sans-serif;
+    height: fit-content;
+    margin: auto;
+}
+
+#contactForm {
+  display: flex;
+  flex-direction: column;
+  gap: 80px; /* This is the vertical spacing fix - very bold and open */
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px; /* Horizontal spacing between pair fields */
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make the labels/placeholders feel like a design element */
+input, textarea {
+  width: 100%;
+  padding: 15px 0;
+  border: none;
+  border-bottom: 2px solid var(--line-color); /* Thicker line */
+  background: transparent;
+  outline: none;
+  font-size: 16px; /* Slightly larger for readability */
+  font-weight: 500;
+  color: var(--text-main);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* The Bold Interaction */
+input:focus, textarea:focus {
+  border-bottom: 2px solid var(--text-main); /* Flips to black on focus */
+  padding-left: 10px; /* Subtle indent movement when typing */
+}
+
+input::placeholder, textarea::placeholder {
+  color: #a0a0a0;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+/* Textarea specific height */
+textarea {
+  min-height: 120px;
+}
+
+/* The "Statement" Button */
+#submitBtn {
+  background: var(--primary-orange);
+  color: #000;
+  border: 1.5px solid #000; /* High contrast border */
+  padding: 22px 50px;
+  border-radius: 100px;
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 14px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+#submitBtn:hover {
+  background: #000;
+  color: var(--primary-orange);
+  transform: scale(1.05);
+}
+
+/* Toast Message - Floating Boldly */
+/* Sleek Bottom-Right Toast */
+.toast {
+  visibility: hidden;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  
+  /* Modern soft shadow with an orange tint */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 
+              0 0 0 1px rgba(0, 0, 0, 0.02);
+  
+  /* The Orange "Success" Accent */
+  border-left: 4px solid var(--primary-orange);
+  
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  /* Animation preparation */
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast.show {
+  visibility: visible;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Optional: Add a small checkmark icon via CSS if you want */
+.toast::before {
+  content: '✓';
+  background: var(--primary-orange);
+  color: white;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+}
+/* Mobile: Stack everything */
+@media (max-width: 850px) {
+  .form-container {
+    padding: 40px 20px;
+  }
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 80px;
+  }
+  #contactForm {
+    gap: 60px;
+  }
+}
+</style>
+<script>
+  const contactForm = document.getElementById('contactForm');
+const toast = document.getElementById('toast');
+const scriptURL = 'https://script.google.com/macros/s/AKfycbySNOknC7H0AMApRyii-DZKhZGkCKpzOlFYdQmRdpRYg_7LzkO4zjuONSpkmhGwmvr_Nw/exec'; // Paste your URL here
+
+contactForm.addEventListener('submit', e => {
+  e.preventDefault();
+  
+  // Change button state
+  const btn = document.getElementById('submitBtn');
+  btn.innerText = "SENDING...";
+  btn.disabled = true;
+
+  fetch(scriptURL, { 
+    method: 'POST', 
+    body: new FormData(contactForm)
+  })
+  .then(response => {
+    // Show Toast
+    toast.classList.add("show");
+    
+    // Auto-hide after 4 seconds
+    setTimeout(() => { 
+      toast.classList.remove("show"); 
+    }, 4000);
+
+    // Reset Form
+    contactForm.reset();
+    btn.innerText = "SEND MESSAGE";
+    btn.disabled = false;
+  })
+  .catch(error => {
+    console.error('Error!', error.message);
+    btn.innerText = "TRY AGAIN";
+    btn.disabled = false;
+  });
+});
+</script>
                         </div>
                       </div>
                     </div>
