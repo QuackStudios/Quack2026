@@ -2964,7 +2964,7 @@ function __injectScrollMenu() {
                   </div>
                 </div>
                 <a
-                  href="#"
+                  href=""
                   class="x_nav_contact-btn_link is-consult w-inline-block open-koalender"
                   data-cal-open
                   ><div class="x_nav_contact-btn_text">
